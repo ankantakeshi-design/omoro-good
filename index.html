@@ -132,6 +132,8 @@
     clip-path:polygon(50% 0, 100% 100%, 0 100%);
     filter:drop-shadow(0 3px 0 rgba(120,50,0,.18));
   }
+  .house.no-roof .house-roof{ display:none; }
+  .house.no-roof .house-room{ border-top:2px solid var(--card-border); border-radius:14px; }
   .house-room{
     position:relative; height:150px; overflow:hidden;
     background:#f7ddab url('room-egg-bg.webp') center 62% / cover no-repeat;
@@ -921,6 +923,7 @@
     var himg = dst.anim || dst.wide || img;
     sceneMode = !!(dst.anim || dst.wide);
     room.classList.toggle('scene', sceneMode);
+    panel.classList.toggle('no-roof', dst.key === 'daidara' || dst.key === 'god');
     walker.classList.toggle('scene-walker', sceneMode);
     jumpWrap.classList.toggle('sway', sceneMode);
     if (sceneMode) {
