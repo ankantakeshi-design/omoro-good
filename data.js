@@ -4,13 +4,13 @@
 window.OMORO_DATA = {
   entries: [
     {
-      id: "20261124-threads-yagi",
-      date: "2026-11-24",
-      dateLabel: "2026年11月24日",
+      id: "20261108-threads-mikogiri",
+      date: "2026-11-08",
+      dateLabel: "2026年11月8日",
       platform: "Threads",
-      title: "「桃色片想い」の反対の言葉。",
-      body: "イラストレーターYAGIさんの「スレッズ大喜利」。松浦亜弥さんの名曲のタイトルの反対の言葉を考えるお題に、265件の回答が集まりました。黄色い画面にちなんだ連想ボケも飛び出す、平和で楽しい大喜利会場です。",
-      url: "https://www.threads.com/@illustratoryagi/post/DgHzLbDgeYs"
+      title: "「大喜利カルタ『ね』の読み札を教えてください」",
+      body: "ミコさんが主催する大喜利大会「ミコギリ大会」、なんと第264回。カルタの『ね』の読み札を考えるお題に、常連さんたちの回答が次々と集まりました。長く続く温かいやり取りが心地いい、平和な大喜利会場です。",
+      url: "https://www.threads.com/@mi.ko4611/post/DfdnkvdGtAc"
     },
     {
       id: "20261107-threads-yagi",
