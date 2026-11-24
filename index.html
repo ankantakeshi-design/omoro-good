@@ -89,10 +89,14 @@
     font-size:17px;
     font-weight:700;
   }
-  header .update-note{
-    margin:8px 0 0;
-    font-size:15px;
-    font-weight:700;
+  .sec-head{
+    display:flex; align-items:baseline; justify-content:space-between; gap:10px;
+    margin:26px 0 12px;
+  }
+  .sec-head .sec-title{ margin:0; }
+  .sec-head .update-note{
+    margin:0; font-size:12.5px; font-weight:700; color:var(--ink);
+    white-space:nowrap;
   }
   /* ===== 育成（おうち） ===== */
   .growth-zone{ max-width:680px; margin:18px auto 0; }
@@ -604,7 +608,6 @@
 <header>
   <h1 class="site-title">おもろグ〜</h1>
   <p class="tagline">笑える投稿、あつめました。</p>
-  <p class="update-note">🕖 毎朝7時ごろに、3つ追加しています</p>
 
   <div class="growth-zone">
     <button type="button" class="growth-toggle" id="growthToggle" aria-expanded="false" aria-controls="growthPanel">
@@ -645,7 +648,10 @@
 </header>
 
 <div class="wrap">
-  <h2 class="sec-title">最近のおもろ</h2>
+  <div class="sec-head">
+    <h2 class="sec-title">最近のおもろ</h2>
+    <p class="update-note">🕖 毎朝7時ごろに、3つ追加</p>
+  </div>
   <main id="list"></main>
 
   <section class="archive-zone" id="archiveZone" hidden>
