@@ -235,6 +235,46 @@
     100%{ transform:translate(var(--dx), var(--dy)) scale(1.15) rotate(160deg); opacity:0; }
   }
 
+  /* ===== 進化の演出：揺れ→フラッシュ→新しい姿＋名前表示（見本 evolve-demo.webp の流れ） ===== */
+  .walker.evo-shake{ animation:evo-shake .95s linear; }
+  @keyframes evo-shake{
+    0%,100%{ transform:translateX(0); }
+    12%{ transform:translateX(-9px); }
+    25%{ transform:translateX(8px); }
+    38%{ transform:translateX(-10px); }
+    50%{ transform:translateX(9px); }
+    63%{ transform:translateX(-7px); }
+    76%{ transform:translateX(6px); }
+    88%{ transform:translateX(-3px); }
+  }
+  .evo-flash{
+    position:absolute; inset:0; z-index:4; pointer-events:none;
+    background:radial-gradient(circle at 50% 45%, #fffef8 0%, #fff6d9 55%, #ffeeb8 100%);
+    opacity:0; transition:opacity .45s ease-out;
+  }
+  .evo-flash[hidden]{ display:none; }
+  .evo-flash.on{ opacity:1; transition:opacity .14s ease-in; }
+  .evo-name{
+    position:absolute; left:50%; bottom:10px; z-index:6;
+    transform:translateX(-50%);
+    background:rgba(255,255,255,.94);
+    border:2px solid var(--yellow); border-radius:999px;
+    padding:6px 18px;
+    font-size:17px; font-weight:900; white-space:nowrap;
+    box-shadow:0 3px 0 rgba(120,50,0,.18);
+    pointer-events:none;
+  }
+  .evo-name[hidden]{ display:none; }
+  .evo-name.pop{ animation:evo-name-pop .35s ease-out; }
+  @keyframes evo-name-pop{
+    0%{ transform:translateX(-50%) scale(.7); opacity:0; }
+    100%{ transform:translateX(-50%) scale(1); opacity:1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .walker.evo-shake{ animation:none; }
+    .evo-name.pop{ animation:none; }
+  }
+
   /* ===== すがたをえらぶ（到達済みステージのフォーム選択） ===== */
   .form-row{
     display:flex; gap:8px; flex-wrap:wrap;
@@ -525,6 +565,8 @@
         <button type="button" class="walker" id="walker" aria-label="おもろっち">
           <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg-t0.png" width="700" height="903" alt="おもろっち"><span class="egg-nest" aria-hidden="true"><svg viewBox="0 0 120 36" fill="none"><ellipse cx="60" cy="25" rx="50" ry="9" fill="#eec25e" opacity="0.5"/><path d="M16 13 l-7 -5 M104 13 l7 -5 M38 9 l-3 -6 M82 9 l3 -6" stroke="#b97e2a" stroke-width="3" stroke-linecap="round"/><path d="M12 15 Q60 30 108 15" stroke="#c9902e" stroke-width="6" stroke-linecap="round"/><path d="M30 18 Q60 29 90 18" stroke="#f2cd7e" stroke-width="3.5" stroke-linecap="round"/><path d="M18 21 Q60 35 102 21" stroke="#a8741f" stroke-width="5.5" stroke-linecap="round"/><path d="M26 26 Q60 36 94 26" stroke="#d9a441" stroke-width="4.5" stroke-linecap="round"/></svg></span></span>
         </button>
+        <div class="evo-flash" id="evoFlash" hidden aria-hidden="true"></div>
+        <div class="evo-name" id="evoName" hidden></div>
       </div>
       <div class="form-row" id="formRow" aria-label="すがたをえらぶ"></div>
       <div class="progress">
@@ -696,6 +738,8 @@
   var nextCount = document.getElementById('nextCount');
   var maxRow = document.getElementById('maxRow');
   var evolveBtn = document.getElementById('evolveBtn');
+  var evoFlash = document.getElementById('evoFlash');
+  var evoName = document.getElementById('evoName');
   /* アニメ版が読み込めないときは静止画 wide にフォールバック */
   stageImg.addEventListener('error', function(){
     var fb = stageImg.dataset ? stageImg.dataset.fallback : '';
@@ -863,9 +907,10 @@
     }
   }
 
-  /* ===== 進化ボタン（押した瞬間に次の姿へ＋キラキラで祝福） ===== */
-  function spawnSparkles(){
-    for (var i = 0; i < 12; i++) {
+  /* ===== 進化ボタン（見本の流れ：揺れ→フラッシュ→新しい姿＋「◯◯に進化したよ！」） ===== */
+  function spawnSparkles(n){
+    n = n || 12;
+    for (var i = 0; i < n; i++) {
       var s = document.createElement('span');
       s.className = 'spark';
       s.style.left = (20 + Math.random() * 60) + '%';
@@ -877,13 +922,57 @@
       (function(el){ setTimeout(function(){ el.remove(); }, 1600); })(s);
     }
   }
-  evolveBtn.addEventListener('click', function(){
-    if (evolvedIdx >= STAGES.length - 1) return;
-    if (my < STAGES[evolvedIdx + 1].min) return;
+  var evolving = false;
+  function doEvolve(){
     evolvedIdx += 1;
     try { localStorage.setItem('omoro-evolved', String(evolvedIdx)); } catch(e) {}
-    renderGrowth(true);
-    spawnSparkles();
+    /* 進化の瞬間は、おうちの表示も新しい姿に切り替える */
+    formKey = STAGES[evolvedIdx].key;
+    try { localStorage.setItem('omoro-form', formKey); } catch(e) {}
+    renderGrowth(false);
+  }
+  function showEvoName(){
+    evoName.textContent = STAGES[evolvedIdx].name + 'に進化したよ！';
+    evoName.hidden = false;
+    evoName.classList.remove('pop');
+    void evoName.offsetWidth;
+    evoName.classList.add('pop');
+    setTimeout(function(){ evoName.hidden = true; }, 2600);
+  }
+  evolveBtn.addEventListener('click', function(){
+    if (evolving) return;
+    if (evolvedIdx >= STAGES.length - 1) return;
+    if (my < STAGES[evolvedIdx + 1].min) return;
+    if (reduceMotion) { doEvolve(); showEvoName(); return; }
+    evolving = true;
+    evolveBtn.hidden = true;
+    stopWalk();
+    /* 1. 今の姿が左右に小刻みに揺れる（キラキラが増えていく） */
+    walker.classList.add('evo-shake');
+    spawnSparkles(4);
+    setTimeout(function(){ spawnSparkles(6); }, 320);
+    setTimeout(function(){ spawnSparkles(8); }, 620);
+    /* 2. 一瞬フラッシュ */
+    setTimeout(function(){
+      evoFlash.hidden = false;
+      void evoFlash.offsetWidth;
+      evoFlash.classList.add('on');
+      spawnSparkles(14);
+    }, 950);
+    /* 3. フラッシュの裏で新しい姿へ切り替え */
+    setTimeout(function(){
+      walker.classList.remove('evo-shake');
+      doEvolve();
+    }, 1180);
+    /* 4. フラッシュが引いて、新しい姿＋キラキラ＋名前表示 */
+    setTimeout(function(){
+      evoFlash.classList.remove('on');
+      hop();
+      showEvoName();
+      spawnSparkles(12);
+    }, 1330);
+    setTimeout(function(){ evoFlash.hidden = true; }, 1850);
+    setTimeout(function(){ evolving = false; }, 2000);
   });
 
   /* ===== おうちの開閉と、部屋の中の歩行 ===== */
