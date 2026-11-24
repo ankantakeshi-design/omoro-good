@@ -638,7 +638,7 @@
   </section>
 
   <div class="faq">
-  <details class="faq-outer">
+  <details class="faq-outer" id="installGuide">
     <summary>ホーム画面への置き方</summary>
     <div class="faq-inner">
       <p>iPhoneの方：Safariで開いて、共有のボタンから「ホーム画面に追加」。<br>
@@ -676,6 +676,7 @@
     <p>面白い投稿の「おもろ」ボタンを押すと、その数がおもろっちの力になります。あなたが押した「おもろ」が増えると、おもろっちは成長します。</p>
     <p>進捗の見方：おもろっちの顔と数字が、あなたの「おもろ」の合計です。「あと◯」が、次の成長までの残りです。</p>
     <p>「進化する」ボタンが出たら、押すと次の姿に進化します。</p>
+    <p>育ち具合の記録は、このブラウザの中に残ります。ブラウザや端末が変わると、また卵からになります。消えにくくするには、ホーム画面への追加がおすすめです。<br><a href="#installGuide" id="installLink">ホーム画面への置き方はこちら</a></p>
     <ul class="stage-list">
       <li><img class="stage-thumb" data-img="stage-egg-t0.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="卵おもろっち">卵おもろっち</span><span class="min">0〜</span></li>
       <li><img class="stage-thumb" data-img="stage-baby.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="ベビーおもろっち">？？？</span><span class="min">10〜</span></li>
@@ -1030,6 +1031,13 @@
   }
   document.getElementById('aboutOpen').addEventListener('click', openAbout);
   document.getElementById('aboutClose').addEventListener('click', function(){ closeAbout(false); });
+  var installLink = document.getElementById('installLink');
+  if (installLink) installLink.addEventListener('click', function(e){
+    e.preventDefault();
+    closeAbout(false);
+    var g = document.getElementById('installGuide');
+    if (g){ g.open = true; setTimeout(function(){ g.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60); }
+  });
   document.getElementById('aboutCloseX').addEventListener('click', function(){ closeAbout(false); });
   aboutOverlay.addEventListener('click', function(e){ if (e.target === aboutOverlay) closeAbout(false); });
   window.addEventListener('popstate', function(){ if (aboutIsOpen) closeAbout(true); });
