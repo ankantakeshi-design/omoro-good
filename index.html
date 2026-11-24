@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>おもろグ〜｜笑える投稿、あつめました。</title>
+<meta name="description" content="Threads・X・Instagramで見つけた、コメント欄が大喜利みたいに盛り上がっている平和で面白い投稿を集めるログ。おもろボタンで、おもろっちが育ちます。">
+<link rel="icon" href="omorocchi-icon.png" type="image/png">
+<link rel="apple-touch-icon" href="omorocchi-icon.png">
+<style>
+  :root{
+    --orange:#e05d00;
+    --orange-dark:#b34a00;
+    --yellow:#ffc400;
+    --yellow-soft:#fff6d9;
+    --ink:#3a2a1a;
+    --ink-soft:#6b5847;
+    --card-border:#ffd9a8;
+  }
+  *{ box-sizing:border-box; }
+  html{ -webkit-text-size-adjust:100%; }
+  body{
+    margin:0;
+    font-family:"Hiragino Maru Gothic ProN","Hiragino Sans","Noto Sans JP",sans-serif;
+    background:#fffdf7;
+    color:var(--ink);
+    font-size:16px;
+    line-height:1.7;
+  }
+  img{ height:auto; }
+  .wrap{ max-width:680px; margin:0 auto; padding:0 16px 48px; }
+
+  /* ===== ヘッダー ===== */
+  header{
+    background:linear-gradient(160deg, #ffb300 0%, #ff7a00 78%);
+    color:#fff;
+    padding:26px 16px 22px;
+    text-align:center;
+  }
+  header .site-title{
+    margin:0;
+    font-size:42px;
+    font-weight:900;
+    letter-spacing:.04em;
+    text-shadow:0 2px 0 rgba(120,50,0,.35);
+    line-height:1.2;
+  }
+  header .tagline{
+    margin:6px 0 0;
+    font-size:17px;
+    font-weight:700;
+  }
+  /* ===== 育成パネル ===== */
+  .growth{
+    max-width:680px;
+    margin:18px auto 0;
+    background:#fff;
+    color:var(--ink);
+    border:3px solid var(--yellow);
+    border-radius:20px;
+    padding:14px 16px 16px;
+    display:flex;
+    gap:14px;
+    align-items:center;
+    text-align:left;
+    box-shadow:0 4px 0 rgba(120,50,0,.18);
+  }
+  .growth .stage-img{
+    width:110px;
+    flex:0 0 110px;
+  }
+  .growth .stage-img img{
+    width:110px;
+    display:block;
+  }
+  .growth .stage-img img.bounce{ animation:bounce .7s ease; }
+  @keyframes bounce{
+    0%{ transform:scale(1); } 30%{ transform:scale(1.18) rotate(-3deg); }
+    60%{ transform:scale(.94) rotate(2deg); } 100%{ transform:scale(1); }
+  }
+  .growth-info{ flex:1; min-width:0; }
+  .growth-info .stage-line{
+    font-size:15px; font-weight:700; color:var(--ink-soft); margin:0;
+  }
+  .growth-info .stage-name{
+    font-size:24px; font-weight:900; color:var(--orange-dark); margin:0 4px;
+  }
+  .growth-info .total{
+    margin:2px 0 8px; font-size:16px; font-weight:700;
+  }
+  .growth-info .total b{ font-size:22px; color:var(--orange); }
+  .bar{
+    height:16px; background:#ffe9bd; border-radius:999px; overflow:hidden;
+    border:2px solid var(--card-border);
+  }
+  .bar > div{
+    height:100%; width:0%;
+    background:linear-gradient(90deg, var(--yellow), var(--orange));
+    border-radius:999px;
+    transition:width .8s ease;
+  }
+  .growth-info .next{
+    margin:6px 0 0; font-size:14px; color:var(--ink-soft); font-weight:700;
+  }
+  .growth-info .grow-note{
+    margin:8px 0 0; font-size:14px; color:var(--ink-soft);
+  }
+  @media (max-width:480px){
+    .growth .stage-img{ width:88px; flex-basis:88px; }
+    .growth .stage-img img{ width:88px; }
+    header .site-title{ font-size:36px; }
+  }
+
+  /* ===== 投稿カード ===== */
+  main{ margin-top:22px; }
+  .card{
+    background:#fff;
+    border:2px solid var(--card-border);
+    border-radius:18px;
+    padding:16px 16px 14px;
+    margin-bottom:16px;
+    box-shadow:0 3px 0 rgba(230,140,0,.12);
+  }
+  .card .meta{
+    display:flex; align-items:center; gap:8px; flex-wrap:wrap;
+    margin-bottom:8px;
+  }
+  .badge{
+    display:inline-block;
+    font-size:13px; font-weight:800;
+    color:#fff; border-radius:999px; padding:3px 12px;
+    line-height:1.5;
+  }
+  .badge.threads{ background:#1a1a1a; }
+  .badge.x{ background:#000; }
+  .badge.instagram{ background:#a11c68; }
+  .card .date{ font-size:14px; color:var(--ink-soft); font-weight:700; }
+  .card h2{
+    margin:0 0 6px; font-size:20px; font-weight:900; line-height:1.45;
+  }
+  .card p.body{ margin:0 0 12px; font-size:16px; }
+  .card .row{
+    display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap;
+  }
+  .orig-link{
+    display:inline-flex; align-items:center;
+    min-height:48px; padding:8px 4px;
+    color:var(--orange-dark); font-weight:800; font-size:16px;
+    text-decoration:underline; text-underline-offset:3px;
+  }
+  /* ===== おもろボタン ===== */
+  .omoro-btn{
+    position:relative;
+    display:inline-flex; align-items:center; gap:7px;
+    min-height:48px; min-width:48px;
+    padding:8px 16px 8px 10px;
+    border:3px solid var(--orange);
+    background:var(--yellow-soft);
+    color:var(--orange-dark);
+    border-radius:999px;
+    font-size:17px; font-weight:900;
+    cursor:pointer;
+    font-family:inherit;
+    transition:transform .1s ease, background .2s ease;
+  }
+  .omoro-btn:active{ transform:scale(.94); }
+  .omoro-btn img{ width:30px; display:block; }
+  .omoro-btn .cnt{ font-size:17px; }
+  .omoro-btn.liked{
+    background:var(--orange);
+    color:#fff;
+    border-color:var(--orange-dark);
+  }
+  .face-pop{
+    position:absolute;
+    width:26px;
+    pointer-events:none;
+    animation:facepop 1.1s ease-out forwards;
+    z-index:3;
+  }
+  @keyframes facepop{
+    0%{ transform:translate(0,0) scale(.5) rotate(0deg); opacity:1; }
+    100%{ transform:translate(var(--dx), -64px) scale(1.15) rotate(var(--rot)); opacity:0; }
+  }
+  .empty{
+    text-align:center; color:var(--ink-soft); font-weight:700;
+    padding:32px 0;
+  }
+  footer{
+    margin-top:36px; text-align:center;
+    font-size:14px; color:var(--ink-soft);
+  }
+  footer a{ color:var(--orange-dark); font-weight:700; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1 class="site-title">おもろグ〜</h1>
+  <p class="tagline">笑える投稿、あつめました。</p>
+
+  <div class="growth" aria-label="おもろっちの育成状況">
+    <div class="stage-img">
+      <img id="stageImg" src="stage-baby.png" width="700" height="904" alt="おもろっち">
+    </div>
+    <div class="growth-info">
+      <p class="stage-line">いまのおもろっち：<span class="stage-name" id="stageName">ベビーおもろっち</span></p>
+      <p class="total">みんなのおもろ <b id="totalCount">0</b> 件</p>
+      <div class="bar"><div id="barFill"></div></div>
+      <p class="next" id="nextText">次の成長まで あと 30 おもろ</p>
+      <p class="grow-note">おもろっちは、みんなの「おもろ」で育ちます。面白かったら、おもろボタンを押してね。</p>
+    </div>
+  </div>
+</header>
+
+<div class="wrap">
+  <main id="list"></main>
+
+  <footer>
+    <p>おもろグ〜は、平和で面白い投稿を集める小さなログです。<br>
+    運営：<a href="https://takechanlink.pages.dev/" target="_blank" rel="noopener">心体調整塾 たけちゃん</a></p>
+  </footer>
+</div>
+
+<script src="data.js"></script>
+<script>
+(function(){
+  var SB_URL = 'https://twxxcjjffznjaeyconoc.supabase.co';
+  var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InR3eHhjampmZnpuamFleWNvbm9jIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTUwMTc1NTcsImV4cCI6MjExMDU5MzU1N30.MIVvDvZx03ai7mshyP3FR8JP0xe9Yu-7BgUjtIvvpew';
+
+  /* ===== 成長ステージ（閾値はここで調整できます） ===== */
+  var STAGES = [
+    { key:'baby',   name:'ベビーおもろっち',   img:'stage-baby.png',   min:0 },
+    { key:'kid',    name:'子供おもろっち',     img:'stage-kid.png',    min:30 },
+    { key:'adult',  name:'大人おもろっち',     img:'stage-adult.png',  min:100 },
+    { key:'daidara', name:'ダイダラおもろっち', img:'stage-daidara.png', min:300 },
+    { key:'god',    name:'神おもろっち',       img:'stage-god.png',    min:800 }
+  ];
+
+  var entries = (window.OMORO_DATA && window.OMORO_DATA.entries) || [];
+  entries = entries.slice().sort(function(a,b){ return a.date < b.date ? 1 : -1; });
+
+  var liked = [];
+  try { liked = JSON.parse(localStorage.getItem('omoro-liked') || '[]'); } catch(e) {}
+  var counts = {};
+  var total = 0;
+
+  var listEl = document.getElementById('list');
+  var stageImg = document.getElementById('stageImg');
+  var stageNameEl = document.getElementById('stageName');
+  var totalEl = document.getElementById('totalCount');
+  var barFill = document.getElementById('barFill');
+  var nextText = document.getElementById('nextText');
+  var currentStage = -1;
+
+  function stageOf(t){
+    var idx = 0;
+    for (var i = 0; i < STAGES.length; i++) { if (t >= STAGES[i].min) idx = i; }
+    return idx;
+  }
+  function renderGrowth(pop){
+    var idx = stageOf(total);
+    var st = STAGES[idx];
+    stageNameEl.textContent = st.name;
+    totalEl.textContent = total;
+    if (idx < STAGES.length - 1) {
+      var next = STAGES[idx + 1];
+      var pct = Math.floor((total - st.min) / (next.min - st.min) * 100);
+      barFill.style.width = Math.max(0, Math.min(100, pct)) + '%';
+      nextText.textContent = '次の成長（' + next.name + '）まで あと ' + (next.min - total) + ' おもろ';
+    } else {
+      barFill.style.width = '100%';
+      nextText.textContent = '最終形態！ みんなのおかげで、神おもろっちになりました';
+    }
+    if (idx !== currentStage) {
+      stageImg.src = st.img;
+      if (currentStage >= 0 && pop) {
+        stageImg.classList.remove('bounce'); void stageImg.offsetWidth; stageImg.classList.add('bounce');
+      }
+      currentStage = idx;
+    }
+  }
+
+  function spawnFaces(btn){
+    for (var i = 0; i < 5; i++) {
+      var s = document.createElement('img');
+      s.src = 'omorocchi-icon.png';
+      s.className = 'face-pop';
+      s.alt = '';
+      s.style.left = (14 + Math.random() * 55) + '%';
+      s.style.top = '-4px';
+      s.style.setProperty('--dx', (Math.random() * 48 - 24) + 'px');
+      s.style.setProperty('--rot', (Math.random() * 40 - 20) + 'deg');
+      s.style.animationDelay = (i * 0.07) + 's';
+      btn.appendChild(s);
+      (function(el){ setTimeout(function(){ el.remove(); }, 1600); })(s);
+    }
+  }
+
+  function paintBtn(btn, id){
+    var on = liked.indexOf(id) >= 0;
+    btn.classList.toggle('liked', on);
+    btn.querySelector('.cnt').textContent = counts[id] || 0;
+  }
+
+  function doOmoro(id, btn){
+    if (liked.indexOf(id) >= 0) return;
+    spawnFaces(btn);
+    liked.push(id);
+    try { localStorage.setItem('omoro-liked', JSON.stringify(liked)); } catch(e) {}
+    counts[id] = (counts[id] || 0) + 1;
+    total += 1;
+    paintBtn(btn, id);
+    renderGrowth(true);
+    fetch(SB_URL + '/rest/v1/rpc/increment_omoro_like', {
+      method: 'POST',
+      headers: {
+        'apikey': SB_KEY,
+        'Authorization': 'Bearer ' + SB_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ p_post_id: id })
+    }).then(function(r){ return r.json(); }).then(function(n){
+      if (typeof n === 'number') {
+        total += (n - counts[id]);
+        counts[id] = n;
+        paintBtn(btn, id);
+        renderGrowth(true);
+      }
+    }).catch(function(){});
+  }
+
+  /* ===== カード描画 ===== */
+  if (!entries.length) {
+    listEl.innerHTML = '<p class="empty">近日公開。面白い投稿を集めています。</p>';
+  }
+  entries.forEach(function(en){
+    var card = document.createElement('article');
+    card.className = 'card';
+    var badgeClass = en.platform === 'Threads' ? 'threads' : (en.platform === 'X' ? 'x' : 'instagram');
+    card.innerHTML =
+      '<div class="meta"><span class="badge ' + badgeClass + '">' + en.platform + '</span>' +
+      '<span class="date">' + en.dateLabel + '</span></div>' +
+      '<h2></h2><p class="body"></p>' +
+      '<div class="row">' +
+        '<a class="orig-link" target="_blank" rel="noopener">元の投稿を見る →</a>' +
+        '<button type="button" class="omoro-btn" aria-label="おもろボタン">' +
+          '<img src="omorocchi-icon.png" width="512" height="512" alt="">おもろ<span class="cnt">0</span>' +
+        '</button>' +
+      '</div>';
+    card.querySelector('h2').textContent = en.title;
+    card.querySelector('p.body').textContent = en.body;
+    card.querySelector('a.orig-link').href = en.url;
+    var btn = card.querySelector('.omoro-btn');
+    paintBtn(btn, en.id);
+    btn.addEventListener('click', function(){ doOmoro(en.id, btn); });
+    listEl.appendChild(card);
+  });
+
+  renderGrowth(false);
+
+  /* ===== 現在の集計を取得 ===== */
+  fetch(SB_URL + '/rest/v1/omoro_likes?select=post_id,count', {
+    headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }
+  }).then(function(r){ return r.json(); }).then(function(rows){
+    if (!Array.isArray(rows)) return;
+    total = 0;
+    rows.forEach(function(row){
+      counts[row.post_id] = row.count;
+      total += row.count;
+    });
+    // ボタン表示を更新
+    var cards = listEl.querySelectorAll('.card');
+    for (var i = 0; i < cards.length && i < entries.length; i++) {
+      paintBtn(cards[i].querySelector('.omoro-btn'), entries[i].id);
+    }
+    renderGrowth(true);
+  }).catch(function(){});
+})();
+</script>
+</body>
+</html>
