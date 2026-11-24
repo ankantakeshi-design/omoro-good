@@ -207,6 +207,34 @@
   .next-row img{ width:34px; display:block; }
   .next-row b{ font-size:20px; color:var(--orange-dark); }
 
+  /* ===== 進化ボタン（閾値に達したら「あと◯」の代わりに出る） ===== */
+  .evolve-btn{
+    width:100%; min-height:56px; margin:10px 0 0;
+    border:none; border-radius:999px; cursor:pointer;
+    background:linear-gradient(160deg, #ffc400, #ff7a00);
+    color:#fff; font-family:inherit; font-size:19px; font-weight:900; letter-spacing:.06em;
+    box-shadow:0 4px 0 rgba(120,50,0,.25);
+    text-shadow:0 1px 0 rgba(120,50,0,.3);
+    animation:evolve-pulse 1.2s ease-in-out infinite;
+  }
+  .evolve-btn[hidden]{ display:none; }
+  @keyframes evolve-pulse{ 0%,100%{ transform:scale(1); } 50%{ transform:scale(1.045); } }
+  @media (prefers-reduced-motion: reduce){
+    .evolve-btn{ animation:none; }
+  }
+  /* 進化の祝福キラキラ */
+  .spark{
+    position:absolute; width:14px; height:14px; z-index:5; pointer-events:none;
+    background:#ffcf3f;
+    clip-path:polygon(50% 0, 62% 38%, 100% 50%, 62% 62%, 50% 100%, 38% 62%, 0 50%, 38% 38%);
+    animation:spark-fly 1.1s ease-out forwards;
+  }
+  @keyframes spark-fly{
+    0%{ transform:translate(0,0) scale(.4) rotate(0deg); opacity:0; }
+    25%{ opacity:1; }
+    100%{ transform:translate(var(--dx), var(--dy)) scale(1.15) rotate(160deg); opacity:0; }
+  }
+
   /* ===== すがたをえらぶ（到達済みステージのフォーム選択） ===== */
   .form-row{
     display:flex; gap:8px; flex-wrap:wrap;
@@ -490,6 +518,7 @@
       <div class="progress">
         <p class="total-row"><img id="totalImg" src="stage-egg-t0.png" width="700" height="903" alt=""><b id="totalCount">0</b></p>
         <div class="bar"><div id="barFill"></div></div>
+        <button type="button" class="evolve-btn" id="evolveBtn" hidden>✦ 進化する ✦</button>
         <p class="next-row" id="nextRow"><img id="nextImg" src="stage-egg-t0.png" width="700" height="903" alt=""><span>あと <b id="nextCount">10</b></span></p>
         <p class="next-row" id="maxRow" hidden><img src="stage-god.png" width="700" height="903" alt=""><span>✨</span></p>
       </div>
@@ -569,6 +598,7 @@
     </div>
     <p>面白い投稿の「おもろ」ボタンを押すと、その数がおもろっちの力になります。あなたが押した「おもろ」が増えると、おもろっちは成長します。</p>
     <p>進捗の見方：おもろっちの顔と数字が、あなたの「おもろ」の合計です。「あと◯」が、次の成長までの残りです。</p>
+    <p>「進化する」ボタンが出たら、押すと次の姿に進化します。</p>
     <ul class="stage-list">
       <li><img class="stage-thumb" data-img="stage-egg-t0.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="卵おもろっち">卵おもろっち</span><span class="min">0〜</span></li>
       <li><img class="stage-thumb" data-img="stage-baby.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="ベビーおもろっち">？？？</span><span class="min">10〜</span></li>
@@ -617,6 +647,11 @@
   /* 育成は個人方式：自分が押した記事の数（localStorageの押下記録）で進める。
      記事ごとの表示数とSupabase集計は従来どおり全員の合計のまま */
   var my = liked.length;
+  /* 進化はボタン方式：進化ボタンで進化した先のステージを保存する（合計だけでは進化しない） */
+  var evolvedIdx = 0;
+  try { evolvedIdx = parseInt(localStorage.getItem('omoro-evolved') || '0', 10); } catch(e) {}
+  if (isNaN(evolvedIdx) || evolvedIdx < 0) evolvedIdx = 0;
+  if (evolvedIdx > STAGES.length - 1) evolvedIdx = STAGES.length - 1;
 
   var listEl = document.getElementById('list');
   var stageImg = document.getElementById('stageImg');
@@ -633,6 +668,7 @@
   var nextImg = document.getElementById('nextImg');
   var nextCount = document.getElementById('nextCount');
   var maxRow = document.getElementById('maxRow');
+  var evolveBtn = document.getElementById('evolveBtn');
   /* アニメ版が読み込めないときは静止画 wide にフォールバック */
   stageImg.addEventListener('error', function(){
     var fb = stageImg.dataset ? stageImg.dataset.fallback : '';
@@ -686,7 +722,7 @@
     b.className = 'form-pick';
     b.innerHTML = '<img src="' + s.img + '" width="700" height="903" alt=""><span class="lock" aria-hidden="true">🔒</span>';
     b.addEventListener('click', function(){
-      if (i > stageOf(my)) return;
+      if (i > evolvedIdx) return;
       formKey = STAGES[i].key;
       try { localStorage.setItem('omoro-form', formKey); } catch(e) {}
       renderGrowth(false);
@@ -710,25 +746,34 @@
   }
 
   function renderGrowth(pop){
-    var idx = stageOf(my);
+    /* 進化した先が自分の合計を超えていたら、合計の範囲に戻す（記録の整合用） */
+    if (evolvedIdx > stageOf(my)) evolvedIdx = stageOf(my);
+    var idx = evolvedIdx;
     var st = STAGES[idx];
     var dispIdx = dispIndex(idx);
     var dst = STAGES[dispIdx];
     var img = stageImgOf(dispIdx, my);
     totalEl.textContent = my;
     toggleThumb.src = img;
-    /* 進捗バーと「あと◯」は自分の合計おもろ基準（フォーム選択とは独立） */
+    /* 進捗バーは自分の合計基準。次の閾値に達していたら「あと◯」の代わりに進化ボタン */
     if (idx < STAGES.length - 1) {
       var next = STAGES[idx + 1];
       var pct = Math.floor((my - st.min) / (next.min - st.min) * 100);
       barFill.style.width = Math.max(0, Math.min(100, pct)) + '%';
-      /* 「あと◯」の横は次の姿ではなく「今の姿」にする（ネタバレ防止） */
-      nextImg.src = st.img;
-      nextCount.textContent = (next.min - my);
-      nextRow.hidden = false;
+      if (my >= next.min) {
+        evolveBtn.hidden = false;
+        nextRow.hidden = true;
+      } else {
+        evolveBtn.hidden = true;
+        /* 「あと◯」の横は次の姿ではなく「今の姿」にする（ネタバレ防止） */
+        nextImg.src = st.img;
+        nextCount.textContent = (next.min - my);
+        nextRow.hidden = false;
+      }
       maxRow.hidden = true;
     } else {
       barFill.style.width = '100%';
+      evolveBtn.hidden = true;
       nextRow.hidden = true;
       maxRow.hidden = false;
     }
@@ -790,6 +835,29 @@
       currentStage = idx;
     }
   }
+
+  /* ===== 進化ボタン（押した瞬間に次の姿へ＋キラキラで祝福） ===== */
+  function spawnSparkles(){
+    for (var i = 0; i < 12; i++) {
+      var s = document.createElement('span');
+      s.className = 'spark';
+      s.style.left = (20 + Math.random() * 60) + '%';
+      s.style.top = (15 + Math.random() * 50) + '%';
+      s.style.setProperty('--dx', (Math.random() * 90 - 45) + 'px');
+      s.style.setProperty('--dy', (Math.random() * -70 - 10) + 'px');
+      s.style.animationDelay = (Math.random() * 0.25) + 's';
+      room.appendChild(s);
+      (function(el){ setTimeout(function(){ el.remove(); }, 1600); })(s);
+    }
+  }
+  evolveBtn.addEventListener('click', function(){
+    if (evolvedIdx >= STAGES.length - 1) return;
+    if (my < STAGES[evolvedIdx + 1].min) return;
+    evolvedIdx += 1;
+    try { localStorage.setItem('omoro-evolved', String(evolvedIdx)); } catch(e) {}
+    renderGrowth(true);
+    spawnSparkles();
+  });
 
   /* ===== おうちの開閉と、部屋の中の歩行 ===== */
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
