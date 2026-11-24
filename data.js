@@ -4,6 +4,15 @@
 window.OMORO_DATA = {
   entries: [
     {
+      id: "20261124-threads-yagi",
+      date: "2026-11-24",
+      dateLabel: "2026年11月24日",
+      platform: "Threads",
+      title: "「桃色片想い」の反対の言葉。",
+      body: "イラストレーターYAGIさんの「スレッズ大喜利」。松浦亜弥さんの名曲のタイトルの反対の言葉を考えるお題に、265件の回答が集まりました。黄色い画面にちなんだ連想ボケも飛び出す、平和で楽しい大喜利会場です。",
+      url: "https://www.threads.com/@illustratoryagi/post/DgHzLbDgeYs"
+    },
+    {
       id: "20261107-threads-yagi",
       date: "2026-11-07",
       dateLabel: "2026年11月7日",
