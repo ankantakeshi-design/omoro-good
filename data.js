@@ -4,6 +4,33 @@
 window.OMORO_DATA = {
   entries: [
     {
+      id: "20261124-threads-tofu",
+      date: "2026-11-24",
+      dateLabel: "2026年11月24日",
+      platform: "Threads",
+      title: "「まずは、豆腐に謝ります。」",
+      body: "ゆげさんの投稿。シンクの排水口に落ちかけた豆腐の写真に、この一言だけ。なのに返信欄は「木綿なさい…」などのダジャレ合戦になりました。表示64万回、いいね2.5万。募集もしていないのに、勝手に始まる大喜利です。",
+      url: "https://www.threads.com/@leda_1532/post/DgHP4iIoKtc"
+    },
+    {
+      id: "20261122-threads-blanket",
+      date: "2026-11-22",
+      dateLabel: "2026年11月22日",
+      platform: "Threads",
+      title: "「行ってしまったか。そのまま。」",
+      body: "こたさんの投稿。電車の座席に、人の形のまま残ったブランケットの写真です。返信欄には「うちも同じ」という、服や布団の脱皮写真が次々と集まりました。表示206万回、いいね14万の大きな反響です。",
+      url: "https://www.threads.com/@kota_make_up/post/DgC69-gErWy"
+    },
+    {
+      id: "20261122-threads-cabbage",
+      date: "2026-11-22",
+      dateLabel: "2026年11月22日",
+      platform: "Threads",
+      title: "「あっぶねぇ、キャベツかと思ったわ。」",
+      body: "3kidsmasumamaさんの投稿。キャベツそっくり、その正体はレタスでした。返信欄も「あぶねぇ、〇〇かと思った」の見間違い写真で連鎖しています。投稿者のフォロワーは53人、それでも表示51万回・返信1,024件です。",
+      url: "https://www.threads.com/@3kidsmasumama/post/DgB_q5Ek42o"
+    },
+    {
       id: "20261108-threads-mikogiri",
       date: "2026-11-08",
       dateLabel: "2026年11月8日",
