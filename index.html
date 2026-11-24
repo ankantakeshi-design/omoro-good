@@ -448,6 +448,18 @@
   .faq-inner{ padding:2px 12px 12px; }
   .faq-inner details:last-child{ margin-bottom:0; }
 
+  /* ===== LINEスタンプへのリンクカード ===== */
+  .stamp-link{
+    margin-top:26px;
+    display:flex; align-items:center; gap:12px;
+    min-height:56px; padding:8px 16px;
+    background:#fff; color:var(--ink);
+    border:2px solid var(--card-border); border-radius:14px;
+    font-size:16px; font-weight:800; text-decoration:none;
+  }
+  .stamp-link img{ width:40px; height:auto; border-radius:10px; flex:none; }
+  .stamp-link .arrow{ margin-left:auto; font-size:20px; color:var(--orange-dark); }
+
   footer{
     margin-top:36px; text-align:center;
     font-size:14px; color:var(--ink-soft);
@@ -536,6 +548,12 @@
     </div>
     </details>
   </section>
+
+  <a class="stamp-link" href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener">
+    <img src="icon-egg.png" alt="" width="512" height="512">
+    <span>LINEスタンプ</span>
+    <span class="arrow" aria-hidden="true">→</span>
+  </a>
 
   <footer>
     <p>おもろグ〜は、平和で面白い投稿を集める小さなログです。<br>
