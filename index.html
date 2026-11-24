@@ -104,10 +104,14 @@
   .growth-toggle .deco{ color:var(--orange); font-size:14px; }
   .growth-toggle img.thumb{ width:34px; display:block; }
   .growth-toggle .chev{
-    font-size:15px; color:var(--orange-dark);
-    transition:transform .25s ease;
+    display:inline-flex; align-items:center; justify-content:center;
+    width:30px; height:30px; border-radius:50%;
+    background:var(--orange); color:#fff; font-size:14px;
+    animation:chev-bob 1.6s ease-in-out infinite;
   }
-  .growth-toggle[aria-expanded="true"] .chev{ transform:rotate(180deg); }
+  @keyframes chev-bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(3px); } }
+  @media (prefers-reduced-motion: reduce){ .growth-toggle .chev{ animation:none; } }
+  .growth-toggle[aria-expanded="true"] .chev{ animation:none; transform:rotate(180deg); }
   .house{
     margin-top:10px;
     background:#fff; color:var(--ink);
