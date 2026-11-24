@@ -194,6 +194,8 @@
   }
   .total-row img{ width:30px; display:block; }
   .total-row b{ font-size:24px; color:var(--orange); }
+  .next-inline{ font-size:15px; font-weight:700; color:var(--muted); }
+  .next-inline b{ font-size:17px; color:var(--orange-dark); }
   .bar{
     height:16px; background:#ffe9bd; border-radius:999px; overflow:hidden;
     border:2px solid var(--card-border);
@@ -584,11 +586,9 @@
       </div>
       <div class="form-row" id="formRow" aria-label="すがたをえらぶ"></div>
       <div class="progress">
-        <p class="total-row"><img id="totalImg" src="stage-egg-t0.png" width="700" height="903" alt=""><b id="totalCount">0</b></p>
+        <p class="total-row"><img id="totalImg" src="stage-egg-t0.png" width="700" height="903" alt=""><b id="totalCount">0</b><span class="next-inline" id="nextRow">（あと <b id="nextCount">10</b>）</span><span class="next-inline" id="maxRow" hidden>✨</span></p>
         <div class="bar"><div id="barFill"></div></div>
         <button type="button" class="evolve-btn" id="evolveBtn" hidden>✦ 進化する ✦</button>
-        <p class="next-row" id="nextRow"><img id="nextImg" src="stage-egg-t0.png" width="700" height="903" alt=""><span>あと <b id="nextCount">10</b></span></p>
-        <p class="next-row" id="maxRow" hidden><img src="stage-god.png" width="700" height="903" alt=""><span>✨</span></p>
       </div>
       <p class="about-row"><button type="button" class="about-link" id="aboutOpen">おもろっちについて ›</button></p>
     </div>
@@ -761,7 +761,6 @@
   var jumpWrap = document.getElementById('jumpWrap');
   var totalImg = document.getElementById('totalImg');
   var nextRow = document.getElementById('nextRow');
-  var nextImg = document.getElementById('nextImg');
   var nextCount = document.getElementById('nextCount');
   var maxRow = document.getElementById('maxRow');
   var evolveBtn = document.getElementById('evolveBtn');
@@ -863,8 +862,6 @@
         nextRow.hidden = true;
       } else {
         evolveBtn.hidden = true;
-        /* 「あと◯」の横は次の姿ではなく「今の姿」にする（ネタバレ防止） */
-        nextImg.src = st.img;
         nextCount.textContent = (next.min - my);
         nextRow.hidden = false;
       }
