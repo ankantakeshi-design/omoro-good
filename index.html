@@ -93,17 +93,18 @@
   .growth-zone{ max-width:680px; margin:18px auto 0; }
   .growth-toggle{
     width:100%; min-height:56px;
-    display:flex; align-items:center; gap:10px;
+    display:flex; align-items:center; justify-content:center; gap:8px;
     padding:8px 16px;
-    background:#fff; color:var(--ink);
+    background:linear-gradient(180deg,#fffdf4,#ffedb5); color:var(--ink);
     border:3px solid var(--yellow); border-radius:999px;
     font-family:inherit; font-size:17px; font-weight:900;
     cursor:pointer; box-shadow:0 4px 0 rgba(120,50,0,.18);
-    text-align:left;
+    text-align:center;
   }
+  .growth-toggle .deco{ color:var(--orange); font-size:14px; }
   .growth-toggle img.thumb{ width:34px; display:block; }
   .growth-toggle .chev{
-    margin-left:auto; font-size:15px; color:var(--orange-dark);
+    font-size:15px; color:var(--orange-dark);
     transition:transform .25s ease;
   }
   .growth-toggle[aria-expanded="true"] .chev{ transform:rotate(180deg); }
@@ -562,9 +563,11 @@
 
   <div class="growth-zone">
     <button type="button" class="growth-toggle" id="growthToggle" aria-expanded="false" aria-controls="growthPanel">
+      <span class="deco" aria-hidden="true">✦</span>
       <img class="thumb" id="toggleThumb" src="stage-egg-t0.png" width="700" height="903" alt="">
       <span>おもろっちのおうち</span>
       <span class="chev" aria-hidden="true">▽</span>
+      <span class="deco" aria-hidden="true">✦</span>
     </button>
     <div class="house" id="growthPanel" hidden>
       <div class="house-roof" aria-hidden="true"></div>
