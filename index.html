@@ -443,6 +443,10 @@
     margin:0; padding:0 16px 14px;
     font-size:15px; color:var(--ink);
   }
+  .faq details.faq-outer{ background:#fff6e0; }
+  .faq details.faq-outer > summary{ font-size:18px; min-height:56px; }
+  .faq-inner{ padding:2px 12px 12px; }
+  .faq-inner details:last-child{ margin-bottom:0; }
 
   footer{
     margin-top:36px; text-align:center;
@@ -498,7 +502,9 @@
   </section>
 
   <section class="faq" aria-label="よくある質問">
-    <h2 class="sec-title">よくある質問</h2>
+    <details class="faq-outer">
+    <summary>よくある質問</summary>
+    <div class="faq-inner">
     <details>
       <summary>おもろグ〜とは何ですか？</summary>
       <p>ThreadsとInstagramで見つけた、コメント欄が大喜利みたいに盛り上がっている、平和で面白い投稿を集めたログ（記録）です。毎日1件ずつ、新しい投稿が増えていきます。</p>
@@ -526,6 +532,8 @@
     <details>
       <summary>元の投稿はどこで読めますか？</summary>
       <p>各投稿カードの「元の投稿を見る」から、ThreadsやInstagramの元の投稿へ移動できます。大喜利の回答は、元の投稿のコメント欄で読めます。</p>
+    </details>
+    </div>
     </details>
   </section>
 
