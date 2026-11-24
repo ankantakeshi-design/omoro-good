@@ -278,7 +278,7 @@
 
   <div class="growth-zone">
     <button type="button" class="growth-toggle" id="growthToggle" aria-expanded="false" aria-controls="growthPanel">
-      <img class="thumb" id="toggleThumb" src="stage-egg.png" width="700" height="903" alt="">
+      <img class="thumb" id="toggleThumb" src="stage-egg-0.png" width="700" height="903" alt="">
       <span>おもろっちのおうち</span>
       <span class="chev" aria-hidden="true">▽</span>
     </button>
@@ -286,7 +286,7 @@
       <div class="house-roof" aria-hidden="true"></div>
       <div class="house-room" id="houseRoom">
         <button type="button" class="walker" id="walker" aria-label="おもろっち">
-          <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg.png" width="700" height="903" alt="おもろっち"></span>
+          <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg-0.png" width="700" height="903" alt="おもろっち"></span>
         </button>
       </div>
       <div class="progress">
@@ -318,7 +318,7 @@
     <p>面白い投稿の「おもろ」ボタンを押すと、その数がおもろっちの力になります。みんなのおもろが増えると、おもろっちは成長します。</p>
     <p>進捗の見方：おもろっちの顔と数字が、みんなのおもろの合計です。次のステージの絵と「あと◯」が、次の成長までの残りです。</p>
     <ul class="stage-list">
-      <li><img src="stage-egg.png" width="700" height="903" alt="">卵おもろっち<span class="min">0〜</span></li>
+      <li><img src="stage-egg-0.png" width="700" height="903" alt="">卵おもろっち<span class="min">0〜</span></li>
       <li><img src="stage-baby.png" width="700" height="903" alt="">ベビーおもろっち<span class="min">10〜</span></li>
       <li><img src="stage-kid.png" width="700" height="903" alt="">子供おもろっち<span class="min">30〜</span></li>
       <li><img src="stage-adult.png" width="900" height="1162" alt="">大人おもろっち<span class="min">100〜</span></li>
@@ -337,13 +337,23 @@
 
   /* ===== 成長ステージ（閾値はここで調整できます） ===== */
   var STAGES = [
-    { key:'egg',    name:'卵おもろっち',       img:'stage-egg.png',    min:0 },
+    { key:'egg',    name:'卵おもろっち',       img:'stage-egg-0.png',  min:0 },
     { key:'baby',   name:'ベビーおもろっち',   img:'stage-baby.png',   min:10 },
     { key:'kid',    name:'子供おもろっち',     img:'stage-kid.png',    min:30 },
     { key:'adult',  name:'大人おもろっち',     img:'stage-adult.png',  min:100 },
     { key:'daidara', name:'ダイダラおもろっち', img:'stage-daidara.png', min:300 },
     { key:'god',    name:'神おもろっち',       img:'stage-god.png',    min:800 }
   ];
+
+  /* 卵ステージの中の「割れていく過程」（合計おもろで切り替え） */
+  var EGG_CRACKS = [
+    { max:2, img:'stage-egg-0.png' },  /* 0〜2：ヒビなし */
+    { max:5, img:'stage-egg-1.png' },  /* 3〜5：小さなヒビ */
+    { max:8, img:'stage-egg-2.png' },  /* 6〜8：ヒビが大きく広がる */
+    { max:9, img:'stage-egg-3.png' }   /* 9：割れそうでベビーが半分見える */
+  ];
+  /* 割れ具合の画像を先読みして、切り替え時のちらつきを防ぐ */
+  for (var pre = 0; pre < EGG_CRACKS.length; pre++) { var preImg = new Image(); preImg.src = EGG_CRACKS[pre].img; }
 
   var entries = (window.OMORO_DATA && window.OMORO_DATA.entries) || [];
   entries = entries.slice().sort(function(a,b){ return a.date < b.date ? 1 : -1; });
@@ -368,11 +378,18 @@
   var nextCount = document.getElementById('nextCount');
   var maxRow = document.getElementById('maxRow');
   var currentStage = -1;
+  var currentImg = '';
 
   function stageOf(t){
     var idx = 0;
     for (var i = 0; i < STAGES.length; i++) { if (t >= STAGES[i].min) idx = i; }
     return idx;
+  }
+  /* 表示する画像：卵ステージの間は合計に応じて割れ具合の画像を返す */
+  function stageImgOf(idx, t){
+    if (STAGES[idx].key !== 'egg') return STAGES[idx].img;
+    for (var i = 0; i < EGG_CRACKS.length; i++) { if (t <= EGG_CRACKS[i].max) return EGG_CRACKS[i].img; }
+    return EGG_CRACKS[EGG_CRACKS.length - 1].img;
   }
   function hop(){
     jumpWrap.classList.remove('hop');
@@ -385,8 +402,9 @@
   function renderGrowth(pop){
     var idx = stageOf(total);
     var st = STAGES[idx];
+    var img = stageImgOf(idx, total);
     totalEl.textContent = total;
-    toggleThumb.src = st.img;
+    toggleThumb.src = img;
     if (idx < STAGES.length - 1) {
       var next = STAGES[idx + 1];
       var pct = Math.floor((total - st.min) / (next.min - st.min) * 100);
@@ -400,8 +418,11 @@
       nextRow.hidden = true;
       maxRow.hidden = false;
     }
+    if (img !== currentImg) {
+      stageImg.src = img;
+      currentImg = img;
+    }
     if (idx !== currentStage) {
-      stageImg.src = st.img;
       stageImg.alt = st.name;
       if (currentStage >= 0 && pop) hop();
       currentStage = idx;
