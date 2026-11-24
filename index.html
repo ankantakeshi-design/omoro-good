@@ -50,45 +50,70 @@
     font-size:17px;
     font-weight:700;
   }
-  /* ===== 育成パネル ===== */
-  .growth{
-    max-width:680px;
-    margin:18px auto 0;
-    background:#fff;
-    color:var(--ink);
+  /* ===== 育成（おうち） ===== */
+  .growth-zone{ max-width:680px; margin:18px auto 0; }
+  .growth-toggle{
+    width:100%; min-height:56px;
+    display:flex; align-items:center; gap:10px;
+    padding:8px 16px;
+    background:#fff; color:var(--ink);
+    border:3px solid var(--yellow); border-radius:999px;
+    font-family:inherit; font-size:17px; font-weight:900;
+    cursor:pointer; box-shadow:0 4px 0 rgba(120,50,0,.18);
+    text-align:left;
+  }
+  .growth-toggle img.thumb{ width:34px; display:block; }
+  .growth-toggle .chev{
+    margin-left:auto; font-size:15px; color:var(--orange-dark);
+    transition:transform .25s ease;
+  }
+  .growth-toggle[aria-expanded="true"] .chev{ transform:rotate(180deg); }
+  .house{
+    margin-top:10px;
+    background:#fff; color:var(--ink);
     border:3px solid var(--yellow);
     border-radius:20px;
-    padding:14px 16px 16px;
-    display:flex;
-    gap:14px;
-    align-items:center;
-    text-align:left;
+    padding:12px 14px 14px;
     box-shadow:0 4px 0 rgba(120,50,0,.18);
+    text-align:left;
   }
-  .growth .stage-img{
-    width:110px;
-    flex:0 0 110px;
+  .house-roof{
+    height:30px; margin:0 10px;
+    background:linear-gradient(180deg, #ff8a00, #e05d00);
+    clip-path:polygon(6% 100%, 14% 0, 86% 0, 94% 100%);
   }
-  .growth .stage-img img{
-    width:110px;
-    display:block;
+  .house-room{
+    position:relative; height:150px; overflow:hidden;
+    background:linear-gradient(180deg, #fff6d9 0%, #fff6d9 78%, #f7ddab 78%, #f7ddab 100%);
+    border:2px solid var(--card-border);
+    border-top:none;
+    border-radius:0 0 14px 14px;
   }
-  .growth .stage-img img.bounce{ animation:bounce .7s ease; }
-  @keyframes bounce{
-    0%{ transform:scale(1); } 30%{ transform:scale(1.18) rotate(-3deg); }
-    60%{ transform:scale(.94) rotate(2deg); } 100%{ transform:scale(1); }
+  .walker{
+    position:absolute; bottom:10px; left:8px;
+    width:84px; min-height:48px;
+    padding:0; margin:0;
+    background:none; border:none; cursor:pointer;
+    -webkit-appearance:none; appearance:none;
+    -webkit-tap-highlight-color:transparent;
   }
-  .growth-info{ flex:1; min-width:0; }
-  .growth-info .stage-line{
-    font-size:15px; font-weight:700; color:var(--ink-soft); margin:0;
+  .walker .jumpwrap{ display:block; }
+  .walker img{ width:100%; display:block; }
+  .walker .jumpwrap.hop{ animation:hop .7s ease; }
+  @keyframes hop{
+    0%{ transform:translateY(0); }
+    30%{ transform:translateY(-26px); }
+    45%{ transform:translateY(0); }
+    65%{ transform:translateY(-15px); }
+    82%,100%{ transform:translateY(0); }
   }
-  .growth-info .stage-name{
-    font-size:24px; font-weight:900; color:var(--orange-dark); margin:0 4px;
+  .progress{ margin-top:12px; }
+  .total-row{
+    display:flex; align-items:center; gap:8px;
+    margin:0 0 8px; font-size:16px; font-weight:700;
   }
-  .growth-info .total{
-    margin:2px 0 8px; font-size:16px; font-weight:700;
-  }
-  .growth-info .total b{ font-size:22px; color:var(--orange); }
+  .total-row img{ width:30px; display:block; }
+  .total-row b{ font-size:24px; color:var(--orange); }
   .bar{
     height:16px; background:#ffe9bd; border-radius:999px; overflow:hidden;
     border:2px solid var(--card-border);
@@ -99,16 +124,68 @@
     border-radius:999px;
     transition:width .8s ease;
   }
-  .growth-info .next{
-    margin:6px 0 0; font-size:14px; color:var(--ink-soft); font-weight:700;
+  .next-row{
+    display:flex; align-items:center; gap:8px;
+    margin:8px 0 0; font-size:16px; font-weight:700; color:var(--ink-soft);
   }
-  .growth-info .grow-note{
-    margin:8px 0 0; font-size:14px; color:var(--ink-soft);
+  .next-row[hidden]{ display:none; }
+  .next-row img{ width:34px; display:block; }
+  .next-row b{ font-size:20px; color:var(--orange-dark); }
+
+  /* ===== おもろっちについて（ポップアップ） ===== */
+  .about-link{
+    display:inline-block;
+    min-height:48px; padding:12px 10px;
+    background:none; border:none; cursor:pointer;
+    font-family:inherit; font-size:15px; font-weight:700;
+    color:var(--orange-dark);
+    text-decoration:underline; text-underline-offset:3px;
+  }
+  .about-overlay{
+    position:fixed; inset:0; z-index:50;
+    background:rgba(58,42,26,.55);
+    display:flex; align-items:flex-end; justify-content:center;
+  }
+  .about-overlay[hidden]{ display:none; }
+  .about-card{
+    background:#fff; width:100%; max-width:680px;
+    max-height:86vh; overflow-y:auto;
+    border-radius:20px 20px 0 0;
+    padding:18px 18px 22px;
+    color:var(--ink); text-align:left;
+  }
+  .about-head{
+    display:flex; align-items:flex-start; justify-content:space-between; gap:8px;
+  }
+  .about-card h2{ margin:4px 0 8px; font-size:20px; font-weight:900; }
+  .about-x{
+    flex:0 0 48px; width:48px; height:48px;
+    border-radius:50%; border:2px solid var(--card-border);
+    background:#fff; color:var(--ink-soft);
+    font-family:inherit; font-size:22px; font-weight:900; line-height:1;
+    cursor:pointer;
+  }
+  .about-card p{ font-size:15px; margin:0 0 10px; }
+  .stage-list{ list-style:none; margin:8px 0 12px; padding:0; }
+  .stage-list li{
+    display:flex; align-items:center; gap:10px;
+    padding:6px 0;
+    border-bottom:1px dashed var(--card-border);
+    font-size:15px; font-weight:700;
+  }
+  .stage-list img{ width:40px; display:block; }
+  .stage-list .min{ margin-left:auto; color:var(--orange-dark); font-weight:900; }
+  .about-close{
+    width:100%; min-height:52px; margin-top:6px;
+    border:3px solid var(--orange); background:var(--yellow-soft);
+    color:var(--orange-dark); border-radius:999px;
+    font-family:inherit; font-size:16px; font-weight:900;
+    cursor:pointer;
   }
   @media (max-width:480px){
-    .growth .stage-img{ width:88px; flex-basis:88px; }
-    .growth .stage-img img{ width:88px; }
     header .site-title{ font-size:36px; }
+    .walker{ width:74px; }
+    .house-room{ height:138px; }
   }
 
   /* ===== 投稿カード ===== */
@@ -199,16 +276,25 @@
   <h1 class="site-title">おもろグ〜</h1>
   <p class="tagline">笑える投稿、あつめました。</p>
 
-  <div class="growth" aria-label="おもろっちの育成状況">
-    <div class="stage-img">
-      <img id="stageImg" src="stage-baby.png" width="700" height="904" alt="おもろっち">
-    </div>
-    <div class="growth-info">
-      <p class="stage-line">いまのおもろっち：<span class="stage-name" id="stageName">ベビーおもろっち</span></p>
-      <p class="total">みんなのおもろ <b id="totalCount">0</b> 件</p>
-      <div class="bar"><div id="barFill"></div></div>
-      <p class="next" id="nextText">次の成長まで あと 30 おもろ</p>
-      <p class="grow-note">おもろっちは、みんなの「おもろ」で育ちます。面白かったら、おもろボタンを押してね。</p>
+  <div class="growth-zone">
+    <button type="button" class="growth-toggle" id="growthToggle" aria-expanded="false" aria-controls="growthPanel">
+      <img class="thumb" id="toggleThumb" src="stage-egg.png" width="700" height="903" alt="">
+      <span>おもろっちのおうち</span>
+      <span class="chev" aria-hidden="true">▽</span>
+    </button>
+    <div class="house" id="growthPanel" hidden>
+      <div class="house-roof" aria-hidden="true"></div>
+      <div class="house-room" id="houseRoom">
+        <button type="button" class="walker" id="walker" aria-label="おもろっち">
+          <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg.png" width="700" height="903" alt="おもろっち"></span>
+        </button>
+      </div>
+      <div class="progress">
+        <p class="total-row"><img src="omorocchi-icon.png" width="512" height="512" alt=""><b id="totalCount">0</b></p>
+        <div class="bar"><div id="barFill"></div></div>
+        <p class="next-row" id="nextRow"><img id="nextImg" src="stage-baby.png" width="700" height="903" alt=""><span>あと <b id="nextCount">10</b></span></p>
+        <p class="next-row" id="maxRow" hidden><img src="stage-god.png" width="700" height="903" alt=""><span>✨</span></p>
+      </div>
     </div>
   </div>
 </header>
@@ -217,9 +303,30 @@
   <main id="list"></main>
 
   <footer>
+    <p><button type="button" class="about-link" id="aboutOpen">おもろっちについて ›</button></p>
     <p>おもろグ〜は、平和で面白い投稿を集める小さなログです。<br>
     運営：<a href="https://takechanlink.pages.dev/" target="_blank" rel="noopener">心体調整塾 たけちゃん</a></p>
   </footer>
+</div>
+
+<div class="about-overlay" id="aboutOverlay" hidden>
+  <div class="about-card" role="dialog" aria-modal="true" aria-labelledby="aboutTitle">
+    <div class="about-head">
+      <h2 id="aboutTitle">おもろっちについて</h2>
+      <button type="button" class="about-x" id="aboutCloseX" aria-label="閉じる">×</button>
+    </div>
+    <p>面白い投稿の「おもろ」ボタンを押すと、その数がおもろっちの力になります。みんなのおもろが増えると、おもろっちは成長します。</p>
+    <p>進捗の見方：おもろっちの顔と数字が、みんなのおもろの合計です。次のステージの絵と「あと◯」が、次の成長までの残りです。</p>
+    <ul class="stage-list">
+      <li><img src="stage-egg.png" width="700" height="903" alt="">卵おもろっち<span class="min">0〜</span></li>
+      <li><img src="stage-baby.png" width="700" height="903" alt="">ベビーおもろっち<span class="min">10〜</span></li>
+      <li><img src="stage-kid.png" width="700" height="903" alt="">子供おもろっち<span class="min">30〜</span></li>
+      <li><img src="stage-adult.png" width="900" height="1162" alt="">大人おもろっち<span class="min">100〜</span></li>
+      <li><img src="stage-daidara.png" width="700" height="903" alt="">ダイダラおもろっち<span class="min">300〜</span></li>
+      <li><img src="stage-god.png" width="700" height="903" alt="">神おもろっち<span class="min">800〜</span></li>
+    </ul>
+    <button type="button" class="about-close" id="aboutClose">閉じる</button>
+  </div>
 </div>
 
 <script src="data.js"></script>
@@ -230,7 +337,8 @@
 
   /* ===== 成長ステージ（閾値はここで調整できます） ===== */
   var STAGES = [
-    { key:'baby',   name:'ベビーおもろっち',   img:'stage-baby.png',   min:0 },
+    { key:'egg',    name:'卵おもろっち',       img:'stage-egg.png',    min:0 },
+    { key:'baby',   name:'ベビーおもろっち',   img:'stage-baby.png',   min:10 },
     { key:'kid',    name:'子供おもろっち',     img:'stage-kid.png',    min:30 },
     { key:'adult',  name:'大人おもろっち',     img:'stage-adult.png',  min:100 },
     { key:'daidara', name:'ダイダラおもろっち', img:'stage-daidara.png', min:300 },
@@ -247,10 +355,18 @@
 
   var listEl = document.getElementById('list');
   var stageImg = document.getElementById('stageImg');
-  var stageNameEl = document.getElementById('stageName');
   var totalEl = document.getElementById('totalCount');
   var barFill = document.getElementById('barFill');
-  var nextText = document.getElementById('nextText');
+  var toggleBtn = document.getElementById('growthToggle');
+  var toggleThumb = document.getElementById('toggleThumb');
+  var panel = document.getElementById('growthPanel');
+  var room = document.getElementById('houseRoom');
+  var walker = document.getElementById('walker');
+  var jumpWrap = document.getElementById('jumpWrap');
+  var nextRow = document.getElementById('nextRow');
+  var nextImg = document.getElementById('nextImg');
+  var nextCount = document.getElementById('nextCount');
+  var maxRow = document.getElementById('maxRow');
   var currentStage = -1;
 
   function stageOf(t){
@@ -258,28 +374,89 @@
     for (var i = 0; i < STAGES.length; i++) { if (t >= STAGES[i].min) idx = i; }
     return idx;
   }
+  function hop(){
+    jumpWrap.classList.remove('hop');
+    void jumpWrap.offsetWidth;
+    jumpWrap.classList.add('hop');
+  }
+  jumpWrap.addEventListener('animationend', function(){ jumpWrap.classList.remove('hop'); });
+  walker.addEventListener('click', hop);
+
   function renderGrowth(pop){
     var idx = stageOf(total);
     var st = STAGES[idx];
-    stageNameEl.textContent = st.name;
     totalEl.textContent = total;
+    toggleThumb.src = st.img;
     if (idx < STAGES.length - 1) {
       var next = STAGES[idx + 1];
       var pct = Math.floor((total - st.min) / (next.min - st.min) * 100);
       barFill.style.width = Math.max(0, Math.min(100, pct)) + '%';
-      nextText.textContent = '次の成長（' + next.name + '）まで あと ' + (next.min - total) + ' おもろ';
+      nextImg.src = next.img;
+      nextCount.textContent = (next.min - total);
+      nextRow.hidden = false;
+      maxRow.hidden = true;
     } else {
       barFill.style.width = '100%';
-      nextText.textContent = '最終形態！ みんなのおかげで、神おもろっちになりました';
+      nextRow.hidden = true;
+      maxRow.hidden = false;
     }
     if (idx !== currentStage) {
       stageImg.src = st.img;
-      if (currentStage >= 0 && pop) {
-        stageImg.classList.remove('bounce'); void stageImg.offsetWidth; stageImg.classList.add('bounce');
-      }
+      stageImg.alt = st.name;
+      if (currentStage >= 0 && pop) hop();
       currentStage = idx;
     }
   }
+
+  /* ===== おうちの開閉と、部屋の中の歩行 ===== */
+  var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  var walkRaf = null, walkLast = 0, walkX = 8, walkDir = 1;
+  function walkStep(ts){
+    if (!walkLast) walkLast = ts;
+    var dt = Math.min(0.05, (ts - walkLast) / 1000);
+    walkLast = ts;
+    var max = Math.max(8, room.clientWidth - walker.offsetWidth - 8);
+    walkX += walkDir * 26 * dt;
+    if (walkX >= max) { walkX = max; walkDir = -1; }
+    else if (walkX <= 8) { walkX = 8; walkDir = 1; }
+    walker.style.left = walkX + 'px';
+    stageImg.style.transform = 'scaleX(' + walkDir + ')';
+    walkRaf = requestAnimationFrame(walkStep);
+  }
+  function startWalk(){
+    if (reduceMotion || walkRaf) return;
+    walkLast = 0;
+    walkRaf = requestAnimationFrame(walkStep);
+  }
+  function stopWalk(){
+    if (walkRaf) cancelAnimationFrame(walkRaf);
+    walkRaf = null;
+  }
+  toggleBtn.addEventListener('click', function(){
+    var open = panel.hidden;
+    panel.hidden = !open;
+    toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
+    if (open) startWalk(); else stopWalk();
+  });
+
+  /* ===== おもろっちについて（ポップアップ） ===== */
+  var aboutOverlay = document.getElementById('aboutOverlay');
+  var aboutIsOpen = false;
+  function openAbout(){
+    aboutOverlay.hidden = false;
+    aboutIsOpen = true;
+    try { history.pushState({ omoroAbout: 1 }, ''); } catch(e) {}
+  }
+  function closeAbout(fromPop){
+    aboutOverlay.hidden = true;
+    aboutIsOpen = false;
+    if (!fromPop && window.history.state && history.state.omoroAbout) history.back();
+  }
+  document.getElementById('aboutOpen').addEventListener('click', openAbout);
+  document.getElementById('aboutClose').addEventListener('click', function(){ closeAbout(false); });
+  document.getElementById('aboutCloseX').addEventListener('click', function(){ closeAbout(false); });
+  aboutOverlay.addEventListener('click', function(e){ if (e.target === aboutOverlay) closeAbout(false); });
+  window.addEventListener('popstate', function(){ if (aboutIsOpen) closeAbout(true); });
 
   function spawnFaces(btn){
     for (var i = 0; i < 5; i++) {
