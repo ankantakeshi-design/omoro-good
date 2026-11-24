@@ -191,6 +191,7 @@
   }
 
   /* ===== おもろっちについて（ポップアップ） ===== */
+  .house .about-row{ margin:8px 0 0; }
   .about-link{
     display:inline-block;
     min-height:48px; padding:12px 10px;
@@ -298,6 +299,22 @@
     font-family:inherit;
     transition:transform .1s ease, background .2s ease;
   }
+  /* ===== シェアボタン（おもろボタンの横） ===== */
+  .btn-actions{ display:inline-flex; align-items:center; gap:8px; }
+  .share-btn{
+    display:inline-flex; align-items:center; gap:6px;
+    min-height:48px; min-width:48px;
+    padding:8px 14px;
+    border:3px solid var(--card-border);
+    background:#fff; color:var(--orange-dark);
+    border-radius:999px;
+    font-size:15px; font-weight:900; font-family:inherit;
+    cursor:pointer;
+    transition:transform .1s ease, background .2s ease;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .share-btn:active{ transform:scale(.94); }
+  .share-btn svg{ display:block; flex:0 0 auto; }
   .omoro-btn:active{ transform:scale(.94); }
   .omoro-btn img{ width:30px; display:block; }
   .omoro-btn .cnt{ font-size:17px; }
@@ -336,7 +353,7 @@
 
   <div class="growth-zone">
     <button type="button" class="growth-toggle" id="growthToggle" aria-expanded="false" aria-controls="growthPanel">
-      <img class="thumb" id="toggleThumb" src="stage-egg-0.png" width="700" height="903" alt="">
+      <img class="thumb" id="toggleThumb" src="stage-egg-t0.png" width="700" height="903" alt="">
       <span>おもろっちのおうち</span>
       <span class="chev" aria-hidden="true">▽</span>
     </button>
@@ -344,16 +361,17 @@
       <div class="house-roof" aria-hidden="true"></div>
       <div class="house-room" id="houseRoom">
         <button type="button" class="walker" id="walker" aria-label="おもろっち">
-          <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg-0.png" width="700" height="903" alt="おもろっち"></span>
+          <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg-t0.png" width="700" height="903" alt="おもろっち"></span>
         </button>
       </div>
       <div class="form-row" id="formRow" aria-label="すがたをえらぶ"></div>
       <div class="progress">
-        <p class="total-row"><img src="omorocchi-icon.png" width="512" height="512" alt=""><b id="totalCount">0</b></p>
+        <p class="total-row"><img id="totalImg" src="stage-egg-t0.png" width="700" height="903" alt=""><b id="totalCount">0</b></p>
         <div class="bar"><div id="barFill"></div></div>
-        <p class="next-row" id="nextRow"><img id="nextImg" src="stage-baby.png" width="700" height="903" alt=""><span>あと <b id="nextCount">10</b></span></p>
+        <p class="next-row" id="nextRow"><img id="nextImg" src="stage-egg-t0.png" width="700" height="903" alt=""><span>あと <b id="nextCount">10</b></span></p>
         <p class="next-row" id="maxRow" hidden><img src="stage-god.png" width="700" height="903" alt=""><span>✨</span></p>
       </div>
+      <p class="about-row"><button type="button" class="about-link" id="aboutOpen">おもろっちについて ›</button></p>
     </div>
   </div>
 </header>
@@ -362,7 +380,6 @@
   <main id="list"></main>
 
   <footer>
-    <p><button type="button" class="about-link" id="aboutOpen">おもろっちについて ›</button></p>
     <p>おもろグ〜は、平和で面白い投稿を集める小さなログです。<br>
     運営：<a href="https://takechanlink.pages.dev/" target="_blank" rel="noopener">心体調整塾 たけちゃん</a></p>
   </footer>
@@ -375,14 +392,14 @@
       <button type="button" class="about-x" id="aboutCloseX" aria-label="閉じる">×</button>
     </div>
     <p>面白い投稿の「おもろ」ボタンを押すと、その数がおもろっちの力になります。みんなのおもろが増えると、おもろっちは成長します。</p>
-    <p>進捗の見方：おもろっちの顔と数字が、みんなのおもろの合計です。次のステージの絵と「あと◯」が、次の成長までの残りです。</p>
+    <p>進捗の見方：おもろっちの顔と数字が、みんなのおもろの合計です。「あと◯」が、次の成長までの残りです。</p>
     <ul class="stage-list">
-      <li><img src="stage-egg-0.png" width="700" height="903" alt="">卵おもろっち<span class="min">0〜</span></li>
-      <li><img src="stage-baby.png" width="700" height="903" alt="">ベビーおもろっち<span class="min">10〜</span></li>
-      <li><img src="stage-kid.png" width="700" height="903" alt="">子供おもろっち<span class="min">30〜</span></li>
-      <li><img src="stage-adult.png" width="900" height="1162" alt="">大人おもろっち<span class="min">100〜</span></li>
-      <li><img src="stage-daidara.png" width="700" height="903" alt="">ダイダラおもろっち<span class="min">300〜</span></li>
-      <li><img src="stage-god.png" width="700" height="903" alt="">神おもろっち<span class="min">800〜</span></li>
+      <li><img class="stage-thumb" data-img="stage-egg-t0.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="卵おもろっち">卵おもろっち</span><span class="min">0〜</span></li>
+      <li><img class="stage-thumb" data-img="stage-baby.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="ベビーおもろっち">？？？</span><span class="min">10〜</span></li>
+      <li><img class="stage-thumb" data-img="stage-kid.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="子供おもろっち">？？？</span><span class="min">30〜</span></li>
+      <li><img class="stage-thumb" data-img="stage-adult.png" src="stage-egg-t0.png" width="900" height="1162" alt=""><span class="stage-name" data-name="大人おもろっち">？？？</span><span class="min">100〜</span></li>
+      <li><img class="stage-thumb" data-img="stage-daidara.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="ダイダラおもろっち">？？？</span><span class="min">300〜</span></li>
+      <li><img class="stage-thumb" data-img="stage-god.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="神おもろっち">？？？</span><span class="min">800〜</span></li>
     </ul>
     <button type="button" class="about-close" id="aboutClose">閉じる</button>
   </div>
@@ -396,21 +413,21 @@
 
   /* ===== 成長ステージ（閾値はここで調整できます） ===== */
   var STAGES = [
-    { key:'egg',    name:'卵おもろっち',       img:'stage-egg-0.png',  min:0 },
-    { key:'baby',   name:'ベビーおもろっち',   img:'stage-baby.png',   wide:'wide-baby.webp', min:10 },
-    { key:'kid',    name:'子供おもろっち',     img:'stage-kid.png',    wide:'wide-kid.webp',  min:30 },
-    { key:'adult',  name:'大人おもろっち',     img:'stage-adult.png',  wide:'wide-adult.webp', min:100 },
-    { key:'daidara', name:'ダイダラおもろっち', img:'stage-daidara.png', wide:'wide-daidara.webp', min:300 },
-    { key:'god',    name:'神おもろっち',       img:'stage-god.png',    wide:'wide-god.webp',  min:800 }
+    { key:'egg',    name:'卵おもろっち',       img:'stage-egg-t0.png', min:0 },
+    { key:'baby',   name:'ベビーおもろっち',   img:'stage-baby.png',   wide:'wide-baby.webp',   anim:'wide-baby-anim.webp',   min:10 },
+    { key:'kid',    name:'子供おもろっち',     img:'stage-kid.png',    wide:'wide-kid.webp',    anim:'wide-kid-anim.webp',    min:30 },
+    { key:'adult',  name:'大人おもろっち',     img:'stage-adult.png',  wide:'wide-adult.webp',  anim:'wide-adult-anim.webp',  min:100 },
+    { key:'daidara', name:'ダイダラおもろっち', img:'stage-daidara.png', wide:'wide-daidara.webp', anim:'wide-daidara-anim.webp', min:300 },
+    { key:'god',    name:'神おもろっち',       img:'stage-god.png',    wide:'wide-god.webp',    anim:'wide-god-anim.webp',    min:800 }
   ];
 
   /* 卵ステージの中の「割れていく過程」（合計おもろで切り替え） */
   var EGG_CRACKS = [
-    { max:1, img:'stage-egg-0.png' },  /* 0〜1：ヒビなし */
-    { max:3, img:'stage-egg-1.png' },  /* 2〜3：小さなヒビ */
-    { max:5, img:'stage-egg-2.png' },  /* 4〜5：ヒビが大きく広がる */
-    { max:7, img:'stage-egg-3.png' },  /* 6〜7：ヒビ最大・殻が少し開きかける */
-    { max:9, img:'stage-egg-4.png' }   /* 8〜9：割れそうでベビーが半分見える */
+    { max:1, img:'stage-egg-t0.png' },  /* 0〜1：ヒビなし */
+    { max:3, img:'stage-egg-t1.png' },  /* 2〜3：小さなヒビ */
+    { max:5, img:'stage-egg-t2.png' },  /* 4〜5：ヒビが大きく広がる */
+    { max:7, img:'stage-egg-t3.png' },  /* 6〜7：ヒビ最大・殻が少し開きかける */
+    { max:9, img:'stage-egg-t4.png' }   /* 8〜9：割れそうでベビーが半分見える */
   ];
   /* 割れ具合の画像を先読みして、切り替え時のちらつきを防ぐ */
   for (var pre = 0; pre < EGG_CRACKS.length; pre++) { var preImg = new Image(); preImg.src = EGG_CRACKS[pre].img; }
@@ -433,10 +450,19 @@
   var room = document.getElementById('houseRoom');
   var walker = document.getElementById('walker');
   var jumpWrap = document.getElementById('jumpWrap');
+  var totalImg = document.getElementById('totalImg');
   var nextRow = document.getElementById('nextRow');
   var nextImg = document.getElementById('nextImg');
   var nextCount = document.getElementById('nextCount');
   var maxRow = document.getElementById('maxRow');
+  /* アニメ版が読み込めないときは静止画 wide にフォールバック */
+  stageImg.addEventListener('error', function(){
+    var fb = stageImg.dataset ? stageImg.dataset.fallback : '';
+    if (fb && stageImg.getAttribute('src') !== fb) {
+      currentImg = fb;
+      stageImg.src = fb;
+    }
+  });
   var currentStage = -1;
   var currentImg = '';
   var currentDisp = -1;
@@ -518,7 +544,8 @@
       var next = STAGES[idx + 1];
       var pct = Math.floor((total - st.min) / (next.min - st.min) * 100);
       barFill.style.width = Math.max(0, Math.min(100, pct)) + '%';
-      nextImg.src = next.img;
+      /* 「あと◯」の横は次の姿ではなく「今の姿」にする（ネタバレ防止） */
+      nextImg.src = st.img;
       nextCount.textContent = (next.min - total);
       nextRow.hidden = false;
       maxRow.hidden = true;
@@ -527,9 +554,9 @@
       nextRow.hidden = true;
       maxRow.hidden = false;
     }
-    /* おうちの表示：wide がある姿は横長シーン、ない姿は縦絵 */
-    var himg = dst.wide || img;
-    sceneMode = !!dst.wide;
+    /* おうちの表示：アニメ版があればそれ、なければ wide 横長シーン、ない姿は縦絵 */
+    var himg = dst.anim || dst.wide || img;
+    sceneMode = !!(dst.anim || dst.wide);
     room.classList.toggle('scene', sceneMode);
     walker.classList.toggle('scene-walker', sceneMode);
     jumpWrap.classList.toggle('sway', sceneMode);
@@ -541,6 +568,7 @@
       startWalk();
     }
     if (himg !== currentImg) {
+      stageImg.dataset.fallback = dst.wide || '';
       stageImg.src = himg;
       if (sceneMode) { stageImg.setAttribute('width', '1200'); stageImg.setAttribute('height', '800'); }
       else { stageImg.setAttribute('width', '700'); stageImg.setAttribute('height', '903'); }
@@ -551,6 +579,34 @@
       currentDisp = dispIdx;
     }
     paintForms(idx, dispIdx);
+    /* 合計の横のアイコンも「今の姿」に追随させる（ネタバレ防止） */
+    if (totalImg.getAttribute('src') !== st.img) {
+      totalImg.src = st.img;
+      totalImg.setAttribute('width', '700');
+      totalImg.setAttribute('height', '903');
+    }
+    /* 記事の「おもろ」ボタンの顔アイコンも、おうちに表示している姿に合わせる（卵の間は透過版の卵） */
+    var formImg = dst.img;
+    var btnIcons = listEl.querySelectorAll('.omoro-btn img');
+    for (var bi = 0; bi < btnIcons.length; bi++) {
+      if (btnIcons[bi].getAttribute('src') !== formImg) {
+        btnIcons[bi].src = formImg;
+        btnIcons[bi].setAttribute('width', '700');
+        btnIcons[bi].setAttribute('height', '903');
+      }
+    }
+    /* 「おもろっちについて」のステージ一覧もネタバレ防止：未到達は絵＝卵・名前＝？？？にする */
+    var stageThumbs = document.querySelectorAll('.stage-list img.stage-thumb');
+    var stageNames = document.querySelectorAll('.stage-list .stage-name');
+    for (var ti = 0; ti < stageThumbs.length; ti++) {
+      var reachedStage = ti <= idx;
+      var want = reachedStage ? stageThumbs[ti].getAttribute('data-img') : 'stage-egg-t0.png';
+      if (want && stageThumbs[ti].getAttribute('src') !== want) stageThumbs[ti].src = want;
+      if (stageNames[ti]) {
+        var wantName = reachedStage ? stageNames[ti].getAttribute('data-name') : '？？？';
+        if (wantName && stageNames[ti].textContent !== wantName) stageNames[ti].textContent = wantName;
+      }
+    }
     if (idx !== currentStage) {
       if (currentStage >= 0 && pop) hop();
       currentStage = idx;
@@ -630,6 +686,34 @@
     btn.querySelector('.cnt').textContent = counts[id] || 0;
   }
 
+  /* ===== シェア（ほっとニュースと同じ方式：共有シート→使えなければコピー） ===== */
+  function shareEntry(en, btn){
+    var url = 'https://omoro-good.pages.dev/#a=' + encodeURIComponent(en.id);
+    var text = 'おもろグ〜\n' + en.title;
+    if (navigator.share) {
+      navigator.share({ title:'おもろグ〜', text:text, url:url }).catch(function(){});
+      return;
+    }
+    function done(){
+      var label = btn.querySelector('.share-label');
+      if (!label) return;
+      var orig = label.textContent;
+      label.textContent = 'コピーしました';
+      setTimeout(function(){ label.textContent = orig; }, 1600);
+    }
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      navigator.clipboard.writeText(text + '\n' + url).then(done).catch(function(){});
+    } else {
+      var ta = document.createElement('textarea');
+      ta.value = text + '\n' + url;
+      ta.style.position = 'fixed'; ta.style.opacity = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      try { document.execCommand('copy'); done(); } catch(e) {}
+      ta.remove();
+    }
+  }
+
   function doOmoro(id, btn){
     if (liked.indexOf(id) >= 0) return;
     spawnFaces(btn);
@@ -664,6 +748,7 @@
   entries.forEach(function(en){
     var card = document.createElement('article');
     card.className = 'card';
+    card.id = 'post-' + en.id;
     var badgeClass = en.platform === 'Threads' ? 'threads' : (en.platform === 'X' ? 'x' : 'instagram');
     card.innerHTML =
       '<div class="meta"><span class="badge ' + badgeClass + '">' + en.platform + '</span>' +
@@ -671,9 +756,15 @@
       '<h2></h2><p class="body"></p>' +
       '<div class="row">' +
         '<a class="orig-link" target="_blank" rel="noopener">元の投稿を見る →</a>' +
-        '<button type="button" class="omoro-btn" aria-label="おもろボタン">' +
-          '<img src="omorocchi-icon.png" width="512" height="512" alt="">おもろ<span class="cnt">0</span>' +
-        '</button>' +
+        '<span class="btn-actions">' +
+          '<button type="button" class="share-btn" aria-label="この記事をシェアする">' +
+            '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4.2M8.6 13.4l6.8 4.2"/></svg>' +
+            '<span class="share-label">シェア</span>' +
+          '</button>' +
+          '<button type="button" class="omoro-btn" aria-label="おもろボタン">' +
+            '<img src="omorocchi-icon.png" width="512" height="512" alt="">おもろ<span class="cnt">0</span>' +
+          '</button>' +
+        '</span>' +
       '</div>';
     card.querySelector('h2').textContent = en.title;
     card.querySelector('p.body').textContent = en.body;
@@ -681,10 +772,19 @@
     var btn = card.querySelector('.omoro-btn');
     paintBtn(btn, en.id);
     btn.addEventListener('click', function(){ doOmoro(en.id, btn); });
+    var sbtn = card.querySelector('.share-btn');
+    sbtn.addEventListener('click', function(){ shareEntry(en, sbtn); });
     listEl.appendChild(card);
   });
 
   renderGrowth(false);
+
+  /* 共有アンカー（#a=<記事ID>）で開かれたら、その記事までスクロール */
+  if (location.hash.indexOf('#a=') === 0) {
+    var anchorId = decodeURIComponent(location.hash.slice(3));
+    var anchorEl = document.getElementById('post-' + anchorId);
+    if (anchorEl) setTimeout(function(){ anchorEl.scrollIntoView({ block:'start' }); }, 80);
+  }
 
   /* ===== 現在の集計を取得 ===== */
   fetch(SB_URL + '/rest/v1/omoro_likes?select=post_id,count', {
