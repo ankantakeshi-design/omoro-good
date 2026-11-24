@@ -109,14 +109,17 @@
   .growth-toggle .deco{ color:var(--orange); font-size:14px; }
   .growth-toggle img.thumb{ width:34px; display:block; }
   .growth-toggle .chev{
-    display:inline-flex; align-items:center; justify-content:center;
-    width:30px; height:30px; border-radius:50%;
-    background:var(--orange); color:#fff; font-size:14px;
-    animation:chev-bob 1.6s ease-in-out infinite;
+    display:inline-flex; align-items:center; justify-content:center; gap:5px;
+    min-height:32px; padding:4px 13px; border-radius:999px;
+    background:var(--orange); color:#fff; font-size:13px; font-weight:900;
+    white-space:nowrap;
   }
+  .growth-toggle .chev-label::before{ content:"ひらく"; }
+  .growth-toggle[aria-expanded="true"] .chev-label::before{ content:"とじる"; }
+  .growth-toggle .chev-arrow{ display:inline-block; font-size:11px; transition:transform .25s ease; animation:chev-bob 1.6s ease-in-out infinite; }
   @keyframes chev-bob{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(3px); } }
-  @media (prefers-reduced-motion: reduce){ .growth-toggle .chev{ animation:none; } }
-  .growth-toggle[aria-expanded="true"] .chev{ animation:none; transform:rotate(180deg); }
+  @media (prefers-reduced-motion: reduce){ .growth-toggle .chev-arrow{ animation:none; } }
+  .growth-toggle[aria-expanded="true"] .chev-arrow{ animation:none; transform:rotate(180deg); }
   .house{
     margin-top:10px;
     background:#fff; color:var(--ink);
@@ -608,7 +611,7 @@
       <span class="deco" aria-hidden="true">✦</span>
       <img class="thumb" id="toggleThumb" src="stage-egg-t0.png" width="700" height="903" alt="">
       <span>おもろっちのおうち</span>
-      <span class="chev" aria-hidden="true">▽</span>
+      <span class="chev" aria-hidden="true"><span class="chev-label"></span><span class="chev-arrow">▽</span></span>
       <span class="deco" aria-hidden="true">✦</span>
     </button>
     <div class="house" id="growthPanel" hidden>
