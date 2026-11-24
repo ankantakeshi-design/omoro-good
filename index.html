@@ -99,6 +99,31 @@
   }
   .walker .jumpwrap{ display:block; }
   .walker img{ width:100%; display:block; }
+  /* 横長シーン表示（ベビー以上の wide 画像） */
+  .house-room.scene{
+    height:auto;
+    aspect-ratio:3 / 2;
+    background:#fff6d9;
+  }
+  .walker.scene-walker{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    min-height:0;
+  }
+  .walker.scene-walker .jumpwrap{ height:100%; }
+  .walker.scene-walker img{
+    width:100%; height:100%;
+    object-fit:cover;
+    transform:scale(1.04);
+  }
+  .walker .jumpwrap.sway{ animation:sway 5.5s ease-in-out infinite alternate; }
+  @keyframes sway{
+    from{ transform:translateX(-5px) rotate(-.4deg); }
+    to{ transform:translateX(5px) rotate(.4deg); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .walker .jumpwrap.sway{ animation:none; }
+  }
   .walker .jumpwrap.hop{ animation:hop .7s ease; }
   @keyframes hop{
     0%{ transform:translateY(0); }
@@ -131,6 +156,38 @@
   .next-row[hidden]{ display:none; }
   .next-row img{ width:34px; display:block; }
   .next-row b{ font-size:20px; color:var(--orange-dark); }
+
+  /* ===== すがたをえらぶ（到達済みステージのフォーム選択） ===== */
+  .form-row{
+    display:flex; gap:8px; flex-wrap:wrap;
+    margin-top:12px;
+  }
+  .form-pick{
+    position:relative;
+    width:52px; height:52px; min-width:48px; min-height:48px;
+    padding:2px;
+    border:3px solid var(--card-border); border-radius:14px;
+    background:#fff; cursor:pointer;
+    overflow:hidden;
+    -webkit-tap-highlight-color:transparent;
+  }
+  .form-pick img{
+    width:100%; height:100%;
+    object-fit:cover; object-position:top;
+    border-radius:9px; display:block;
+  }
+  .form-pick.sel{
+    border-color:var(--orange);
+    box-shadow:0 2px 0 rgba(120,50,0,.22);
+  }
+  .form-pick.locked{ cursor:default; }
+  .form-pick.locked img{ filter:grayscale(1); opacity:.38; }
+  .form-pick .lock{
+    position:absolute; inset:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:19px;
+    text-shadow:0 1px 2px rgba(255,255,255,.9);
+  }
 
   /* ===== おもろっちについて（ポップアップ） ===== */
   .about-link{
@@ -289,6 +346,7 @@
           <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg-0.png" width="700" height="903" alt="おもろっち"></span>
         </button>
       </div>
+      <div class="form-row" id="formRow" aria-label="すがたをえらぶ"></div>
       <div class="progress">
         <p class="total-row"><img src="omorocchi-icon.png" width="512" height="512" alt=""><b id="totalCount">0</b></p>
         <div class="bar"><div id="barFill"></div></div>
@@ -338,19 +396,21 @@
   /* ===== 成長ステージ（閾値はここで調整できます） ===== */
   var STAGES = [
     { key:'egg',    name:'卵おもろっち',       img:'stage-egg-0.png',  min:0 },
-    { key:'baby',   name:'ベビーおもろっち',   img:'stage-baby.png',   min:10 },
-    { key:'kid',    name:'子供おもろっち',     img:'stage-kid.png',    min:30 },
-    { key:'adult',  name:'大人おもろっち',     img:'stage-adult.png',  min:100 },
+    { key:'baby',   name:'ベビーおもろっち',   img:'stage-baby.png',   wide:'wide-baby.png', min:10 },
+    { key:'kid',    name:'子供おもろっち',     img:'stage-kid.png',    wide:'wide-kid.png',  min:30 },
+    { key:'adult',  name:'大人おもろっち',     img:'stage-adult.png',  wide:'wide-adult.png', min:100 },
+    /* ダイダラの wide は新デザイン確定後に追加する（当面は縦絵のまま） */
     { key:'daidara', name:'ダイダラおもろっち', img:'stage-daidara.png', min:300 },
-    { key:'god',    name:'神おもろっち',       img:'stage-god.png',    min:800 }
+    { key:'god',    name:'神おもろっち',       img:'stage-god.png',    wide:'wide-god.png',  min:800 }
   ];
 
   /* 卵ステージの中の「割れていく過程」（合計おもろで切り替え） */
   var EGG_CRACKS = [
-    { max:2, img:'stage-egg-0.png' },  /* 0〜2：ヒビなし */
-    { max:5, img:'stage-egg-1.png' },  /* 3〜5：小さなヒビ */
-    { max:8, img:'stage-egg-2.png' },  /* 6〜8：ヒビが大きく広がる */
-    { max:9, img:'stage-egg-3.png' }   /* 9：割れそうでベビーが半分見える */
+    { max:1, img:'stage-egg-0.png' },  /* 0〜1：ヒビなし */
+    { max:3, img:'stage-egg-1.png' },  /* 2〜3：小さなヒビ */
+    { max:5, img:'stage-egg-2.png' },  /* 4〜5：ヒビが大きく広がる */
+    { max:7, img:'stage-egg-3.png' },  /* 6〜7：ヒビ最大・殻が少し開きかける */
+    { max:9, img:'stage-egg-4.png' }   /* 8〜9：割れそうでベビーが半分見える */
   ];
   /* 割れ具合の画像を先読みして、切り替え時のちらつきを防ぐ */
   for (var pre = 0; pre < EGG_CRACKS.length; pre++) { var preImg = new Image(); preImg.src = EGG_CRACKS[pre].img; }
@@ -379,6 +439,12 @@
   var maxRow = document.getElementById('maxRow');
   var currentStage = -1;
   var currentImg = '';
+  var currentDisp = -1;
+  var sceneMode = false;
+
+  /* 選んだ姿（到達済みステージの中から選択、localStorageに保存） */
+  var formKey = null;
+  try { formKey = localStorage.getItem('omoro-form') || null; } catch(e) {}
 
   function stageOf(t){
     var idx = 0;
@@ -391,6 +457,14 @@
     for (var i = 0; i < EGG_CRACKS.length; i++) { if (t <= EGG_CRACKS[i].max) return EGG_CRACKS[i].img; }
     return EGG_CRACKS[EGG_CRACKS.length - 1].img;
   }
+  /* おうちに表示する姿：選んだ姿が到達済みならそれ、なければ現在のステージ */
+  function dispIndex(idx){
+    if (!formKey) return idx;
+    for (var i = 0; i < STAGES.length; i++) {
+      if (STAGES[i].key === formKey) return i <= idx ? i : idx;
+    }
+    return idx;
+  }
   function hop(){
     jumpWrap.classList.remove('hop');
     void jumpWrap.offsetWidth;
@@ -399,12 +473,43 @@
   jumpWrap.addEventListener('animationend', function(){ jumpWrap.classList.remove('hop'); });
   walker.addEventListener('click', hop);
 
+  /* ===== すがたをえらぶ（サムネイル行） ===== */
+  var formRow = document.getElementById('formRow');
+  var formBtns = [];
+  STAGES.forEach(function(s, i){
+    var b = document.createElement('button');
+    b.type = 'button';
+    b.className = 'form-pick';
+    b.innerHTML = '<img src="' + s.img + '" width="700" height="903" alt=""><span class="lock" aria-hidden="true">🔒</span>';
+    b.addEventListener('click', function(){
+      if (i > stageOf(total)) return;
+      formKey = STAGES[i].key;
+      try { localStorage.setItem('omoro-form', formKey); } catch(e) {}
+      renderGrowth(false);
+    });
+    formRow.appendChild(b);
+    formBtns.push(b);
+  });
+  function paintForms(idx, dispIdx){
+    for (var i = 0; i < formBtns.length; i++) {
+      var reached = i <= idx;
+      formBtns[i].classList.toggle('locked', !reached);
+      formBtns[i].classList.toggle('sel', i === dispIdx);
+      formBtns[i].disabled = !reached;
+      formBtns[i].querySelector('.lock').style.display = reached ? 'none' : 'flex';
+      formBtns[i].setAttribute('aria-label', STAGES[i].name + (reached ? '' : '（まだ）'));
+    }
+  }
+
   function renderGrowth(pop){
     var idx = stageOf(total);
     var st = STAGES[idx];
-    var img = stageImgOf(idx, total);
+    var dispIdx = dispIndex(idx);
+    var dst = STAGES[dispIdx];
+    var img = stageImgOf(dispIdx, total);
     totalEl.textContent = total;
     toggleThumb.src = img;
+    /* 進捗バーと「あと◯」は合計おもろ基準（フォーム選択とは独立） */
     if (idx < STAGES.length - 1) {
       var next = STAGES[idx + 1];
       var pct = Math.floor((total - st.min) / (next.min - st.min) * 100);
@@ -418,12 +523,31 @@
       nextRow.hidden = true;
       maxRow.hidden = false;
     }
-    if (img !== currentImg) {
-      stageImg.src = img;
-      currentImg = img;
+    /* おうちの表示：wide がある姿は横長シーン、ない姿は縦絵 */
+    var himg = dst.wide || img;
+    sceneMode = !!dst.wide;
+    room.classList.toggle('scene', sceneMode);
+    walker.classList.toggle('scene-walker', sceneMode);
+    jumpWrap.classList.toggle('sway', sceneMode);
+    if (sceneMode) {
+      stopWalk();
+      walker.style.left = '';
+      stageImg.style.transform = '';
+    } else if (!panel.hidden) {
+      startWalk();
     }
+    if (himg !== currentImg) {
+      stageImg.src = himg;
+      if (sceneMode) { stageImg.setAttribute('width', '1200'); stageImg.setAttribute('height', '800'); }
+      else { stageImg.setAttribute('width', '700'); stageImg.setAttribute('height', '903'); }
+      currentImg = himg;
+    }
+    if (dispIdx !== currentDisp) {
+      stageImg.alt = dst.name;
+      currentDisp = dispIdx;
+    }
+    paintForms(idx, dispIdx);
     if (idx !== currentStage) {
-      stageImg.alt = st.name;
       if (currentStage >= 0 && pop) hop();
       currentStage = idx;
     }
@@ -433,6 +557,7 @@
   var reduceMotion = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   var walkRaf = null, walkLast = 0, walkX = 8, walkDir = 1;
   function walkStep(ts){
+    if (sceneMode) { stopWalk(); return; }
     if (!walkLast) walkLast = ts;
     var dt = Math.min(0.05, (ts - walkLast) / 1000);
     walkLast = ts;
@@ -457,7 +582,7 @@
     var open = panel.hidden;
     panel.hidden = !open;
     toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) startWalk(); else stopWalk();
+    if (open) { if (!sceneMode) startWalk(); } else stopWalk();
   });
 
   /* ===== おもろっちについて（ポップアップ） ===== */
