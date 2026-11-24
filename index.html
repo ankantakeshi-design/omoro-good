@@ -521,6 +521,15 @@
   .faq details.faq-outer{ background:#fff6e0; }
   .faq details.faq-outer > summary{ font-size:18px; min-height:56px; }
   .faq-inner{ padding:2px 12px 12px; }
+  .os-row{
+    display:flex; gap:10px; align-items:flex-start;
+    border-radius:14px; padding:10px 12px; margin:0 0 10px;
+  }
+  .os-row p{ margin:0; }
+  .os-emoji{ font-size:26px; line-height:1.2; flex:none; }
+  .os-ios{ background:#e9f1fc; }
+  .os-android{ background:#e9f6df; }
+  .os-pc{ background:#f1eafa; }
   .faq-inner details:last-child{ margin-bottom:0; }
 
   /* ===== LINEスタンプへのリンクカード ===== */
@@ -650,10 +659,10 @@
   <details class="faq-outer" id="installGuide">
     <summary>ホーム画面への置き方</summary>
     <div class="faq-inner">
-      <p>iPhoneの方：Safariで開いて、共有のボタンから「ホーム画面に追加」。<br>
-      Androidの方：Chromeで開いて、右上のメニューから「ホーム画面に追加」。<br>
-      パソコンの方：ChromeやEdgeで開いて、アドレスバーの右端に出るインストールのマークから追加。<br>
-      追加すると、卵のアイコンでアプリみたいに開けます。</p>
+      <div class="os-row os-ios"><span class="os-emoji" aria-hidden="true">🍎</span><p><strong>iPhoneの方</strong><br>Safariで開いて、共有のボタンから「ホーム画面に追加」。</p></div>
+      <div class="os-row os-android"><span class="os-emoji" aria-hidden="true">🤖</span><p><strong>Androidの方</strong><br>Chromeで開いて、右上のメニューから「ホーム画面に追加」。</p></div>
+      <div class="os-row os-pc"><span class="os-emoji" aria-hidden="true">💻</span><p><strong>パソコンの方</strong><br>ChromeやEdgeで開いて、アドレスバーの右端に出るインストールのマークから追加。</p></div>
+      <p>追加すると、卵のアイコンでアプリみたいに開けます。</p>
       <p><strong>おもろっちを育てている方におすすめです。</strong><br>
       育ち具合の記録は、開いたブラウザの中に残るしくみです。ブラウザや端末が変わると、記録は引き継げず、また卵からになります。<br>
       ホーム画面に追加しておくと、いつも同じ場所から開けて、記録も消えにくくなります。</p>
