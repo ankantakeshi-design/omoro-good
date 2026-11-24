@@ -180,8 +180,9 @@
     border-color:var(--orange);
     box-shadow:0 2px 0 rgba(120,50,0,.22);
   }
-  .form-pick.locked{ cursor:default; }
-  .form-pick.locked img{ filter:grayscale(1); opacity:.38; }
+  .form-pick.locked{ cursor:default; background:var(--yellow-soft); }
+  /* 未到達の姿はネタバレ防止のため一切見せない（無地＋🔒だけ） */
+  .form-pick.locked img{ display:none; }
   .form-pick .lock{
     position:absolute; inset:0;
     display:flex; align-items:center; justify-content:center;
@@ -495,6 +496,10 @@
       formBtns[i].classList.toggle('locked', !reached);
       formBtns[i].classList.toggle('sel', i === dispIdx);
       formBtns[i].disabled = !reached;
+      /* 未到達は姿の絵を読み込ませもしない（ネタバレ防止）。到達したら初めて出す */
+      var fimg = formBtns[i].querySelector('img');
+      if (reached) { if (!fimg.getAttribute('src')) fimg.setAttribute('src', STAGES[i].img); }
+      else { fimg.removeAttribute('src'); }
       formBtns[i].querySelector('.lock').style.display = reached ? 'none' : 'flex';
       formBtns[i].setAttribute('aria-label', STAGES[i].name + (reached ? '' : '（まだ）'));
     }
