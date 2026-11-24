@@ -325,6 +325,25 @@
     color:var(--orange-dark);
     text-decoration:underline; text-underline-offset:3px;
   }
+  /* ===== 記録のバックアップ ===== */
+  .backup-box{
+    margin-top:12px; padding-top:12px;
+    border-top:2px dashed var(--card-border);
+  }
+  .backup-box .backup-title{ margin:0 0 4px; font-size:16px; font-weight:900; }
+  .backup-box .backup-note{ margin:0 0 10px; font-size:16px; line-height:1.5; color:var(--ink-soft); }
+  .backup-btns{ display:flex; flex-wrap:wrap; gap:8px; }
+  .backup-btn{
+    flex:1 1 200px; min-height:48px;
+    padding:10px 12px;
+    background:#fff; color:var(--orange-dark);
+    border:2px solid var(--orange); border-radius:999px;
+    font-family:inherit; font-size:16px; font-weight:900;
+    cursor:pointer;
+  }
+  .backup-msg{ margin:10px 0 0; font-size:16px; font-weight:700; line-height:1.5; }
+  .backup-msg.ok{ color:#3d7a1e; }
+  .backup-msg.err{ color:#b3261e; }
   .about-overlay{
     position:fixed; inset:0; z-index:50;
     background:rgba(58,42,26,.55);
@@ -600,6 +619,16 @@
         <button type="button" class="evolve-btn" id="evolveBtn" hidden>✦ 進化する ✦</button>
       </div>
       <p class="about-row"><button type="button" class="about-link" id="aboutOpen">おもろっちについて ›</button></p>
+      <div class="backup-box">
+        <p class="backup-title">記録のバックアップ</p>
+        <p class="backup-note">スマホを変える時や、記録が消えてしまった時のために、記録を保存しておけます。</p>
+        <div class="backup-btns">
+          <button type="button" class="backup-btn" id="backupSaveBtn">記録をバックアップする</button>
+          <button type="button" class="backup-btn" id="backupLoadBtn">バックアップから戻す</button>
+        </div>
+        <input type="file" id="backupFile" accept=".json,application/json" hidden>
+        <p class="backup-msg" id="backupMsg" hidden></p>
+      </div>
     </div>
   </div>
 </header>
@@ -1232,6 +1261,104 @@
     }
     renderGrowth(true);
   }).catch(function(){});
+
+  /* ===== 記録のバックアップ（書き出し／戻す） ===== */
+  var backupMsg = document.getElementById('backupMsg');
+  var backupFile = document.getElementById('backupFile');
+  function showBackupMsg(text, ok){
+    backupMsg.textContent = text;
+    backupMsg.className = 'backup-msg ' + (ok ? 'ok' : 'err');
+    backupMsg.hidden = false;
+  }
+  document.getElementById('backupSaveBtn').addEventListener('click', function(){
+    var data = {
+      app: 'omoro-good',
+      version: 1,
+      savedAt: new Date().toISOString(),
+      records: {
+        'omoro-liked': localStorage.getItem('omoro-liked'),
+        'omoro-evolved': localStorage.getItem('omoro-evolved'),
+        'omoro-form': localStorage.getItem('omoro-form')
+      }
+    };
+    var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+    var url = URL.createObjectURL(blob);
+    var now = new Date();
+    function pad(n){ return (n < 10 ? '0' : '') + n; }
+    var a = document.createElement('a');
+    a.href = url;
+    a.download = 'omorogu-backup-' + now.getFullYear() + pad(now.getMonth() + 1) + pad(now.getDate()) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    setTimeout(function(){ URL.revokeObjectURL(url); }, 4000);
+    showBackupMsg('記録を保存しました。大事にしまっておいてくださいね。', true);
+  });
+  document.getElementById('backupLoadBtn').addEventListener('click', function(){
+    backupFile.value = '';
+    backupFile.click();
+  });
+  backupFile.addEventListener('change', function(){
+    var f = backupFile.files && backupFile.files[0];
+    if (!f) return;
+    var reader = new FileReader();
+    reader.onload = function(){
+      var data;
+      try { data = JSON.parse(reader.result); } catch(e) {
+        showBackupMsg('そのファイルは読み取れませんでした。バックアップのファイルか、確かめてみてくださいね。', false);
+        return;
+      }
+      var rec = data && data.records;
+      function likedOk(v){
+        if (v === null) return true;
+        if (typeof v !== 'string') return false;
+        try { return Array.isArray(JSON.parse(v)); } catch(e){ return false; }
+      }
+      function evoOk(v){
+        if (v === null) return true;
+        return typeof v === 'string' && !isNaN(parseInt(v, 10));
+      }
+      function formOk(v){
+        return v === null || typeof v === 'string';
+      }
+      if (!rec || !likedOk(rec['omoro-liked']) || !evoOk(rec['omoro-evolved']) || !formOk(rec['omoro-form'])) {
+        showBackupMsg('そのファイルは読み取れませんでした。バックアップのファイルか、確かめてみてくださいね。', false);
+        return;
+      }
+      if (!window.confirm('今の記録を、バックアップの記録で上書きします。よろしいですか？')) return;
+      try {
+        ['omoro-liked', 'omoro-evolved', 'omoro-form'].forEach(function(k){
+          if (rec[k] === null || rec[k] === undefined) localStorage.removeItem(k);
+          else localStorage.setItem(k, rec[k]);
+        });
+      } catch(e) {
+        showBackupMsg('うまく戻せませんでした。もう一度お試しくださいね。', false);
+        return;
+      }
+      try { sessionStorage.setItem('omoro-restored', '1'); } catch(e) {}
+      location.reload();
+    };
+    reader.onerror = function(){
+      showBackupMsg('そのファイルは読み取れませんでした。バックアップのファイルか、確かめてみてくださいね。', false);
+    };
+    reader.readAsText(f);
+  });
+  /* 戻した直後：おうちを開いて、戻せたことを知らせる */
+  (function(){
+    var done = false;
+    try {
+      done = sessionStorage.getItem('omoro-restored') === '1';
+      if (done) sessionStorage.removeItem('omoro-restored');
+    } catch(e) {}
+    if (done) {
+      if (panel.hidden) {
+        panel.hidden = false;
+        toggleBtn.setAttribute('aria-expanded', 'true');
+        if (!sceneMode) startWalk();
+      }
+      showBackupMsg('記録を戻しました。おもろっちも、元に戻っていますよ。', true);
+    }
+  })();
 })();
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d2aa62b80a17499dba0ea29614893659"}'></script><!-- End Cloudflare Web Analytics -->
