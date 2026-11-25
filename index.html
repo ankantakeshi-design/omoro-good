@@ -139,6 +139,15 @@
     clip-path:polygon(50% 0, 100% 100%, 0 100%);
     filter:drop-shadow(0 3px 0 rgba(120,50,0,.18));
   }
+  .daily-note{ margin:6px 0 0; font-size:12.5px; font-weight:700; color:var(--ink-soft); text-align:center; }
+  .daily-toast{
+    position:fixed; left:50%; bottom:22px; transform:translateX(-50%) translateY(16px);
+    background:#4a2f14; color:#fff; font-size:14.5px; font-weight:800;
+    padding:11px 18px; border-radius:999px; box-shadow:0 6px 18px rgba(60,30,0,.3);
+    opacity:0; pointer-events:none; transition:opacity .25s ease, transform .25s ease;
+    z-index:60; max-width:92vw; text-align:center;
+  }
+  .daily-toast.show{ opacity:1; transform:translateX(-50%) translateY(0); }
   .house.no-roof .house-roof{ display:none; }
   .house.no-roof .house-room{ border-top:2px solid var(--card-border); border-radius:14px; }
   .house-room{
@@ -633,6 +642,7 @@
       <div class="progress">
         <p class="total-row"><img id="totalImg" src="stage-egg-t0.png" width="700" height="903" alt=""><b id="totalCount">0</b><span class="next-inline" id="nextRow">（あと <b id="nextCount">10</b>）</span><span class="next-inline" id="maxRow" hidden>✨</span></p>
         <div class="bar"><div id="barFill"></div></div>
+        <p class="daily-note">おもろは1日5個までだよ</p>
         <button type="button" class="evolve-btn" id="evolveBtn" hidden>✦ 進化する ✦</button>
       </div>
       <p class="about-row"><button type="button" class="about-link" id="aboutOpen">おもろっちについて ›</button></p>
@@ -1168,10 +1178,35 @@
     }
   }
 
+  var DAILY_LIMIT = 5;
+  function dailyRec(){
+    var t = new Date();
+    var key = t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
+    var rec = null;
+    try { rec = JSON.parse(localStorage.getItem('omoro-daily') || 'null'); } catch(e) {}
+    if (!rec || rec.d !== key) rec = { d: key, n: 0 };
+    return rec;
+  }
+  var toastTimer = null;
+  function showDailyToast(msg){
+    var el = document.getElementById('dailyToast');
+    if (!el) return;
+    el.textContent = msg;
+    el.classList.add('show');
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2400);
+  }
   function doOmoro(id, btn){
     if (liked.indexOf(id) >= 0) return;
+    var rec = dailyRec();
+    if (rec.n >= DAILY_LIMIT) {
+      showDailyToast('今日のおもろは5個までだよ。また明日ね');
+      return;
+    }
     spawnFaces(btn);
     liked.push(id);
+    rec.n += 1;
+    try { localStorage.setItem('omoro-daily', JSON.stringify(rec)); } catch(e) {}
     try { localStorage.setItem('omoro-liked', JSON.stringify(liked)); } catch(e) {}
     counts[id] = (counts[id] || 0) + 1;
     my = liked.length;
@@ -1384,5 +1419,6 @@
 })();
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d2aa62b80a17499dba0ea29614893659"}'></script><!-- End Cloudflare Web Analytics -->
+<div class="daily-toast" id="dailyToast" role="status" aria-live="polite"></div>
 </body>
 </html>
