@@ -650,6 +650,11 @@
     font-size:14px; color:var(--ink-soft);
   }
   footer a{ color:var(--orange-dark); font-weight:700; }
+
+  /* ネタバレ注意の折りたたみ（2026-11-25） */
+  .netabare-fold > summary{ color:#C0392B; }
+  .faq-inner .stamp-warn{ margin-top:8px; }
+  .faq-inner .stamp-link{ margin-top:10px; }
 </style>
 </head>
 <body>
@@ -731,16 +736,18 @@
   </details>
   </div>
 
-  <div class="stamp-warn">
+  <div class="faq"><details class="faq-outer netabare-fold"><summary>⚠ おもろっち進化 ネタバレ注意！</summary><div class="faq-inner">
+<div class="stamp-warn">
     <div class="warn-title">⚠ おもろっち進化<br>ネタバレ注意！</div>
     <div class="warn-sub">まだ進化した姿を見ていない方は、ストアを見ないでね。</div>
     <div class="warn-note">おもろっちスタンプは現在作成中です。審査が通ったらお知らせします。</div>
   </div>
-  <a class="stamp-link" href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener">
+<a class="stamp-link" href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener">
     <img src="icon-egg.png" alt="" width="512" height="512">
     <span>LINEスタンプ</span>
     <span class="arrow" aria-hidden="true">→</span>
   </a>
+</div></details></div>
 
   
 
