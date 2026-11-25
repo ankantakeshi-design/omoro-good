@@ -680,6 +680,11 @@
   .nb-stack{ display:flex; flex-direction:column; gap:1px; min-width:0; flex:1; overflow:hidden; }
   .nb-sub{ font-size:11px; font-weight:900; color:#2E9E4F; letter-spacing:.08em; }
   .nb-main{ white-space:nowrap; font-size:13.5px; }
+
+  /* 見出しから直接リンク＋行のシェアボタン（2026-11-26） */
+  a.hl-main{ text-decoration:none; color:inherit; cursor:pointer; }
+  .share-btn.sm{ flex:none; min-height:48px; padding:8px 11px; font-size:13.5px; border-width:2px; border-radius:999px; }
+  .hl-row.anchor-flash{ outline:3px solid #F39C12; outline-offset:2px; }
 </style>
 </head>
 <body>
@@ -865,27 +870,7 @@
   </div>
 </div>
 
-<div class="about-overlay" id="entryOverlay" hidden>
-  <div class="about-card">
-    <div class="about-head">
-      <div class="meta" id="entryMeta" style="margin-top:10px;"></div>
-      <button type="button" class="about-x" id="entryClose" aria-label="閉じる">×</button>
-    </div>
-    <h2 id="entryTitle"></h2>
-    <p id="entryBody"></p>
-    <a class="entry-orig" id="entryOrig" href="#" target="_blank" rel="noopener">元の記事を読む →</a>
-    <div class="entry-actions">
-      <button type="button" class="share-btn" id="entryShare" aria-label="この記事をシェアする">
-        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4.2M8.6 13.4l6.8 4.2"/></svg>
-        <span class="share-label">シェア</span>
-      </button>
-      <button type="button" class="omoro-btn" id="entryOmoro" aria-label="おもろボタン">
-        <img src="icon-egg.png" width="512" height="512" alt="">おもろ<span class="cnt">0</span>
-      </button>
-    </div>
-    <button type="button" class="entry-close-b" id="entryCloseB">閉じる</button>
-  </div>
-</div>
+
 <script src="data.js"></script>
 <script>
 (function(){
@@ -1350,47 +1335,26 @@
   var archivePanel = document.getElementById('archivePanel');
   var archiveCountEl = document.getElementById('archiveCount');
 
-  var entryOverlay = document.getElementById('entryOverlay');
-  var entryOmoroBtn = document.getElementById('entryOmoro');
-  var entryShareBtn = document.getElementById('entryShare');
-  var currentEntry = null;
-  function badgeClassOf(p){ return p === 'Threads' ? 'threads' : (p === 'X' ? 'x' : 'instagram'); }
-  function openEntry(en){
-    currentEntry = en;
-    document.getElementById('entryMeta').innerHTML =
-      '<span class="badge ' + badgeClassOf(en.platform) + '">' + en.platform + '</span>' +
-      '<span class="date">' + en.dateLabel + '</span>';
-    document.getElementById('entryTitle').textContent = en.title;
-    document.getElementById('entryBody').textContent = en.body;
-    var orig = document.getElementById('entryOrig');
-    orig.href = en.url;
-    orig.textContent = '元の記事を読む →（' + en.platform + '）';
-    entryOmoroBtn.setAttribute('data-omoro', en.id);
-    paintBtn(entryOmoroBtn, en.id);
-    entryOverlay.hidden = false;
-  }
-  function closeEntry(){ entryOverlay.hidden = true; currentEntry = null; }
-  document.getElementById('entryClose').addEventListener('click', closeEntry);
-  document.getElementById('entryCloseB').addEventListener('click', closeEntry);
-  entryOverlay.addEventListener('click', function(e){ if (e.target === entryOverlay) closeEntry(); });
-  entryOmoroBtn.addEventListener('click', function(){ if (currentEntry) doOmoro(currentEntry.id, entryOmoroBtn); });
-  entryShareBtn.addEventListener('click', function(){ if (currentEntry) shareEntry(currentEntry, entryShareBtn); });
-
+  
   function buildRow(en){
     var row = document.createElement('article');
     row.className = 'hl-row';
     row.id = 'post-' + en.id;
     row.innerHTML =
-      '<button type="button" class="hl-main" aria-label="記事の紹介を開く">' +
-        '<span class="hl-top"><span class="badge sm ' + badgeClassOf(en.platform) + '">' + en.platform + '</span>' +
-        '<span class="hl-date">' + en.dateLabel + '</span></span>' +
+      '<a class="hl-main" href="' + en.url + '" target="_blank" rel="noopener" aria-label="元の記事を読む">' +
+        '<span class="hl-top"><span class="hl-date">' + en.dateLabel + '</span></span>' +
         '<span class="hl-title"></span>' +
+      '</a>' +
+      '<button type="button" class="share-btn sm" aria-label="この記事をシェアする">' +
+        '<svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4.2M8.6 13.4l6.8 4.2"/></svg>' +
+        '<span class="share-label">シェア</span>' +
       '</button>' +
       '<button type="button" class="omoro-btn sm" data-omoro="' + en.id + '" aria-label="おもろボタン">' +
         '<img src="icon-egg.png" width="512" height="512" alt="">おもろ<span class="cnt">0</span>' +
       '</button>';
     row.querySelector('.hl-title').textContent = en.title;
-    row.querySelector('.hl-main').addEventListener('click', function(){ openEntry(en); });
+    var sbtn = row.querySelector('.share-btn');
+    sbtn.addEventListener('click', function(){ shareEntry(en, sbtn); });
     var btn = row.querySelector('.omoro-btn');
     paintBtn(btn, en.id);
     btn.addEventListener('click', function(){ doOmoro(en.id, btn); });
@@ -1429,7 +1393,7 @@
     if (anchorEl) {
       if (archiveListEl.contains(anchorEl)) openArchive();
       for (var ai = 0; ai < entries.length; ai++) {
-        if (entries[ai].id === anchorId) { openEntry(entries[ai]); break; }
+        if (entries[ai].id === anchorId) { anchorEl.scrollIntoView({ block: 'center' }); anchorEl.classList.add('anchor-flash'); setTimeout(function(){ anchorEl.classList.remove('anchor-flash'); }, 2600); break; }
       }
     }
   }
