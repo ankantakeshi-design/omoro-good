@@ -4,6 +4,33 @@
 window.OMORO_DATA = {
   entries: [
     {
+      id: "20261126-threads-nyuin-warawasete",
+      date: "2026-11-26",
+      dateLabel: "2026年11月26日",
+      platform: "Threads",
+      title: "「どうか笑わせてください」",
+      body: "rabbitさんの投稿。入院中でテレビも見られないなか、笑いを求める一言に、温かいボケ返信がどんどん集まりました。表示441万回、いいね2.5万、返信は約2,000件。笑いを届けようとする、優しいコメント欄です。",
+      url: "https://www.threads.com/@rabbit.1528778/post/Dc3Vlk-iZPT"
+    },
+    {
+      id: "20261126-threads-katakana-senshuken",
+      date: "2026-11-26",
+      dateLabel: "2026年11月26日",
+      platform: "Threads",
+      title: "「子育てママなら1発でなにかわかるカタカナ選手権」",
+      body: "はるさんの投稿。「カルボシステイン！！！」から始まる、子育てママのカタカナ言い合いです。薬の名前や育児グッズのカタカナが次々と集まりました。表示115.7万回、いいね1.0万、返信994件です。",
+      url: "https://www.threads.com/@____haru.mama/post/DaoWbC4kwFi"
+    },
+    {
+      id: "20261126-threads-yumeijin-shashin",
+      date: "2026-11-26",
+      dateLabel: "2026年11月26日",
+      platform: "Threads",
+      title: "「有名人と写真撮った事ある選手権しよ、まず俺からね。」",
+      body: "池未裕輝さんの投稿。「まず俺からね。」の一言に、有名人とのツーショット自慢が次々と集まりました。いいね7,276、返信2,516件の、にぎやかな自慢合戦です。",
+      url: "https://www.threads.com/@ikemi58/post/DUrrhQxD5F5"
+    },
+    {
       id: "20261124-threads-tofu",
       date: "2026-11-24",
       dateLabel: "2026年11月24日",
