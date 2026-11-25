@@ -665,6 +665,11 @@
   /* 見出しカードのエリアを色で分ける＋隙間を少し詰める（2026-11-25） */
   main#list{ background:#EFF6E3; border:2px solid #D8E8C3; border-radius:20px; padding:12px 10px 4px; }
   .hl-row{ margin-bottom:6px; }
+
+  /* 下の折りたたみ4つを1つのエリアに＋隙間を詰める（2026-11-25） */
+  .sub-zone{ background:#FDF0DC; border:2px solid #F3D9AE; border-radius:20px; padding:12px 10px 6px; margin-top:16px; }
+  .sub-zone > .faq{ margin-top:6px; }
+  .sub-zone > .faq:first-child{ margin-top:0; }
 </style>
 </head>
 <body>
@@ -730,7 +735,8 @@
     </div>
   </section>
 
-  <div class="faq">
+  <div class="sub-zone">
+<div class="faq">
   <details class="faq-outer" id="installGuide">
     <summary>ホーム画面への置き方</summary>
     <div class="faq-inner">
@@ -821,6 +827,7 @@
     </div>
     </details>
   </section>
+</div>
 <footer>
     <p>おもろグ〜は、平和で面白い投稿を集める小さなログです。<br>
     運営：<a href="https://takechanlink.pages.dev/" target="_blank" rel="noopener">心体調整塾 たけちゃん</a></p>
