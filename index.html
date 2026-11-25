@@ -1196,7 +1196,7 @@
     walkRaf = requestAnimationFrame(walkStep);
   }
   function startWalk(){
-    if (reduceMotion || walkRaf) return;
+    if (walkRaf) return;
     walkLast = 0;
     walkRaf = requestAnimationFrame(walkStep);
   }
@@ -1210,6 +1210,7 @@
     toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
     if (open) { if (!sceneMode) startWalk(); } else stopWalk();
   });
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden && !panel.hidden && !sceneMode) { stopWalk(); startWalk(); } });
 
   /* ===== おもろっちについて（ポップアップ） ===== */
   var aboutOverlay = document.getElementById('aboutOverlay');
