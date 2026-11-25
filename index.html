@@ -367,6 +367,43 @@
   .backup-msg{ margin:10px 0 0; font-size:16px; font-weight:700; line-height:1.5; }
   .backup-msg.ok{ color:#3d7a1e; }
   .backup-msg.err{ color:#b3261e; }
+  /* ===== 見出し一覧（ほっとニュース式） ===== */
+  .hl-row{
+    display:flex; align-items:center; gap:10px;
+    background:#fff; border:2px solid var(--card-border); border-radius:14px;
+    padding:10px 12px; margin-bottom:10px;
+    box-shadow:0 3px 0 rgba(230,140,0,.10);
+  }
+  .hl-main{
+    flex:1 1 auto; min-width:0; min-height:48px;
+    display:flex; flex-direction:column; justify-content:center; gap:4px;
+    background:none; border:none; padding:2px 0; margin:0;
+    font-family:inherit; text-align:left; cursor:pointer; color:var(--ink);
+  }
+  .hl-top{ display:flex; align-items:center; gap:8px; }
+  .badge.sm{ font-size:11.5px; padding:2px 9px; }
+  .hl-date{ font-size:12.5px; font-weight:700; color:var(--ink-soft); }
+  .hl-title{ font-size:16.5px; font-weight:900; line-height:1.45; }
+  .omoro-btn.sm{
+    flex:none; min-height:48px; padding:6px 13px 6px 8px;
+    font-size:14.5px; border-width:2px; gap:5px;
+  }
+  .omoro-btn.sm img{ width:24px; height:auto; }
+  .entry-orig{
+    display:flex; align-items:center; justify-content:center;
+    min-height:48px; margin:4px 0 12px; padding:10px 14px;
+    background:var(--orange); color:#fff; border-radius:999px;
+    font-size:16px; font-weight:900; text-decoration:none;
+  }
+  .entry-actions{ display:flex; gap:10px; }
+  .entry-actions .share-btn{ flex:1 1 200px; justify-content:center; }
+  .entry-actions .omoro-btn{ flex:0 0 auto; }
+  .entry-close-b{
+    display:block; width:100%; min-height:48px; margin-top:14px;
+    background:#fff; color:var(--ink); border:2px solid var(--card-border);
+    border-radius:999px; font-family:inherit; font-size:16px; font-weight:900;
+    cursor:pointer;
+  }
   .about-overlay{
     position:fixed; inset:0; z-index:50;
     background:rgba(58,42,26,.55);
@@ -777,6 +814,27 @@
   </div>
 </div>
 
+<div class="about-overlay" id="entryOverlay" hidden>
+  <div class="about-card">
+    <div class="about-head">
+      <div class="meta" id="entryMeta" style="margin-top:10px;"></div>
+      <button type="button" class="about-x" id="entryClose" aria-label="閉じる">×</button>
+    </div>
+    <h2 id="entryTitle"></h2>
+    <p id="entryBody"></p>
+    <a class="entry-orig" id="entryOrig" href="#" target="_blank" rel="noopener">元の記事を読む →</a>
+    <div class="entry-actions">
+      <button type="button" class="share-btn" id="entryShare" aria-label="この記事をシェアする">
+        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4.2M8.6 13.4l6.8 4.2"/></svg>
+        <span class="share-label">シェア</span>
+      </button>
+      <button type="button" class="omoro-btn" id="entryOmoro" aria-label="おもろボタン">
+        <img src="icon-egg.png" width="512" height="512" alt="">おもろ<span class="cnt">0</span>
+      </button>
+    </div>
+    <button type="button" class="entry-close-b" id="entryCloseB">閉じる</button>
+  </div>
+</div>
 <script src="data.js"></script>
 <script>
 (function(){
@@ -1149,6 +1207,10 @@
     btn.classList.toggle('liked', on);
     btn.querySelector('.cnt').textContent = counts[id] || 0;
   }
+  function paintAllBtns(id){
+    var btns = document.querySelectorAll('.omoro-btn[data-omoro="' + id + '"]');
+    for (var i = 0; i < btns.length; i++) paintBtn(btns[i], id);
+  }
 
   /* ===== シェア（ほっとニュースと同じ方式：共有シート→使えなければコピー） ===== */
   function shareEntry(en, btn){
@@ -1210,7 +1272,7 @@
     try { localStorage.setItem('omoro-liked', JSON.stringify(liked)); } catch(e) {}
     counts[id] = (counts[id] || 0) + 1;
     my = liked.length;
-    paintBtn(btn, id);
+    paintAllBtns(id);
     renderGrowth(true);
     fetch(SB_URL + '/rest/v1/rpc/increment_omoro_like', {
       method: 'POST',
@@ -1223,7 +1285,7 @@
     }).then(function(r){ return r.json(); }).then(function(n){
       if (typeof n === 'number') {
         counts[id] = n;
-        paintBtn(btn, id);
+        paintAllBtns(id);
       }
     }).catch(function(){});
   }
@@ -1236,36 +1298,51 @@
   var archivePanel = document.getElementById('archivePanel');
   var archiveCountEl = document.getElementById('archiveCount');
 
-  function buildCard(en){
-    var card = document.createElement('article');
-    card.className = 'card';
-    card.id = 'post-' + en.id;
-    var badgeClass = en.platform === 'Threads' ? 'threads' : (en.platform === 'X' ? 'x' : 'instagram');
-    card.innerHTML =
-      '<div class="meta"><span class="badge ' + badgeClass + '">' + en.platform + '</span>' +
-      '<span class="date">' + en.dateLabel + '</span></div>' +
-      '<h3></h3><p class="body"></p>' +
-      '<div class="row">' +
-        '<a class="orig-link" target="_blank" rel="noopener">元の投稿を見る →</a>' +
-        '<span class="btn-actions">' +
-          '<button type="button" class="share-btn" aria-label="この記事をシェアする">' +
-            '<svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="M8.6 10.6l6.8-4.2M8.6 13.4l6.8 4.2"/></svg>' +
-            '<span class="share-label">シェア</span>' +
-          '</button>' +
-          '<button type="button" class="omoro-btn" aria-label="おもろボタン">' +
-            '<img src="icon-egg.png" width="512" height="512" alt="">おもろ<span class="cnt">0</span>' +
-          '</button>' +
-        '</span>' +
-      '</div>';
-    card.querySelector('h3').textContent = en.title;
-    card.querySelector('p.body').textContent = en.body;
-    card.querySelector('a.orig-link').href = en.url;
-    var btn = card.querySelector('.omoro-btn');
+  var entryOverlay = document.getElementById('entryOverlay');
+  var entryOmoroBtn = document.getElementById('entryOmoro');
+  var entryShareBtn = document.getElementById('entryShare');
+  var currentEntry = null;
+  function badgeClassOf(p){ return p === 'Threads' ? 'threads' : (p === 'X' ? 'x' : 'instagram'); }
+  function openEntry(en){
+    currentEntry = en;
+    document.getElementById('entryMeta').innerHTML =
+      '<span class="badge ' + badgeClassOf(en.platform) + '">' + en.platform + '</span>' +
+      '<span class="date">' + en.dateLabel + '</span>';
+    document.getElementById('entryTitle').textContent = en.title;
+    document.getElementById('entryBody').textContent = en.body;
+    var orig = document.getElementById('entryOrig');
+    orig.href = en.url;
+    orig.textContent = '元の記事を読む →（' + en.platform + '）';
+    entryOmoroBtn.setAttribute('data-omoro', en.id);
+    paintBtn(entryOmoroBtn, en.id);
+    entryOverlay.hidden = false;
+  }
+  function closeEntry(){ entryOverlay.hidden = true; currentEntry = null; }
+  document.getElementById('entryClose').addEventListener('click', closeEntry);
+  document.getElementById('entryCloseB').addEventListener('click', closeEntry);
+  entryOverlay.addEventListener('click', function(e){ if (e.target === entryOverlay) closeEntry(); });
+  entryOmoroBtn.addEventListener('click', function(){ if (currentEntry) doOmoro(currentEntry.id, entryOmoroBtn); });
+  entryShareBtn.addEventListener('click', function(){ if (currentEntry) shareEntry(currentEntry, entryShareBtn); });
+
+  function buildRow(en){
+    var row = document.createElement('article');
+    row.className = 'hl-row';
+    row.id = 'post-' + en.id;
+    row.innerHTML =
+      '<button type="button" class="hl-main" aria-label="記事の紹介を開く">' +
+        '<span class="hl-top"><span class="badge sm ' + badgeClassOf(en.platform) + '">' + en.platform + '</span>' +
+        '<span class="hl-date">' + en.dateLabel + '</span></span>' +
+        '<span class="hl-title"></span>' +
+      '</button>' +
+      '<button type="button" class="omoro-btn sm" data-omoro="' + en.id + '" aria-label="おもろボタン">' +
+        '<img src="icon-egg.png" width="512" height="512" alt="">おもろ<span class="cnt">0</span>' +
+      '</button>';
+    row.querySelector('.hl-title').textContent = en.title;
+    row.querySelector('.hl-main').addEventListener('click', function(){ openEntry(en); });
+    var btn = row.querySelector('.omoro-btn');
     paintBtn(btn, en.id);
     btn.addEventListener('click', function(){ doOmoro(en.id, btn); });
-    var sbtn = card.querySelector('.share-btn');
-    sbtn.addEventListener('click', function(){ shareEntry(en, sbtn); });
-    return card;
+    return row;
   }
 
   function openArchive(){
@@ -1283,12 +1360,12 @@
   if (!entries.length) {
     listEl.innerHTML = '<p class="empty">近日公開。面白い投稿を集めています。</p>';
   }
-  entries.slice(0, LATEST_COUNT).forEach(function(en){ listEl.appendChild(buildCard(en)); });
+  entries.slice(0, LATEST_COUNT).forEach(function(en){ listEl.appendChild(buildRow(en)); });
   var archiveEntries = entries.slice(LATEST_COUNT);
   if (archiveEntries.length) {
     archiveZone.hidden = false;
     archiveCountEl.textContent = '（' + archiveEntries.length + '件）';
-    archiveEntries.forEach(function(en){ archiveListEl.appendChild(buildCard(en)); });
+    archiveEntries.forEach(function(en){ archiveListEl.appendChild(buildRow(en)); });
   }
 
   renderGrowth(false);
@@ -1299,7 +1376,9 @@
     var anchorEl = document.getElementById('post-' + anchorId);
     if (anchorEl) {
       if (archiveListEl.contains(anchorEl)) openArchive();
-      setTimeout(function(){ anchorEl.scrollIntoView({ block:'start' }); }, 80);
+      for (var ai = 0; ai < entries.length; ai++) {
+        if (entries[ai].id === anchorId) { openEntry(entries[ai]); break; }
+      }
     }
   }
 
@@ -1312,7 +1391,7 @@
       counts[row.post_id] = row.count;
     });
     // ボタン表示を更新（トップ＋アーカイブの全カードが entries と同じ並び順）
-    var cards = document.querySelectorAll('#list .card, #archiveList .card');
+    var cards = document.querySelectorAll('#list .hl-row, #archiveList .hl-row');
     for (var i = 0; i < cards.length && i < entries.length; i++) {
       paintBtn(cards[i].querySelector('.omoro-btn'), entries[i].id);
     }
