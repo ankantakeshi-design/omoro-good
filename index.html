@@ -674,6 +674,12 @@
   /* バーの小さな絵（2026-11-25） */
   .faq-outer > summary img.bar-thumb{ width:40px; height:40px; object-fit:contain; border-radius:10px; flex:none; }
   .netabare-fold > summary{ font-size:15px; white-space:nowrap; }
+
+  /* ネタバレのバーの「LINEスタンプ」表示（2026-11-25） */
+  .faq-outer > summary img.bar-thumb.stamp{ width:48px; height:48px; }
+  .nb-stack{ display:flex; flex-direction:column; gap:1px; min-width:0; }
+  .nb-sub{ font-size:11px; font-weight:900; color:#2E9E4F; letter-spacing:.08em; }
+  .nb-main{ white-space:nowrap; }
 </style>
 </head>
 <body>
@@ -756,7 +762,7 @@
   </details>
   </div>
 
-  <div class="faq"><details class="faq-outer netabare-fold"><summary><img class="bar-thumb" src="stamp-bar.png" alt="">⚠ おもろっち進化 ネタバレ注意！</summary><div class="faq-inner">
+  <div class="faq"><details class="faq-outer netabare-fold"><summary><img class="bar-thumb stamp" src="stamp-bar.png" alt=""><span class="nb-stack"><span class="nb-sub">LINEスタンプ</span><span class="nb-main">⚠ おもろっち進化 ネタバレ注意！</span></span></summary><div class="faq-inner">
 <div class="stamp-warn">
     <div class="warn-title">⚠ おもろっち進化<br>ネタバレ注意！</div>
     <div class="warn-sub">まだ進化した姿を見ていない方は、ストアを見ないでね。</div>
