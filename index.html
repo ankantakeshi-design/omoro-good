@@ -742,13 +742,7 @@
     0%, 100% { box-shadow:0 4px 0 rgba(120,50,0,.18), 0 0 0 0 rgba(232,134,46,.45); }
     50% { box-shadow:0 4px 0 rgba(120,50,0,.18), 0 0 0 10px rgba(232,134,46,0); }
   }
-  .grew-badge {
-    position:absolute; top:-11px; right:18px;
-    background:#e8862e; color:#fff;
-    font-size:12px; font-weight:900; line-height:1;
-    padding:5px 11px; border-radius:999px;
-    box-shadow:0 2px 6px rgba(120,50,0,.25);
-  }
+  .growth-toggle.grew .bubble { color:#d96a00; }
 </style>
 </head>
 <body>
@@ -765,7 +759,6 @@
         <span class="bubble-sub">おもろっちのおうち</span>
       </span>
       <span class="chev" aria-hidden="true"><span class="chev-label"></span><span class="chev-arrow">▽</span></span>
-      <span class="grew-badge" id="grewBadge" hidden>育ったよ！</span>
     </button>
     <div class="house" id="growthPanel" hidden>
       <div class="house-roof" aria-hidden="true"></div>
@@ -1197,8 +1190,6 @@
     }
     var grew = r > parseInt(seen, 10);
     toggleBtn.classList.toggle('grew', grew);
-    var badge = document.getElementById('grewBadge');
-    if (badge) badge.hidden = !grew;
     if (bubbleEl) bubbleEl.textContent = grew ? 'おもろっちが育ったよ！' : bubbleDefault;
   }
   function markGrowthSeen(){
