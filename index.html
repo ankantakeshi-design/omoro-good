@@ -112,6 +112,17 @@
   }
   .growth-toggle .deco{ color:var(--orange); font-size:14px; }
   .growth-toggle img.thumb{ width:34px; display:block; }
+  .growth-toggle img.thumb{ width:44px; height:auto; }
+  .growth-toggle .bubble-col{ display:flex; flex-direction:column; align-items:flex-start; gap:3px; }
+  .growth-toggle .bubble{
+    position:relative; background:#fff; border:2px solid #f2c14e; border-radius:14px;
+    padding:5px 11px; font-size:15px; font-weight:900; color:var(--ink); white-space:nowrap;
+  }
+  .growth-toggle .bubble::before{
+    content:''; position:absolute; left:-7px; top:50%; margin-top:-5px; width:10px; height:10px;
+    background:#fff; border-left:2px solid #f2c14e; border-bottom:2px solid #f2c14e; transform:rotate(45deg);
+  }
+  .growth-toggle .bubble-sub{ font-size:11.5px; font-weight:700; color:#a8741f; padding-left:4px; }
   .growth-toggle .chev{
     display:inline-flex; align-items:center; justify-content:center; gap:5px;
     min-height:32px; padding:4px 13px; border-radius:999px;
@@ -712,11 +723,12 @@
 
   <div class="growth-zone">
     <button type="button" class="growth-toggle" id="growthToggle" aria-expanded="false" aria-controls="growthPanel">
-      <span class="deco" aria-hidden="true">✦</span>
       <img class="thumb" id="toggleThumb" src="stage-egg-t0.png" width="700" height="903" alt="">
-      <span>おもろっちのおうち</span>
+      <span class="bubble-col">
+        <span class="bubble">僕のこと、育ててくれる？</span>
+        <span class="bubble-sub">おもろっちのおうち</span>
+      </span>
       <span class="chev" aria-hidden="true"><span class="chev-label"></span><span class="chev-arrow">▽</span></span>
-      <span class="deco" aria-hidden="true">✦</span>
     </button>
     <div class="house" id="growthPanel" hidden>
       <div class="house-roof" aria-hidden="true"></div>
@@ -1222,7 +1234,13 @@
     if (!fromPop && window.history.state && history.state.omoroHouse) history.back();
   }
   toggleBtn.addEventListener('click', function(){
-    if (panel.hidden) openHouse(); else closeHouse(false);
+    if (panel.hidden) {
+      openHouse();
+      setTimeout(function(){
+        var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        panel.scrollIntoView({ behavior: rm ? 'auto' : 'smooth', block: 'nearest' });
+      }, 60);
+    } else closeHouse(false);
   });
   document.addEventListener('visibilitychange', function(){ if (!document.hidden && !panel.hidden && !sceneMode) { stopWalk(); startWalk(); } });
 
