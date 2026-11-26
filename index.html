@@ -753,11 +753,10 @@
   .room-bg[hidden]{ display:none; }
 
   /* 育った・進化した時のポップアップ（2026-11-27） */
-  .grew-overlay{ position:fixed; inset:0; z-index:60; background:rgba(58,42,26,.55); display:flex; align-items:flex-end; justify-content:center; }
+  .grew-overlay{ position:fixed; inset:0; z-index:60; background:rgba(58,42,26,.55); display:flex; align-items:center; justify-content:center; padding:20px; }
   .grew-overlay[hidden]{ display:none; }
-  .grew-card{ background:#fff; width:100%; max-width:680px; max-height:86vh; overflow-y:auto; border-radius:20px 20px 0 0; padding:18px 18px 22px; color:var(--ink); text-align:center; }
-  .grew-card h2{ margin:4px 0 8px; font-size:21px; font-weight:900; text-align:left; }
-  .grew-img{ width:150px; height:auto; display:block; margin:6px auto 12px; }
+  .grew-card{ background:#fff; width:100%; max-width:340px; max-height:86vh; overflow-y:auto; border-radius:20px; padding:16px 16px 18px; color:var(--ink); text-align:center; }
+  .grew-card h2{ margin:4px 0 10px; font-size:20px; font-weight:900; text-align:left; }
   .grew-go{ width:100%; min-height:52px; border:3px solid var(--orange-dark); background:var(--orange); color:#fff; border-radius:999px; font-family:inherit; font-size:17px; font-weight:900; cursor:pointer; }
 </style>
 </head>
@@ -933,7 +932,6 @@
       <h2 id="grewMsg">おもろっちが育ったよ！</h2>
       <button type="button" class="about-x" id="grewCloseX" aria-label="閉じる">×</button>
     </div>
-    <img class="grew-img" id="grewImg" src="stage-egg-t0.png" width="700" height="903" alt="おもろっち">
     <button type="button" class="grew-go" id="grewGo">見に行く</button>
     <button type="button" class="about-close" id="grewClose">閉じる</button>
   </div>
@@ -1236,7 +1234,6 @@
   /* 育った・進化した時のポップアップ（同じ変化では1回だけ出す） */
   var grewOverlay = document.getElementById('grewOverlay');
   var grewMsgEl = document.getElementById('grewMsg');
-  var grewImg = document.getElementById('grewImg');
   var grewIsOpen = false;
   function openGrew(){
     grewOverlay.hidden = false;
@@ -1255,7 +1252,6 @@
     if (shown !== null && parseInt(shown, 10) >= r) return;
     try { localStorage.setItem('omoro-grew-popup', String(r)); } catch(e) {}
     grewMsgEl.textContent = msg;
-    grewImg.src = stageImgOf(evolvedIdx, my);
     openGrew();
   }
   document.getElementById('grewClose').addEventListener('click', function(){ closeGrew(false); });
