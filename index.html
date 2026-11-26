@@ -650,6 +650,9 @@
     font-size:14px; color:var(--ink-soft);
   }
   footer a{ color:var(--orange-dark); font-weight:700; }
+  .foot-share-lead{ margin:0 0 10px; font-size:14px; font-weight:700; color:var(--ink-soft); }
+  .foot-share-row{ display:flex; gap:10px; margin:0 0 16px; }
+  .foot-share-btn{ flex:1; display:inline-flex; align-items:center; justify-content:center; gap:6px; min-height:48px; padding:10px; background:#fff; border:3px solid var(--card-border); color:var(--orange-dark); border-radius:999px; font-size:15px; font-weight:900; font-family:inherit; cursor:pointer; -webkit-tap-highlight-color:transparent; }
 
   /* ネタバレ注意の折りたたみ（2026-11-25） */
   .netabare-fold > summary{ color:#C0392B; }
@@ -850,6 +853,8 @@
   </section>
 </div>
 <footer>
+    <p class="foot-share-lead">面白かったら、誰かにも教えてあげてね</p>
+    <div class="foot-share-row"><button type="button" class="foot-share-btn" id="share-copy">🔗 リンクをコピー</button><button type="button" class="foot-share-btn" id="share-native">📤 シェアする</button></div>
     <p>おもろグ〜は、平和で面白い投稿を集める小さなログです。<br>
     運営：<a href="https://takechanlink.pages.dev/" target="_blank" rel="noopener">心体調整塾 たけちゃん</a></p>
   </footer>
@@ -1531,5 +1536,32 @@
 </script>
 <!-- Cloudflare Web Analytics --><script type='module' src='https://static.cloudflareinsights.com/beacon.min.js' data-cf-beacon='{"token": "d2aa62b80a17499dba0ea29614893659"}'></script><!-- End Cloudflare Web Analytics -->
 <div class="daily-toast" id="dailyToast" role="status" aria-live="polite"></div>
+<script>
+(function(){
+  var SHARE_URL='https://omoro-good.pages.dev/';
+  function flash(btn,msg){ var o=btn.textContent; btn.textContent=msg; setTimeout(function(){ btn.textContent=o; },2000); }
+  function fallbackCopy(btn){
+    var ta=document.createElement('textarea');
+    ta.value=SHARE_URL; ta.style.position='fixed'; ta.style.opacity='0';
+    document.body.appendChild(ta); ta.select();
+    try { document.execCommand('copy'); flash(btn,'コピーしました ✓'); }
+    catch(e){ flash(btn,'コピーできませんでした'); }
+    document.body.removeChild(ta);
+  }
+  function doCopy(btn){
+    if(navigator.clipboard && navigator.clipboard.writeText){
+      navigator.clipboard.writeText(SHARE_URL).then(function(){ flash(btn,'コピーしました ✓'); }, function(){ fallbackCopy(btn); });
+    } else { fallbackCopy(btn); }
+  }
+  var c=document.getElementById('share-copy');
+  if(c){ c.addEventListener('click', function(){ doCopy(c); }); }
+  var s=document.getElementById('share-native');
+  if(s){ s.addEventListener('click', function(){
+    if(navigator.share){
+      navigator.share({ title:'おもろグ〜', text:'平和で面白い投稿を集める小さなログです', url:SHARE_URL }).catch(function(){});
+    } else { doCopy(s); }
+  }); }
+})();
+</script>
 </body>
 </html>
