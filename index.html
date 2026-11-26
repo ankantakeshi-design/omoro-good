@@ -751,6 +751,14 @@
   /* 部屋とキャラの分離表示（2026-11-27）: 部屋は固定レイヤー、揺れる・跳ねるのはキャラだけ */
   .room-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
   .room-bg[hidden]{ display:none; }
+
+  /* 育った・進化した時のポップアップ（2026-11-27） */
+  .grew-overlay{ position:fixed; inset:0; z-index:60; background:rgba(58,42,26,.55); display:flex; align-items:flex-end; justify-content:center; }
+  .grew-overlay[hidden]{ display:none; }
+  .grew-card{ background:#fff; width:100%; max-width:680px; max-height:86vh; overflow-y:auto; border-radius:20px 20px 0 0; padding:18px 18px 22px; color:var(--ink); text-align:center; }
+  .grew-card h2{ margin:4px 0 8px; font-size:21px; font-weight:900; text-align:left; }
+  .grew-img{ width:150px; height:auto; display:block; margin:6px auto 12px; }
+  .grew-go{ width:100%; min-height:52px; border:3px solid var(--orange-dark); background:var(--orange); color:#fff; border-radius:999px; font-family:inherit; font-size:17px; font-weight:900; cursor:pointer; }
 </style>
 </head>
 <body>
@@ -917,6 +925,18 @@
     運営：<a href="https://takechanlink.pages.dev/" target="_blank" rel="noopener">心体調整塾 たけちゃん</a><span class="bgm-credit">BGM: もっぴーさうんど / Kevin MacLeod</span></p>
   </footer>
 
+</div>
+
+<div class="grew-overlay" id="grewOverlay" hidden>
+  <div class="grew-card" role="dialog" aria-modal="true" aria-labelledby="grewMsg">
+    <div class="about-head">
+      <h2 id="grewMsg">おもろっちが育ったよ！</h2>
+      <button type="button" class="about-x" id="grewCloseX" aria-label="閉じる">×</button>
+    </div>
+    <img class="grew-img" id="grewImg" src="stage-egg-t0.png" width="700" height="903" alt="おもろっち">
+    <button type="button" class="grew-go" id="grewGo">見に行く</button>
+    <button type="button" class="about-close" id="grewClose">閉じる</button>
+  </div>
 </div>
 
 <div class="about-overlay" id="aboutOverlay" hidden>
@@ -1204,13 +1224,48 @@
     toggleBtn.classList.toggle('grew', grew);
     var grewMsg = 'おもろっちが育ったよ！';
     if (Math.floor(r / 10) > Math.floor(seenRank / 10)) grewMsg = 'おもろっちが進化したよ！';
-    else if (evolvedIdx === 0) grewMsg = eggTierIndex(totalLiked()) >= 4 ? 'お顔が見えたよ！' : 'たまごに、ひびが入ったよ！';
+    else if (evolvedIdx === 0) grewMsg = eggTierIndex(my) >= 4 ? 'お顔が見えたよ！' : 'たまごに、ひびが入ったよ！';
     if (bubbleEl) bubbleEl.textContent = grew ? grewMsg : bubbleDefault;
+    if (grew) maybeShowGrewPopup(r, grewMsg);
   }
   function markGrowthSeen(){
     try { localStorage.setItem('omoro-grew-seen', String(growthRank())); } catch(e) {}
     checkGrowth();
   }
+
+  /* 育った・進化した時のポップアップ（同じ変化では1回だけ出す） */
+  var grewOverlay = document.getElementById('grewOverlay');
+  var grewMsgEl = document.getElementById('grewMsg');
+  var grewImg = document.getElementById('grewImg');
+  var grewIsOpen = false;
+  function openGrew(){
+    grewOverlay.hidden = false;
+    grewIsOpen = true;
+    try { history.pushState({ omoroGrew: 1 }, ''); } catch(e) {}
+  }
+  function closeGrew(fromPop){
+    grewOverlay.hidden = true;
+    grewIsOpen = false;
+    if (!fromPop && window.history.state && history.state.omoroGrew) history.back();
+  }
+  function maybeShowGrewPopup(r, msg){
+    if (houseIsOpen || grewIsOpen) return;
+    var shown = null;
+    try { shown = localStorage.getItem('omoro-grew-popup'); } catch(e) {}
+    if (shown !== null && parseInt(shown, 10) >= r) return;
+    try { localStorage.setItem('omoro-grew-popup', String(r)); } catch(e) {}
+    grewMsgEl.textContent = msg;
+    grewImg.src = stageImgOf(evolvedIdx, my);
+    openGrew();
+  }
+  document.getElementById('grewClose').addEventListener('click', function(){ closeGrew(false); });
+  document.getElementById('grewCloseX').addEventListener('click', function(){ closeGrew(false); });
+  grewOverlay.addEventListener('click', function(e){ if (e.target === grewOverlay) closeGrew(false); });
+  document.getElementById('grewGo').addEventListener('click', function(){
+    closeGrew(false);
+    openHouse();
+    setTimeout(function(){ toggleBtn.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
+  });
 
   function renderGrowth(pop){
     /* 進化した先が自分の合計を超えていたら、合計の範囲に戻す（記録の整合用） */
@@ -1456,7 +1511,7 @@
   });
   document.getElementById('aboutCloseX').addEventListener('click', function(){ closeAbout(false); });
   aboutOverlay.addEventListener('click', function(e){ if (e.target === aboutOverlay) closeAbout(false); });
-  window.addEventListener('popstate', function(){ if (aboutIsOpen) closeAbout(true); else if (houseIsOpen) closeHouse(true); });
+  window.addEventListener('popstate', function(){ if (grewIsOpen) closeGrew(true); else if (aboutIsOpen) closeAbout(true); else if (houseIsOpen) closeHouse(true); });
 
   function spawnFaces(btn){
     for (var i = 0; i < 5; i++) {
