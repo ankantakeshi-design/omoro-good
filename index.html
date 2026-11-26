@@ -952,6 +952,29 @@
     for (var i = 0; i < steps.length; i++) { if (t <= steps[i].max) return steps[i]; }
     return steps[steps.length - 1];
   }
+  function stepIndexOf(idx, t){
+    var steps = STAGE_STEPS[STAGES[idx].key];
+    if (!steps) return -1;
+    for (var i = 0; i < steps.length; i++) { if (t <= steps[i].max) return i; }
+    return steps.length - 1;
+  }
+  function eggTierIndex(t){
+    for (var i = 0; i < EGG_CRACKS.length; i++) { if (t <= EGG_CRACKS[i].max) return i; }
+    return EGG_CRACKS.length - 1;
+  }
+  /* そのレベルで到達済みの段階の数（卵はヒビの段階数） */
+  function clearedSteps(idx, t){
+    if (STAGES[idx].key === 'egg') {
+      var ec = 1;
+      for (var e = 1; e < EGG_CRACKS.length; e++) { if (t >= EGG_CRACKS[e - 1].max + 1) ec = e + 1; }
+      return ec;
+    }
+    var steps = STAGE_STEPS[STAGES[idx].key];
+    if (!steps) return 1;
+    var n = 1;
+    for (var i = 1; i < steps.length; i++) { if (t >= steps[i - 1].max + 1) n = i + 1; }
+    return n;
+  }
   /* 段階の画像も先読みしておく */
   for (var sk in STAGE_STEPS) {
     for (var si = 0; si < STAGE_STEPS[sk].length; si++) {
@@ -1010,6 +1033,20 @@
   /* 選んだ姿（到達済みステージの中から選択、localStorageに保存） */
   var formKey = null;
   try { formKey = localStorage.getItem('omoro-form') || null; } catch(e) {}
+  /* 段階の見直し表示（到達済みの段階だけを、ボタンの連打で切り替える） */
+  var viewStep = null;
+  try { viewStep = JSON.parse(localStorage.getItem('omoro-viewstep') || 'null'); } catch(e) { viewStep = null; }
+  function saveViewStep(){
+    try {
+      if (viewStep) localStorage.setItem('omoro-viewstep', JSON.stringify(viewStep));
+      else localStorage.removeItem('omoro-viewstep');
+    } catch(e) {}
+  }
+  function viewStepFor(idx){
+    if (!viewStep || viewStep.key !== STAGES[idx].key) return -1;
+    if (viewStep.idx < 0 || viewStep.idx >= clearedSteps(idx, my)) return -1;
+    return viewStep.idx;
+  }
 
   function stageOf(t){
     var idx = 0;
@@ -1018,6 +1055,12 @@
   }
   /* 表示する画像：卵ステージの間は合計に応じて割れ具合の画像を返す */
   function stageImgOf(idx, t){
+    var vs = viewStepFor(idx);
+    if (vs >= 0) {
+      if (STAGES[idx].key === 'egg') return EGG_CRACKS[vs].img;
+      var vsteps = STAGE_STEPS[STAGES[idx].key];
+      if (vsteps && vsteps[vs]) return vsteps[vs].img;
+    }
     if (STAGES[idx].key !== 'egg') {
       var step = stepOf(idx, t);
       return step ? step.img : STAGES[idx].img;
@@ -1051,8 +1094,22 @@
     b.innerHTML = '<img src="' + s.img + '" width="700" height="903" alt=""><span class="lock" aria-hidden="true">🔒</span>';
     b.addEventListener('click', function(){
       if (i > evolvedIdx) return;
+      /* 表示中のレベルをもう一度押したら、到達済みの段階を順に切り替える */
+      if (i === dispIndex(evolvedIdx)) {
+        var n = clearedSteps(i, my);
+        if (n > 1) {
+          var cur = viewStepFor(i);
+          if (cur < 0) cur = (STAGES[i].key === 'egg' ? eggTierIndex(my) : stepIndexOf(i, my));
+          viewStep = { key: STAGES[i].key, idx: (cur + 1) % n };
+          saveViewStep();
+          renderGrowth(false);
+          return;
+        }
+      }
       formKey = STAGES[i].key;
       try { localStorage.setItem('omoro-form', formKey); } catch(e) {}
+      viewStep = null;
+      saveViewStep();
       renderGrowth(false);
     });
     formRow.appendChild(b);
@@ -1105,6 +1162,8 @@
     }
     /* おうちの表示：アニメ版があればそれ、なければ wide 横長シーン、ない姿は縦絵 */
     var step = stepOf(dispIdx, my);
+    var vsIdx = viewStepFor(dispIdx);
+    if (vsIdx >= 0) { var vsteps2 = STAGE_STEPS[dst.key]; if (vsteps2 && vsteps2[vsIdx]) step = vsteps2[vsIdx]; }
     var himg = (step && (step.anim || step.wide)) || dst.anim || dst.wide || img;
     sceneMode = !!(dst.anim || dst.wide);
     room.classList.toggle('scene', sceneMode);
