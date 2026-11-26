@@ -1201,7 +1201,7 @@
     }
     var grew = r > parseInt(seen, 10);
     toggleBtn.classList.toggle('grew', grew);
-    if (bubbleEl) bubbleEl.textContent = grew ? 'おもろっちが育ったよ！' : bubbleDefault;
+    if (bubbleEl) bubbleEl.textContent = grew ? (evolvedIdx === 0 ? 'たまごに、ひびが入ったよ！' : 'おもろっちが育ったよ！') : bubbleDefault;
   }
   function markGrowthSeen(){
     try { localStorage.setItem('omoro-grew-seen', String(growthRank())); } catch(e) {}
