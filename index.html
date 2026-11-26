@@ -747,6 +747,10 @@
     0%, 100% { opacity:1; }
     50% { opacity:.25; }
   }
+
+  /* 部屋とキャラの分離表示（2026-11-27）: 部屋は固定レイヤー、揺れる・跳ねるのはキャラだけ */
+  .room-bg{ position:absolute; inset:0; width:100%; height:100%; object-fit:cover; display:block; pointer-events:none; }
+  .room-bg[hidden]{ display:none; }
 </style>
 </head>
 <body>
@@ -767,6 +771,7 @@
     <div class="house" id="growthPanel" hidden>
       <div class="house-roof" aria-hidden="true"></div>
       <div class="house-room" id="houseRoom">
+        <img class="room-bg" id="roomBg" alt="" hidden>
         <button type="button" class="walker" id="walker" aria-label="おもろっち">
           <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg-t0.png" width="700" height="903" alt="おもろっち"><span class="egg-nest" aria-hidden="true"><svg viewBox="0 0 120 36" fill="none"><ellipse cx="60" cy="25" rx="50" ry="9" fill="#eec25e" opacity="0.5"/><path d="M16 13 l-7 -5 M104 13 l7 -5 M38 9 l-3 -6 M82 9 l3 -6" stroke="#b97e2a" stroke-width="3" stroke-linecap="round"/><path d="M12 15 Q60 30 108 15" stroke="#c9902e" stroke-width="6" stroke-linecap="round"/><path d="M30 18 Q60 29 90 18" stroke="#f2cd7e" stroke-width="3.5" stroke-linecap="round"/><path d="M18 21 Q60 35 102 21" stroke="#a8741f" stroke-width="5.5" stroke-linecap="round"/><path d="M26 26 Q60 36 94 26" stroke="#d9a441" stroke-width="4.5" stroke-linecap="round"/></svg></span></span>
         </button>
@@ -966,29 +971,29 @@
      max は合計おもろの上限。段階2は今までの絵をそのまま使う */
   var STAGE_STEPS = {
     baby: [
-      { max:13, img:'stage-baby-s1.png', wide:'wide-baby-s1.webp', anim:'wide-baby-s1-anim.webp' },
-      { max:16, img:'stage-baby-s2.png', wide:'wide-baby-s2.webp', anim:'wide-baby-s2-anim.webp' },
-      { max:19, img:'stage-baby-s3.png', wide:'wide-baby-s3.webp', anim:'wide-baby-s3-anim.webp' }
+      { max:13, img:'stage-baby-s1.png', wide:'wide-baby-s1.webp', anim:'sprite-baby-s1.webp' },
+      { max:16, img:'stage-baby-s2.png', wide:'wide-baby-s2.webp', anim:'sprite-baby-s2.webp' },
+      { max:19, img:'stage-baby-s3.png', wide:'wide-baby-s3.webp', anim:'sprite-baby-s3.webp' }
     ],
     kid: [
-      { max:23, img:'stage-kid-s1.png', wide:'wide-kid-s1.webp', anim:'wide-kid-s1-anim.webp' },
-      { max:26, img:'stage-kid-s2.png', wide:'wide-kid-s2.webp', anim:'wide-kid-s2-anim.webp' },
-      { max:29, img:'stage-kid-s3.png', wide:'wide-kid-s3.webp', anim:'wide-kid-s3-anim.webp' }
+      { max:23, img:'stage-kid-s1.png', wide:'wide-kid-s1.webp', anim:'sprite-kid-s1.webp' },
+      { max:26, img:'stage-kid-s2.png', wide:'wide-kid-s2.webp', anim:'sprite-kid-s2.webp' },
+      { max:29, img:'stage-kid-s3.png', wide:'wide-kid-s3.webp', anim:'sprite-kid-s3.webp' }
     ],
     adult: [
-      { max:33, img:'stage-adult-s1.png', wide:'wide-adult-s1.webp', anim:'wide-adult-s1-anim.webp' },
-      { max:36, img:'stage-adult-s2.png', wide:'wide-adult-s2.webp', anim:'wide-adult-s2-anim.webp' },
-      { max:39, img:'stage-adult-s3.png', wide:'wide-adult-s3.webp', anim:'wide-adult-s3-anim.webp' }
+      { max:33, img:'stage-adult-s1.png', wide:'wide-adult-s1.webp', anim:'sprite-adult-s1.webp' },
+      { max:36, img:'stage-adult-s2.png', wide:'wide-adult-s2.webp', anim:'sprite-adult-s2.webp' },
+      { max:39, img:'stage-adult-s3.png', wide:'wide-adult-s3.webp', anim:'sprite-adult-s3.webp' }
     ],
     daidara: [
-      { max:43, img:'stage-daidara-s1.png', wide:'wide-daidara-s1.webp', anim:'wide-daidara-s1-anim.webp' },
-      { max:46, img:'stage-daidara-s2.png', wide:'wide-daidara-s2.webp', anim:'wide-daidara-s2-anim.webp' },
-      { max:49, img:'stage-daidara-s3.png', wide:'wide-daidara-s3.webp', anim:'wide-daidara-s3-anim.webp' }
+      { max:43, img:'stage-daidara-s1.png', wide:'wide-daidara-s1.webp', anim:'sprite-daidara-s1.webp' },
+      { max:46, img:'stage-daidara-s2.png', wide:'wide-daidara-s2.webp', anim:'sprite-daidara-s2.webp' },
+      { max:49, img:'stage-daidara-s3.png', wide:'wide-daidara-s3.webp', anim:'sprite-daidara-s3.webp' }
     ],
     god: [
-      { max:59, img:'stage-god-s1.png', wide:'wide-god-s1.webp', anim:'wide-god-s1-anim.webp' },
-      { max:79, img:'stage-god-s2.png', wide:'wide-god-s2.webp', anim:'wide-god-s2-anim.webp' },
-      { max:999, img:'stage-god-s3.png', wide:'wide-god-s3.webp', anim:'wide-god-s3-anim.webp' }
+      { max:59, img:'stage-god-s1.png', wide:'wide-god-s1.webp', anim:'sprite-god-s1.webp' },
+      { max:79, img:'stage-god-s2.png', wide:'wide-god-s2.webp', anim:'sprite-god-s2.webp' },
+      { max:999, img:'stage-god-s3.png', wide:'wide-god-s3.webp', anim:'sprite-god-s3.webp' }
     ]
   };
   function stepOf(idx, t){
@@ -1053,6 +1058,8 @@
   var toggleThumb = document.getElementById('toggleThumb');
   var panel = document.getElementById('growthPanel');
   var room = document.getElementById('houseRoom');
+  var roomBg = document.getElementById('roomBg');
+  var PLATES = { baby:'plate-baby.webp', kid:'plate-kid.webp', adult:'plate-adult.webp', daidara:'plate-daidara.webp', god:'plate-god.webp' };
   var walker = document.getElementById('walker');
   var jumpWrap = document.getElementById('jumpWrap');
   var totalImg = document.getElementById('totalImg');
@@ -1238,6 +1245,12 @@
     var himg = (step && (step.anim || step.wide)) || dst.anim || dst.wide || img;
     sceneMode = !!(dst.anim || dst.wide);
     room.classList.toggle('scene', sceneMode);
+    if (sceneMode && PLATES[dst.key]) {
+      if (roomBg.getAttribute('src') !== PLATES[dst.key]) roomBg.src = PLATES[dst.key];
+      roomBg.hidden = false;
+    } else {
+      roomBg.hidden = true;
+    }
     panel.classList.toggle('no-roof', dst.key === 'daidara' || dst.key === 'god');
     walker.classList.toggle('scene-walker', sceneMode);
     jumpWrap.classList.toggle('sway', sceneMode);
