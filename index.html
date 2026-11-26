@@ -1195,11 +1195,23 @@
     if (walkRaf) cancelAnimationFrame(walkRaf);
     walkRaf = null;
   }
+  var houseIsOpen = false;
+  function openHouse(){
+    panel.hidden = false;
+    houseIsOpen = true;
+    toggleBtn.setAttribute('aria-expanded', 'true');
+    if (!sceneMode) startWalk();
+    try { history.pushState({ omoroHouse: 1 }, ''); } catch(e) {}
+  }
+  function closeHouse(fromPop){
+    panel.hidden = true;
+    houseIsOpen = false;
+    toggleBtn.setAttribute('aria-expanded', 'false');
+    stopWalk();
+    if (!fromPop && window.history.state && history.state.omoroHouse) history.back();
+  }
   toggleBtn.addEventListener('click', function(){
-    var open = panel.hidden;
-    panel.hidden = !open;
-    toggleBtn.setAttribute('aria-expanded', open ? 'true' : 'false');
-    if (open) { if (!sceneMode) startWalk(); } else stopWalk();
+    if (panel.hidden) openHouse(); else closeHouse(false);
   });
   document.addEventListener('visibilitychange', function(){ if (!document.hidden && !panel.hidden && !sceneMode) { stopWalk(); startWalk(); } });
 
@@ -1227,7 +1239,7 @@
   });
   document.getElementById('aboutCloseX').addEventListener('click', function(){ closeAbout(false); });
   aboutOverlay.addEventListener('click', function(e){ if (e.target === aboutOverlay) closeAbout(false); });
-  window.addEventListener('popstate', function(){ if (aboutIsOpen) closeAbout(true); });
+  window.addEventListener('popstate', function(){ if (aboutIsOpen) closeAbout(true); else if (houseIsOpen) closeHouse(true); });
 
   function spawnFaces(btn){
     for (var i = 0; i < 5; i++) {
@@ -1511,11 +1523,7 @@
       if (done) sessionStorage.removeItem('omoro-restored');
     } catch(e) {}
     if (done) {
-      if (panel.hidden) {
-        panel.hidden = false;
-        toggleBtn.setAttribute('aria-expanded', 'true');
-        if (!sceneMode) startWalk();
-      }
+      if (panel.hidden) openHouse();
       showBackupMsg('記録を戻しました。おもろっちも、元に戻っていますよ。', true);
     }
   })();
