@@ -731,6 +731,24 @@
   .bgm-btn:active { transform:scale(.97); }
   .bgm-btn.on { background:#5E9C63; border-color:#5E9C63; color:#fff; }
   footer .bgm-credit { display:block; margin-top:6px; font-size:11px; color:#8a7a63; }
+
+  /* 育ったお知らせ（2026-11-27）: レベル・段階が上がったら、おうちのボタンが光って知らせる */
+  .growth-toggle { position:relative; }
+  .growth-toggle.grew {
+    border-color:#e8862e;
+    animation:grewPulse 1.6s ease-in-out infinite;
+  }
+  @keyframes grewPulse {
+    0%, 100% { box-shadow:0 4px 0 rgba(120,50,0,.18), 0 0 0 0 rgba(232,134,46,.45); }
+    50% { box-shadow:0 4px 0 rgba(120,50,0,.18), 0 0 0 10px rgba(232,134,46,0); }
+  }
+  .grew-badge {
+    position:absolute; top:-11px; right:18px;
+    background:#e8862e; color:#fff;
+    font-size:12px; font-weight:900; line-height:1;
+    padding:5px 11px; border-radius:999px;
+    box-shadow:0 2px 6px rgba(120,50,0,.25);
+  }
 </style>
 </head>
 <body>
@@ -747,6 +765,7 @@
         <span class="bubble-sub">おもろっちのおうち</span>
       </span>
       <span class="chev" aria-hidden="true"><span class="chev-label"></span><span class="chev-arrow">▽</span></span>
+      <span class="grew-badge" id="grewBadge" hidden>育ったよ！</span>
     </button>
     <div class="house" id="growthPanel" hidden>
       <div class="house-roof" aria-hidden="true"></div>
@@ -1159,6 +1178,34 @@
     }
   }
 
+  /* ===== 育ったお知らせ: 見ていない間にレベル・段階が上がっていたら、おうちのボタンを光らせる ===== */
+  var bubbleEl = toggleBtn.querySelector('.bubble');
+  var bubbleDefault = bubbleEl ? bubbleEl.textContent : '';
+  function growthRank(){
+    var sub;
+    if (STAGES[evolvedIdx].key === 'egg') sub = eggTierIndex(my);
+    else { var si = stepIndexOf(evolvedIdx, my); sub = si < 0 ? 0 : si; }
+    return evolvedIdx * 10 + sub;
+  }
+  function checkGrowth(){
+    var r = growthRank();
+    var seen = null;
+    try { seen = localStorage.getItem('omoro-grew-seen'); } catch(e) {}
+    if (seen === null) {
+      try { localStorage.setItem('omoro-grew-seen', String(r)); } catch(e) {}
+      return;
+    }
+    var grew = r > parseInt(seen, 10);
+    toggleBtn.classList.toggle('grew', grew);
+    var badge = document.getElementById('grewBadge');
+    if (badge) badge.hidden = !grew;
+    if (bubbleEl) bubbleEl.textContent = grew ? 'おもろっちが育ったよ！' : bubbleDefault;
+  }
+  function markGrowthSeen(){
+    try { localStorage.setItem('omoro-grew-seen', String(growthRank())); } catch(e) {}
+    checkGrowth();
+  }
+
   function renderGrowth(pop){
     /* 進化した先が自分の合計を超えていたら、合計の範囲に戻す（記録の整合用） */
     if (evolvedIdx > stageOf(my)) evolvedIdx = stageOf(my);
@@ -1250,6 +1297,7 @@
       if (currentStage >= 0 && pop) hop();
       currentStage = idx;
     }
+    checkGrowth();
   }
 
   /* ===== 進化ボタン（見本の流れ：揺れ→フラッシュ→新しい姿＋「◯◯に進化したよ！」） ===== */
@@ -1349,6 +1397,7 @@
   function openHouse(){
     panel.hidden = false;
     houseIsOpen = true;
+    markGrowthSeen();
     toggleBtn.setAttribute('aria-expanded', 'true');
     if (!sceneMode) startWalk();
     try { history.pushState({ omoroHouse: 1 }, ''); } catch(e) {}
