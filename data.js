@@ -4,6 +4,33 @@
 window.OMORO_DATA = {
   entries: [
     {
+      id: "20261127-threads-iimachigai-senshuken",
+      date: "2026-11-27",
+      dateLabel: "2026年11月27日",
+      platform: "Threads",
+      title: "「言い間違い選手権」",
+      body: "ミライさんの投稿。92歳のおじいちゃんの「あっちこっちのけんたろう」から始まる、言い間違いの持ち寄りです。家族の言い間違いエピソードが次々と集まりました。表示37.3万回、いいね5,722、返信1,000件。フォロワー53人の投稿が、大きく広がった一例です。",
+      url: "https://www.threads.com/@mirai.e.habatake39/post/Dey6hojAVB8"
+    },
+    {
+      id: "20261127-threads-kiseki-shashin",
+      date: "2026-11-27",
+      dateLabel: "2026年11月27日",
+      platform: "Threads",
+      title: "「AIっぽいけど、AIじゃない奇跡の写真選手権」",
+      body: "泊まれるお城 Cocon Gardenさんの投稿。AIで作ったように見えるのに、実は本物の写真を集める選手権です。雪の要塞のような景色や、桜と水面の写真など、思わず「本当に？」と聞きたくなる一枚が次々と集まりました。いいね5,485、返信1,178件です。",
+      url: "https://www.threads.com/@cocongarden/post/Df9ZiZFE-hl"
+    },
+    {
+      id: "20261127-threads-enma-kuuran",
+      date: "2026-11-27",
+      dateLabel: "2026年11月27日",
+      platform: "Threads",
+      title: "「□んま□ 空欄を埋めてください」",
+      body: "勝間崚登さんの投稿。講談社の絵本の表紙、閻魔大王の絵のタイトル「□んま□」の空欄を埋める言葉遊びです。閻魔にかけた答えがどんどん集まりました。表示36.1万回、いいね910、返信2,300件です。",
+      url: "https://www.threads.com/@shengjianlengdeng4/post/DcB5oC3jxRy"
+    },
+    {
       id: "20261126-threads-nyuin-warawasete",
       date: "2026-11-26",
       dateLabel: "2026年11月26日",
