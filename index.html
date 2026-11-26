@@ -927,6 +927,31 @@
   /* 割れ具合の画像を先読みして、切り替え時のちらつきを防ぐ */
   for (var pre = 0; pre < EGG_CRACKS.length; pre++) { var preImg = new Image(); preImg.src = EGG_CRACKS[pre].img; }
 
+  /* レベルの中での3段階（合計おもろで切り替え。卵は EGG_CRACKS が担当）
+     max は合計おもろの上限。段階2は今までの絵をそのまま使う */
+  var STAGE_STEPS = {
+    baby: [
+      { max:13, img:'stage-baby-s1.png', wide:'wide-baby-s1.webp', anim:'wide-baby-s1-anim.webp' },
+      { max:16, img:'stage-baby.png',    wide:'wide-baby.webp',    anim:'wide-baby-anim.webp' },
+      { max:19, img:'stage-baby-s3.png', wide:'wide-baby-s3.webp', anim:'wide-baby-s3-anim.webp' }
+    ]
+  };
+  function stepOf(idx, t){
+    var steps = STAGE_STEPS[STAGES[idx].key];
+    if (!steps) return null;
+    for (var i = 0; i < steps.length; i++) { if (t <= steps[i].max) return steps[i]; }
+    return steps[steps.length - 1];
+  }
+  /* 段階の画像も先読みしておく */
+  for (var sk in STAGE_STEPS) {
+    for (var si = 0; si < STAGE_STEPS[sk].length; si++) {
+      var sp = STAGE_STEPS[sk][si];
+      if (sp.img) { var pi = new Image(); pi.src = sp.img; }
+      if (sp.wide) { var pw = new Image(); pw.src = sp.wide; }
+      if (sp.anim) { var pa = new Image(); pa.src = sp.anim; }
+    }
+  }
+
   var entries = (window.OMORO_DATA && window.OMORO_DATA.entries) || [];
   entries = entries.slice().sort(function(a,b){ return a.date < b.date ? 1 : -1; });
 
@@ -983,7 +1008,10 @@
   }
   /* 表示する画像：卵ステージの間は合計に応じて割れ具合の画像を返す */
   function stageImgOf(idx, t){
-    if (STAGES[idx].key !== 'egg') return STAGES[idx].img;
+    if (STAGES[idx].key !== 'egg') {
+      var step = stepOf(idx, t);
+      return step ? step.img : STAGES[idx].img;
+    }
     for (var i = 0; i < EGG_CRACKS.length; i++) { if (t <= EGG_CRACKS[i].max) return EGG_CRACKS[i].img; }
     return EGG_CRACKS[EGG_CRACKS.length - 1].img;
   }
@@ -1066,7 +1094,8 @@
       maxRow.hidden = false;
     }
     /* おうちの表示：アニメ版があればそれ、なければ wide 横長シーン、ない姿は縦絵 */
-    var himg = dst.anim || dst.wide || img;
+    var step = stepOf(dispIdx, my);
+    var himg = (step && (step.anim || step.wide)) || dst.anim || dst.wide || img;
     sceneMode = !!(dst.anim || dst.wide);
     room.classList.toggle('scene', sceneMode);
     panel.classList.toggle('no-roof', dst.key === 'daidara' || dst.key === 'god');
@@ -1080,7 +1109,7 @@
       startWalk();
     }
     if (himg !== currentImg) {
-      stageImg.dataset.fallback = dst.wide || '';
+      stageImg.dataset.fallback = (step && step.wide) || dst.wide || '';
       stageImg.src = himg;
       if (sceneMode) { stageImg.setAttribute('width', '1200'); stageImg.setAttribute('height', '800'); }
       else { stageImg.setAttribute('width', '700'); stageImg.setAttribute('height', '903'); }
