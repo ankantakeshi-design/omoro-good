@@ -348,6 +348,11 @@
     font-size:19px;
     text-shadow:0 1px 2px rgba(255,255,255,.9);
   }
+  .form-hint{
+    margin:8px 0 0;
+    font-size:13px;
+    color:#a8741f;
+  }
 
   /* ===== おもろっちについて（ポップアップ） ===== */
   .house .about-row{ margin:8px 0 0; }
@@ -740,6 +745,7 @@
         <div class="evo-name" id="evoName" hidden></div>
       </div>
       <div class="form-row" id="formRow" aria-label="すがたをえらぶ"></div>
+      <p class="form-hint">タッチで、過去のおもろっちや、育った段階も見れるよ</p>
       <div class="progress">
         <p class="total-row"><img id="totalImg" src="stage-egg-t0.png" width="700" height="903" alt=""><b id="totalCount">0</b><span class="next-inline" id="nextRow">（あと <b id="nextCount">10</b>）</span><span class="next-inline" id="maxRow" hidden>✨</span></p>
         <div class="bar"><div id="barFill"></div></div>
@@ -944,6 +950,9 @@
       { max:33, img:'stage-adult-s1.png', wide:'wide-adult-s1.webp', anim:'wide-adult-s1-anim.webp' },
       { max:36, img:'stage-adult-s2.png', wide:'wide-adult-s2.webp', anim:'wide-adult-s2-anim.webp' },
       { max:39, img:'stage-adult-s3.png', wide:'wide-adult-s3.webp', anim:'wide-adult-s3-anim.webp' }
+    ],
+    daidara: [
+      { max:43, img:'stage-daidara-s1.png', wide:'wide-daidara-s1.webp', anim:'wide-daidara-s1-anim.webp' }
     ]
   };
   function stepOf(idx, t){
