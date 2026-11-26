@@ -1199,10 +1199,12 @@
       try { localStorage.setItem('omoro-grew-seen', String(r)); } catch(e) {}
       return;
     }
-    var grew = r > parseInt(seen, 10);
+    var seenRank = parseInt(seen, 10);
+    var grew = r > seenRank;
     toggleBtn.classList.toggle('grew', grew);
     var grewMsg = 'おもろっちが育ったよ！';
-    if (evolvedIdx === 0) grewMsg = eggTierIndex(totalLiked()) >= 4 ? 'お顔が見えたよ！' : 'たまごに、ひびが入ったよ！';
+    if (Math.floor(r / 10) > Math.floor(seenRank / 10)) grewMsg = 'おもろっちが進化したよ！';
+    else if (evolvedIdx === 0) grewMsg = eggTierIndex(totalLiked()) >= 4 ? 'お顔が見えたよ！' : 'たまごに、ひびが入ったよ！';
     if (bubbleEl) bubbleEl.textContent = grew ? grewMsg : bubbleDefault;
   }
   function markGrowthSeen(){
