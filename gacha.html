@@ -92,6 +92,8 @@
   }
   .spin-btn:active{ transform:translateY(2px); box-shadow:0 2px 0 #d35400; }
   .spin-btn:disabled{ background:#d7ccc8; box-shadow:0 4px 0 #a1887f; cursor:default; }
+  .spin-btn.can-spin{ animation:spinGlow 1.6s ease-in-out infinite; }
+  @keyframes spinGlow{ 0%,100%{ box-shadow:0 4px 0 #d35400, 0 0 0 0 rgba(247,183,51,0); filter:brightness(1); } 50%{ box-shadow:0 4px 0 #d35400, 0 0 18px 7px rgba(247,183,51,.9); filter:brightness(1.1); } }
   .spin-note{ color:var(--ink-soft); margin:10px 0 0; }
   .result{ margin-top:18px; }
   .result.pop{ animation:resPop .5s cubic-bezier(.3,1.5,.5,1); }
@@ -460,6 +462,7 @@
       spinBtn.textContent = 'ガチャをまわす';
       spinNote.textContent = 'まわすたびに新しいフィギュアが増えるよ。';
     }
+    spinBtn.classList.toggle('can-spin', spins > 0 && col.length < FIGURES.length && !spinning);
   }
 
   function makeSparks(){
