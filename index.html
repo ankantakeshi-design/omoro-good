@@ -699,6 +699,8 @@
 
   /* 見出しから直接リンク＋行のシェアボタン（2026-11-26） */
   a.hl-main{ text-decoration:none; color:inherit; cursor:pointer; }
+  .hl-more{ display:block; margin-top:6px; font-size:12.5px; font-weight:700; color:var(--orange-dark); letter-spacing:.02em; }
+  a.hl-main:active .hl-more{ opacity:.6; }
   .share-btn.sm{ flex:none; min-height:48px; padding:8px 11px; font-size:13.5px; border-width:2px; border-radius:999px; }
   .hl-row.anchor-flash{ outline:3px solid #F39C12; outline-offset:2px; }
 
@@ -2091,6 +2093,7 @@
       '<a class="hl-main" href="' + en.url + '" target="_blank" rel="noopener" aria-label="元の記事を読む">' +
         '<span class="hl-top"><span class="hl-date">' + en.dateLabel + '</span></span>' +
         '<span class="hl-title"></span>' +
+        '<span class="hl-more">元の投稿を読む ↗</span>' +
       '</a>' +
       '<div class="hl-btns">' +
       '<button type="button" class="share-btn sm" aria-label="この記事をシェアする">' +
