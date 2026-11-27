@@ -1497,7 +1497,7 @@
     grewOverlay.hidden = true;
     grewIsOpen = false;
     openHouse();
-    setTimeout(function(){ toggleBtn.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
+    setTimeout(function(){ toggleBtn.scrollIntoView({ behavior:'auto', block:'start' }); }, 60);
   });
 
   /* ===== 輪廻転生と名前 ===== */
@@ -1966,7 +1966,7 @@
       openHouse();
       setTimeout(function(){
         var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-        panel.scrollIntoView({ behavior: rm ? 'auto' : 'smooth', block: 'nearest' });
+        panel.scrollIntoView({ behavior: 'auto', block: 'nearest' });
       }, 60);
     } else closeHouse(false);
   });
@@ -1993,7 +1993,7 @@
     e.preventDefault();
     closeAbout(false);
     var g = document.getElementById('installGuide');
-    if (g){ g.open = true; setTimeout(function(){ g.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60); }
+    if (g){ g.open = true; setTimeout(function(){ g.scrollIntoView({ behavior:'auto', block:'start' }); }, 60); }
   });
   document.getElementById('aboutCloseX').addEventListener('click', function(){ closeAbout(false); });
   aboutOverlay.addEventListener('click', function(e){ if (e.target === aboutOverlay) closeAbout(false); });
@@ -2320,7 +2320,7 @@
 <script>
 (function(){
   var topBtn = document.getElementById('barTop');
-  if (topBtn) topBtn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'smooth'}); });
+  if (topBtn) topBtn.addEventListener('click', function(){ window.scrollTo({top:0, behavior:'auto'}); });
   var shareBtn = document.getElementById('barShare');
   var toast = document.getElementById('shareToast');
   var toastTimer = null;

@@ -507,7 +507,7 @@
       saveBtn.hidden = true;
       shareBtn.hidden = true;
       stage.hidden = false;
-      stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      stage.scrollIntoView({ behavior: 'auto', block: 'center' });
       void bigCap.offsetWidth;
       setTimeout(function(){ bigCap.classList.add('wobble'); }, 500);
       setTimeout(function(){
@@ -625,7 +625,7 @@
     toastTimer = setTimeout(function(){ toast.hidden = true; }, 2200);
   }
   document.getElementById('barTop').addEventListener('click', function(){
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    window.scrollTo({ top: 0, behavior: 'auto' });
   });
   document.getElementById('barShare').addEventListener('click', function(){
     var url = location.href;
