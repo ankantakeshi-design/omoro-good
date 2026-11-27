@@ -104,6 +104,7 @@
     border-radius:999px; border:2px solid var(--orange-dark); color:var(--orange-dark);
     font-weight:900; text-decoration:none; background:#fff;
   }
+  .share-btn{ font-family:inherit; font-size:16px; cursor:pointer; background:var(--yellow-soft); margin-top:8px; }
 
   /* 図鑑 */
   .album-head{ display:flex; align-items:baseline; justify-content:space-between; gap:8px; }
@@ -218,7 +219,7 @@
   <p class="back-row"><a href="./">‹ おもろグ〜にもどる</a></p>
   <p class="demo-note" id="demoNote" hidden>テスト表示中だよ。本物の回数やコレクションは変わらないよ。</p>
   <h1>🎁 おもろガチャ</h1>
-  <p class="lead">輪廻転生のごほうびガチャだよ。<br>転生するたびに3回まわせて、かぶりなし。<br>12種ぜんぶ集めてみてね。</p>
+  <p class="lead" id="leadText">輪廻転生のごほうびガチャだよ。<br>転生するたびに3回まわせて、かぶりなし。<br>12種ぜんぶ集めてみてね。</p>
 
   <section class="machine-box" aria-label="ガチャマシン">
     <div class="machine" id="machine" aria-hidden="true">
@@ -243,6 +244,7 @@
       <p class="result-name" id="resultName" hidden></p>
       <p id="resultNewWrap" hidden><span class="result-new">NEW！</span></p>
       <a class="save-btn" id="saveBtn" href="#" download hidden>📥 画像を保存する</a>
+      <button type="button" class="save-btn share-btn" id="shareBtn" hidden>⤴ 友達にシェア</button>
     </div>
   </section>
 
@@ -253,7 +255,7 @@
     </div>
     <div class="album-grid" id="albumGrid"></div>
     <p class="complete-msg" id="completeMsg" hidden>🎉 ぜんぶ集まったよ！コンプリートおめでとう 🎉</p>
-    <p class="album-note">集めたフィギュアは、タップすると大きく見れるよ。画像を保存して、持ち帰ることもできるよ。</p>
+    <p class="album-note">集めたフィギュアは、タップすると大きく見れるよ。画像を保存したり、友達にシェアしたりもできるよ。</p>
   </section>
 
   <section aria-label="なかまたちの紹介">
@@ -272,7 +274,7 @@
       <div class="intro-thumb"><img src="gacha-intro-hii.webp" alt="ひーくん" loading="lazy"></div>
       <div class="intro-body">
         <p class="intro-name">ひーくん</p>
-        <p class="intro-text">火の男の子。考えることと、やる気を出すのが得意。気持ちを言葉にするのは、少しずつ練習中だよ。</p>
+        <p class="intro-text">火の男の子。考えることと、やる気を出すのが得意。感じることを練習中だよ。</p>
         <p class="intro-link"><a href="https://kasuiehon.pages.dev/" target="_blank" rel="noopener noreferrer">絵本『ひーくんと みーちゃん』はこちら ›</a></p>
       </div>
     </div>
@@ -306,6 +308,7 @@
     <img id="ovImg" src="" alt="">
     <p class="ov-name" id="ovName"></p>
     <a class="save-btn" id="ovSave" href="#" download>📥 画像を保存する</a>
+    <button type="button" class="save-btn share-btn" id="ovShare">⤴ 友達にシェア</button>
     <button type="button" class="ov-close-btn" id="ovCloseBtn">閉じる</button>
   </div>
 </div>
@@ -324,12 +327,12 @@
 <script>
 (function(){
   var FIGURES = [
-    { key:'egg',           name:'おもろっち たまご' },
-    { key:'baby',          name:'おもろっち ベビー' },
-    { key:'kid',           name:'おもろっち こども' },
-    { key:'adult',         name:'おもろっち おとな' },
-    { key:'daidara',       name:'おもろっち ダイダラ' },
-    { key:'god',           name:'おもろっち 神' },
+    { key:'egg',           name:'たまごおもろっち' },
+    { key:'baby',          name:'ベビーおもろっち' },
+    { key:'kid',           name:'こどもおもろっち' },
+    { key:'adult',         name:'おとなおもろっち' },
+    { key:'daidara',       name:'ダイダラおもろっち' },
+    { key:'god',           name:'神おもろっち' },
     { key:'hii-jump',      name:'ひーくん ジャンプ' },
     { key:'hii-fire',      name:'ひーくん ほのお' },
     { key:'mii-dance',     name:'みーちゃん ダンス' },
@@ -353,6 +356,7 @@
   var resultImg= document.getElementById('resultImg');
   var resultName = document.getElementById('resultName');
   var saveBtn  = document.getElementById('saveBtn');
+  var shareBtn = document.getElementById('shareBtn');
   var albumGrid  = document.getElementById('albumGrid');
   var albumCount = document.getElementById('albumCount');
   var completeMsg= document.getElementById('completeMsg');
@@ -360,6 +364,7 @@
   var ovImg    = document.getElementById('ovImg');
   var ovName   = document.getElementById('ovName');
   var ovSave   = document.getElementById('ovSave');
+  var ovShare  = document.getElementById('ovShare');
   var spinning = false;
   var ovOpen = false;
 
@@ -426,6 +431,18 @@
     completeMsg.hidden = col.length < FIGURES.length;
   }
 
+  function hasReincarnated(){
+    try {
+      var gen = parseInt(localStorage.getItem('omoro-gen') || '1', 10);
+      var lives = JSON.parse(localStorage.getItem('omoro-lives') || '[]');
+      return gen >= 2 || (lives && lives.length > 0);
+    } catch (e) { return false; }
+  }
+
+  if (!hasReincarnated()) {
+    document.getElementById('leadText').innerHTML = 'おもろっちを育て終わるともらえる、ごほうびのガチャだよ。<br>もらえるのは3回分で、かぶりなし。<br>12種ぜんぶ集めてみてね。';
+  }
+
   function renderSpin(){
     var spins = getSpins();
     var col = getCol();
@@ -437,11 +454,11 @@
     } else if (spins <= 0) {
       spinBtn.disabled = true;
       spinBtn.textContent = 'ガチャをまわす';
-      spinNote.textContent = '';
+      spinNote.textContent = hasReincarnated() ? 'おもろっちを育て終わると、またまわせるようになるよ。' : 'おもろっちを育て終わると、まわせるようになるよ。おもろを集めて、育ててみてね。';
     } else {
       spinBtn.disabled = spinning;
       spinBtn.textContent = 'ガチャをまわす';
-      spinNote.textContent = 'かぶりなしだから、まわすたびに新しいフィギュアが増えるよ。';
+      spinNote.textContent = 'まわすたびに新しいフィギュアが増えるよ。';
     }
   }
 
@@ -485,6 +502,7 @@
       resultName.hidden = true;
       resultNewWrap.hidden = true;
       saveBtn.hidden = true;
+      shareBtn.hidden = true;
       stage.hidden = false;
       stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
       void bigCap.offsetWidth;
@@ -512,6 +530,9 @@
           saveBtn.href = 'gacha-card-' + prize.key + '.png';
           saveBtn.setAttribute('download', 'gacha-card-' + prize.key + '.png');
           saveBtn.hidden = false;
+          shareBtn.dataset.key = prize.key;
+          shareBtn.dataset.name = prize.name;
+          shareBtn.hidden = false;
           spinning = false;
           renderAlbum();
           renderSpin();
@@ -521,12 +542,38 @@
   }
   spinBtn.addEventListener('click', spin);
 
+  function shareFigure(key, name){
+    var url = 'https://omoro-good.pages.dev/gacha.html';
+    var text = 'おもろガチャで「' + name + '」が出たよ！ ' + url;
+    function shareTextOnly(){
+      if (navigator.share) {
+        navigator.share({ title: 'おもろガチャ', text: text, url: url }).catch(function(){});
+      } else if (navigator.clipboard) {
+        navigator.clipboard.writeText(text).then(function(){
+          alert('リンクをコピーしたよ。画像は「画像を保存する」から持ち帰ってね。');
+        }).catch(function(){});
+      }
+    }
+    if (navigator.canShare) {
+      fetch('gacha-card-' + key + '.png').then(function(r){ return r.blob(); }).then(function(blob){
+        var file = new File([blob], 'gacha-card-' + key + '.png', { type: 'image/png' });
+        if (navigator.canShare({ files: [file] })) {
+          navigator.share({ files: [file], text: text }).catch(function(){});
+        } else { shareTextOnly(); }
+      }).catch(function(){ shareTextOnly(); });
+    } else { shareTextOnly(); }
+  }
+  shareBtn.addEventListener('click', function(){ shareFigure(shareBtn.dataset.key, shareBtn.dataset.name); });
+  ovShare.addEventListener('click', function(){ shareFigure(ovShare.dataset.key, ovShare.dataset.name); });
+
   function openDetail(f){
     ovImg.src = 'gacha-fig-' + f.key + '.webp';
     ovImg.alt = f.name;
     ovName.textContent = f.name;
     ovSave.href = 'gacha-card-' + f.key + '.png';
     ovSave.setAttribute('download', 'gacha-card-' + f.key + '.png');
+    ovShare.dataset.key = f.key;
+    ovShare.dataset.name = f.name;
     overlay.hidden = false;
     ovOpen = true;
     try { history.pushState({ gachaDetail: 1 }, ''); } catch(e) {}

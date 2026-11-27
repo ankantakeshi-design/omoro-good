@@ -767,6 +767,8 @@
   .name-edit{ min-height:36px; padding:4px 12px; border:2px solid var(--card-border); background:#fff; color:var(--orange-dark); border-radius:999px; font-family:inherit; font-size:13px; font-weight:900; cursor:pointer; }
   .rinne-btn{ width:100%; min-height:52px; margin-top:8px; border:3px solid #8a6d1f; background:linear-gradient(135deg,#ffe9a8,#f7b733); color:#6b4e00; border-radius:999px; font-family:inherit; font-size:16px; font-weight:900; cursor:pointer; }
   .rinne-btn[hidden]{ display:none; }
+  .rinne-gacha-note{ margin:6px 0 0; text-align:center; font-size:13.5px; font-weight:700; color:#b34a00; }
+  .rinne-gacha-note[hidden]{ display:none; }
   .rinne-btn{ animation:rinneBlink 1.6s ease-in-out infinite; }
   .gacha-link{ display:block; margin-top:10px; min-height:48px; line-height:48px; text-align:center; background:#fff3d6; border:2px solid var(--card-border); border-radius:999px; color:var(--orange-dark); font-weight:900; text-decoration:none; }
   @keyframes rinneBlink{ 0%,100%{ box-shadow:0 0 0 0 rgba(247,183,51,0); filter:brightness(1); } 50%{ box-shadow:0 0 16px 5px rgba(247,183,51,.85); filter:brightness(1.13); } }
@@ -942,6 +944,7 @@
         <p class="daily-note" id="dailyNote">おもろは1日4個までだよ</p>
         <button type="button" class="evolve-btn" id="evolveBtn" hidden>✦ 進化する ✦</button>
         <button type="button" class="rinne-btn" id="rinneBtn" hidden>✦ 輪廻転生する ✦</button>
+        <p class="rinne-gacha-note" id="rinneGachaNote" hidden>🎁 転生すると、おもろガチャが3回まわせるよ</p>
         <a class="gacha-link" id="gachaLink" href="gacha.html">🎁 おもろガチャ ›</a>
       </div>
       <p class="about-row"><button type="button" class="about-link" id="aboutOpen">おもろっちについて ›</button></p>
@@ -1147,7 +1150,7 @@
     <p>「おもろ」の数だけ、おもろっちが育つよ。</p>
     <p>育ち具合の記録は、このブラウザの中に残ります。ブラウザや端末が変わると、また卵からになります。ブラウザのキャッシュやサイトデータを消しても消えてしまうので、消さないようにしてくださいね。消えにくくするには、ホーム画面への追加がおすすめです。<br><a href="#installGuide" id="installLink">ホーム画面への置き方はこちら</a></p>
     <ul class="stage-list">
-      <li><img class="stage-thumb" data-img="stage-egg-t0.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="卵おもろっち">卵おもろっち</span><span class="min">0〜</span></li>
+      <li><img class="stage-thumb" data-img="stage-egg-t0.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="たまごおもろっち">たまごおもろっち</span><span class="min">0〜</span></li>
       <li><img class="stage-thumb" data-img="stage-baby.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="ベビーおもろっち">？？？</span><span class="min">10〜</span></li>
       <li><img class="stage-thumb" data-img="stage-kid.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="子供おもろっち">？？？</span><span class="min">20〜</span></li>
       <li><img class="stage-thumb" data-img="stage-adult.png" src="stage-egg-t0.png" width="900" height="1162" alt=""><span class="stage-name" data-name="大人おもろっち">？？？</span><span class="min">30〜</span></li>
@@ -1169,7 +1172,7 @@
 
   /* ===== 成長ステージ（閾値はここで調整できます） ===== */
   var STAGES = [
-    { key:'egg',    name:'卵おもろっち',       img:'stage-egg-t0.png', min:0 },
+    { key:'egg',    name:'たまごおもろっち',       img:'stage-egg-t0.png', min:0 },
     { key:'baby',   name:'ベビーおもろっち',   img:'stage-baby.png',   wide:'wide-baby.webp',   anim:'wide-baby-anim.webp',   min:10 },
     { key:'kid',    name:'子供おもろっち',     img:'stage-kid.png',    wide:'wide-kid.webp',    anim:'wide-kid-anim.webp',    min:20 },
     { key:'adult',  name:'大人おもろっち',     img:'stage-adult.png',  wide:'wide-adult.webp',  anim:'wide-adult-anim.webp',  min:30 },
@@ -1299,6 +1302,7 @@
   var maxRow = document.getElementById('maxRow');
   var evolveBtn = document.getElementById('evolveBtn');
   var rinneBtn = document.getElementById('rinneBtn');
+  var rinneGachaNote = document.getElementById('rinneGachaNote');
   var lifeGenEl = document.getElementById('lifeGen');
   var lifeNameEl = document.getElementById('lifeName');
   var bubbleSub = document.getElementById('bubbleSub');
@@ -1633,7 +1637,7 @@
     row(gen + '周目：' + petName, '育て中');
   }
   /* デモ再生（?demo=rinne）：本物の記録は変えずに、転生イベントだけ再生する */
-  if (rinneDemo) setTimeout(function(){ rinneBtn.hidden = false; openRinne(); }, 700);
+  if (rinneDemo) setTimeout(function(){ rinneBtn.hidden = false; rinneGachaNote.hidden = false; openRinne(); }, 700);
 
 
   function renderGrowth(pop){
@@ -1670,6 +1674,7 @@
       maxRow.hidden = false;
       rinneBtn.hidden = !(my >= 79);
     }
+    rinneGachaNote.hidden = rinneBtn.hidden;
     /* おうちの表示：アニメ版があればそれ、なければ wide 横長シーン、ない姿は縦絵 */
     var step = stepOf(dispIdx, my);
     var vsIdx = viewStepFor(dispIdx);
