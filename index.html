@@ -1258,7 +1258,9 @@
   document.getElementById('grewCloseX').addEventListener('click', function(){ closeGrew(false); });
   grewOverlay.addEventListener('click', function(e){ if (e.target === grewOverlay) closeGrew(false); });
   document.getElementById('grewGo').addEventListener('click', function(){
-    closeGrew(false);
+    /* 履歴を戻してから開くと、戻る処理の popstate でおうちが閉じてしまうので、ここでは履歴を戻さずに直接開く */
+    grewOverlay.hidden = true;
+    grewIsOpen = false;
     openHouse();
     setTimeout(function(){ toggleBtn.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
   });
