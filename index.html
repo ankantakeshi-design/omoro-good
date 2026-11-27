@@ -758,6 +758,25 @@
   .grew-card{ background:#fff; width:100%; max-width:340px; max-height:86vh; overflow-y:auto; border-radius:20px; padding:16px 16px 18px; color:var(--ink); text-align:center; }
   .grew-card h2{ margin:4px 0 10px; font-size:20px; font-weight:900; text-align:left; }
   .grew-go{ width:100%; min-height:52px; border:3px solid var(--orange-dark); background:var(--orange); color:#fff; border-radius:999px; font-family:inherit; font-size:17px; font-weight:900; cursor:pointer; }
+
+  /* 人生（周目）・名前・輪廻転生（2026-11-27） */
+  .life-row{ margin:0 0 8px; font-size:14.5px; font-weight:700; color:var(--ink-soft); display:flex; align-items:center; gap:6px; flex-wrap:wrap; }
+  .life-row b{ color:var(--ink); font-size:15.5px; }
+  .name-edit{ min-height:36px; padding:4px 12px; border:2px solid var(--card-border); background:#fff; color:var(--orange-dark); border-radius:999px; font-family:inherit; font-size:13px; font-weight:900; cursor:pointer; }
+  .rinne-btn{ width:100%; min-height:52px; margin-top:8px; border:3px solid #8a6d1f; background:linear-gradient(135deg,#ffe9a8,#f7b733); color:#6b4e00; border-radius:999px; font-family:inherit; font-size:16px; font-weight:900; cursor:pointer; }
+  .rinne-btn[hidden]{ display:none; }
+  .rinne-overlay{ position:fixed; inset:0; z-index:70; background:rgba(58,42,26,.6); display:flex; align-items:center; justify-content:center; padding:20px; }
+  .rinne-overlay[hidden]{ display:none; }
+  .rinne-card{ background:#fff; width:100%; max-width:360px; max-height:88vh; overflow-y:auto; border-radius:20px; padding:20px 18px; color:var(--ink); text-align:center; }
+  .rinne-card h2{ margin:2px 0 10px; font-size:20px; font-weight:900; }
+  .rinne-card p{ font-size:15px; margin:0 0 12px; }
+  .rinne-go{ width:100%; min-height:52px; border:3px solid var(--orange-dark); background:var(--orange); color:#fff; border-radius:999px; font-family:inherit; font-size:16px; font-weight:900; cursor:pointer; margin-bottom:8px; }
+  .rinne-light img{ width:170px; height:auto; display:block; margin:8px auto; animation:rinneRise 2.6s ease forwards; }
+  @keyframes rinneRise{ 0%{ transform:translateY(10px); opacity:1; filter:brightness(1); } 60%{ transform:translateY(-24px); opacity:1; filter:brightness(1.5); } 100%{ transform:translateY(-46px); opacity:0; filter:brightness(2); } }
+  .rinne-msg{ font-size:16px; font-weight:900; }
+  .rinne-egg{ width:110px; height:auto; display:block; margin:4px auto 8px; }
+  .name-input{ width:100%; min-height:48px; border:2px solid var(--card-border); border-radius:12px; padding:8px 12px; font-family:inherit; font-size:16px; font-weight:700; text-align:center; margin:0 0 10px; box-sizing:border-box; }
+  .lives-title{ margin:14px 0 4px; font-size:16px; font-weight:900; }
 </style>
 </head>
 <body>
@@ -771,7 +790,7 @@
       <img class="thumb" id="toggleThumb" src="stage-egg-t0.png" width="700" height="903" alt="">
       <span class="bubble-col">
         <span class="bubble">僕のこと、育ててくれる？</span>
-        <span class="bubble-sub">おもろっちのおうち</span>
+        <span class="bubble-sub" id="bubbleSub">おもろっちのおうち</span>
       </span>
       <span class="chev" aria-hidden="true"><span class="chev-label"></span><span class="chev-arrow">▽</span></span>
     </button>
@@ -788,10 +807,12 @@
       <div class="form-row" id="formRow" aria-label="すがたをえらぶ"></div>
       <p class="form-hint">タッチで、過去のおもろっちや、育った段階も見れるよ</p>
       <div class="progress">
+        <p class="life-row"><span id="lifeGen">1周目</span>｜名前：<b id="lifeName">おもろっち</b><button type="button" class="name-edit" id="nameEditBtn">名前をつけなおす</button></p>
         <p class="total-row"><img id="totalImg" src="stage-egg-t0.png" width="700" height="903" alt=""><b id="totalCount">0</b><span class="next-inline" id="nextRow">（あと <b id="nextCount">10</b>）</span><span class="next-inline" id="maxRow" hidden>✨</span></p>
         <div class="bar"><div id="barFill"></div></div>
         <p class="daily-note">おもろは1日4個までだよ</p>
         <button type="button" class="evolve-btn" id="evolveBtn" hidden>✦ 進化する ✦</button>
+        <button type="button" class="rinne-btn" id="rinneBtn" hidden>✦ 輪廻転生する ✦</button>
       </div>
       <p class="about-row"><button type="button" class="about-link" id="aboutOpen">おもろっちについて ›</button></p>
       <div class="backup-box">
@@ -926,6 +947,36 @@
 
 </div>
 
+<div class="rinne-overlay" id="rinneOverlay" hidden>
+  <div class="rinne-card" role="dialog" aria-modal="true" aria-labelledby="rinneTitle">
+    <div class="rinne-step" id="rinneConfirm">
+      <h2 id="rinneTitle">輪廻転生しますか？</h2>
+      <p>神さまは光になって、新しい卵に戻ります。<br>今の姿とは、ここでお別れだよ。</p>
+      <button type="button" class="rinne-go" id="rinneDo">輪廻転生する</button>
+      <button type="button" class="about-close" id="rinneCancel">やめる</button>
+    </div>
+    <div class="rinne-step" id="rinneEvent" hidden>
+      <div class="rinne-light"><img src="stage-god-s3.png" width="700" height="903" alt="神おもろっち"></div>
+      <p class="rinne-msg">ありがとう。いってきます。</p>
+    </div>
+    <div class="rinne-step" id="rinneBorn" hidden>
+      <img class="rinne-egg" src="stage-egg-t0.png" width="700" height="903" alt="新しい卵">
+      <h2 id="rinneBornTitle">新しい人生のはじまり</h2>
+      <p>新しい卵が届いたよ。<br>名前をつけてあげてね。</p>
+      <input type="text" class="name-input" id="rinneNameInput" maxlength="10" placeholder="おもろっち">
+      <button type="button" class="rinne-go" id="rinneStart">はじめる</button>
+    </div>
+  </div>
+</div>
+<div class="rinne-overlay" id="nameOverlay" hidden>
+  <div class="rinne-card" role="dialog" aria-modal="true" aria-labelledby="nameTitle">
+    <h2 id="nameTitle">名前をつけなおす</h2>
+    <input type="text" class="name-input" id="nameInput" maxlength="10" placeholder="おもろっち">
+    <button type="button" class="rinne-go" id="nameSave">決定</button>
+    <button type="button" class="about-close" id="nameCancel">やめる</button>
+  </div>
+</div>
+
 <div class="grew-overlay" id="grewOverlay" hidden>
   <div class="grew-card" role="dialog" aria-modal="true" aria-labelledby="grewMsg">
     <div class="about-head">
@@ -953,6 +1004,8 @@
       <li><img class="stage-thumb" data-img="stage-daidara.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="ダイダラおもろっち">？？？</span><span class="min">40〜</span></li>
       <li><img class="stage-thumb" data-img="stage-god.png" src="stage-egg-t0.png" width="700" height="903" alt=""><span class="stage-name" data-name="神おもろっち">？？？</span><span class="min">50〜</span></li>
     </ul>
+    <h3 class="lives-title">人生の記録</h3>
+    <ul class="stage-list" id="livesList"></ul>
     <button type="button" class="about-close" id="aboutClose">閉じる</button>
   </div>
 </div>
@@ -1067,6 +1120,16 @@
   try { evolvedIdx = parseInt(localStorage.getItem('omoro-evolved') || '0', 10); } catch(e) {}
   if (isNaN(evolvedIdx) || evolvedIdx < 0) evolvedIdx = 0;
   if (evolvedIdx > STAGES.length - 1) evolvedIdx = STAGES.length - 1;
+  /* 人生（周目）と名前と記録 */
+  var gen = 1;
+  try { gen = parseInt(localStorage.getItem('omoro-gen') || '1', 10); } catch(e) {}
+  if (isNaN(gen) || gen < 1) gen = 1;
+  var petName = 'おもろっち';
+  try { petName = localStorage.getItem('omoro-name') || 'おもろっち'; } catch(e) {}
+  if (!petName) petName = 'おもろっち';
+  var lives = [];
+  try { lives = JSON.parse(localStorage.getItem('omoro-lives') || '[]'); } catch(e) {}
+  if (!Array.isArray(lives)) lives = [];
 
   var listEl = document.getElementById('list');
   var stageImg = document.getElementById('stageImg');
@@ -1085,6 +1148,15 @@
   var nextCount = document.getElementById('nextCount');
   var maxRow = document.getElementById('maxRow');
   var evolveBtn = document.getElementById('evolveBtn');
+  var rinneBtn = document.getElementById('rinneBtn');
+  var lifeGenEl = document.getElementById('lifeGen');
+  var lifeNameEl = document.getElementById('lifeName');
+  var bubbleSub = document.getElementById('bubbleSub');
+  function refreshLifeUI(){
+    if (lifeGenEl) lifeGenEl.textContent = gen + '周目';
+    if (lifeNameEl) lifeNameEl.textContent = petName;
+    if (bubbleSub) bubbleSub.textContent = petName + 'のおうち';
+  }
   var evoFlash = document.getElementById('evoFlash');
   var evoName = document.getElementById('evoName');
   /* アニメ版が読み込めないときは静止画 wide にフォールバック */
@@ -1220,8 +1292,8 @@
     var seenRank = parseInt(seen, 10);
     var grew = r > seenRank;
     toggleBtn.classList.toggle('grew', grew);
-    var grewMsg = 'おもろっちが育ったよ！';
-    if (Math.floor(r / 10) > Math.floor(seenRank / 10)) grewMsg = 'おもろっちが進化したよ！';
+    var grewMsg = petName + 'が育ったよ！';
+    if (Math.floor(r / 10) > Math.floor(seenRank / 10)) grewMsg = petName + 'が進化したよ！';
     else if (evolvedIdx === 0) grewMsg = eggTierIndex(my) >= 4 ? 'お顔が見えたよ！' : 'たまごに、ひびが入ったよ！';
     if (bubbleEl) bubbleEl.textContent = grew ? grewMsg : bubbleDefault;
     if (grew) maybeShowGrewPopup(r, grewMsg);
@@ -1265,6 +1337,112 @@
     setTimeout(function(){ toggleBtn.scrollIntoView({ behavior:'smooth', block:'start' }); }, 60);
   });
 
+  /* ===== 輪廻転生と名前 ===== */
+  var rinneOverlay = document.getElementById('rinneOverlay');
+  var rinneIsOpen = false;
+  function showRinneStep(id){
+    ['rinneConfirm', 'rinneEvent', 'rinneBorn'].forEach(function(s){
+      document.getElementById(s).hidden = (s !== id);
+    });
+  }
+  function openRinne(){
+    showRinneStep('rinneConfirm');
+    rinneOverlay.hidden = false;
+    rinneIsOpen = true;
+  }
+  function closeRinne(){
+    rinneOverlay.hidden = true;
+    rinneIsOpen = false;
+  }
+  function doReincarnate(){
+    var si = stepIndexOf(evolvedIdx, my);
+    var reached = STAGES[evolvedIdx].name + (si >= 0 ? '・段階' + (si + 1) : '');
+    lives.push({ gen: gen, name: petName, reached: reached });
+    gen += 1;
+    petName = 'おもろっち';
+    liked = [];
+    my = 0;
+    evolvedIdx = 0;
+    formKey = 'egg';
+    try {
+      localStorage.setItem('omoro-lives', JSON.stringify(lives));
+      localStorage.setItem('omoro-gen', String(gen));
+      localStorage.setItem('omoro-name', petName);
+      localStorage.setItem('omoro-liked', '[]');
+      localStorage.setItem('omoro-evolved', '0');
+      localStorage.setItem('omoro-form', 'egg');
+      localStorage.removeItem('omoro-viewstep');
+      localStorage.removeItem('omoro-grew-seen');
+      localStorage.removeItem('omoro-grew-popup');
+    } catch(e) {}
+    entries.forEach(function(en){ paintAllBtns(en.id); });
+    renderGrowth(false);
+    refreshLifeUI();
+  }
+  rinneBtn.addEventListener('click', openRinne);
+  document.getElementById('rinneCancel').addEventListener('click', closeRinne);
+  rinneOverlay.addEventListener('click', function(e){ if (e.target === rinneOverlay) closeRinne(); });
+  document.getElementById('rinneDo').addEventListener('click', function(){
+    showRinneStep('rinneEvent');
+    setTimeout(function(){
+      doReincarnate();
+      document.getElementById('rinneBornTitle').textContent = gen + '周目のはじまり';
+      document.getElementById('rinneNameInput').value = '';
+      showRinneStep('rinneBorn');
+    }, 2700);
+  });
+  document.getElementById('rinneStart').addEventListener('click', function(){
+    var v = document.getElementById('rinneNameInput').value.trim();
+    petName = v || 'おもろっち';
+    try { localStorage.setItem('omoro-name', petName); } catch(e) {}
+    refreshLifeUI();
+    closeRinne();
+  });
+
+  /* 名前のつけなおし */
+  var nameOverlay = document.getElementById('nameOverlay');
+  var nameIsOpen = false;
+  function openName(){
+    document.getElementById('nameInput').value = (petName === 'おもろっち') ? '' : petName;
+    nameOverlay.hidden = false;
+    nameIsOpen = true;
+  }
+  function closeName(){
+    nameOverlay.hidden = true;
+    nameIsOpen = false;
+  }
+  document.getElementById('nameEditBtn').addEventListener('click', openName);
+  document.getElementById('nameCancel').addEventListener('click', closeName);
+  nameOverlay.addEventListener('click', function(e){ if (e.target === nameOverlay) closeName(); });
+  document.getElementById('nameSave').addEventListener('click', function(){
+    var v = document.getElementById('nameInput').value.trim();
+    petName = v || 'おもろっち';
+    try { localStorage.setItem('omoro-name', petName); } catch(e) {}
+    refreshLifeUI();
+    closeName();
+  });
+
+  /* 人生の記録（おもろっちについて） */
+  function renderLives(){
+    var ul = document.getElementById('livesList');
+    if (!ul) return;
+    ul.innerHTML = '';
+    function row(left, right){
+      var li = document.createElement('li');
+      var a = document.createElement('span');
+      a.textContent = left;
+      var b = document.createElement('span');
+      b.className = 'min';
+      b.textContent = right;
+      li.appendChild(a);
+      li.appendChild(b);
+      ul.appendChild(li);
+    }
+    lives.forEach(function(lv){ row(lv.gen + '周目：' + lv.name, lv.reached || ''); });
+    row(gen + '周目：' + petName, '育て中');
+  }
+
+
   function renderGrowth(pop){
     /* 進化した先が自分の合計を超えていたら、合計の範囲に戻す（記録の整合用） */
     if (evolvedIdx > stageOf(my)) evolvedIdx = stageOf(my);
@@ -1274,6 +1452,7 @@
     var dst = STAGES[dispIdx];
     var img = stageImgOf(dispIdx, my);
     totalEl.textContent = my;
+    refreshLifeUI();
     toggleThumb.src = img;
     /* 進捗バーは自分の合計基準。次の閾値に達していたら「あと◯」の代わりに進化ボタン */
     if (idx < STAGES.length - 1) {
@@ -1285,6 +1464,7 @@
         nextRow.hidden = true;
       } else {
         evolveBtn.hidden = true;
+        rinneBtn.hidden = true;
         nextCount.textContent = (next.min - my);
         nextRow.hidden = false;
       }
@@ -1294,6 +1474,7 @@
       evolveBtn.hidden = true;
       nextRow.hidden = true;
       maxRow.hidden = false;
+      rinneBtn.hidden = !(my >= 79);
     }
     /* おうちの表示：アニメ版があればそれ、なければ wide 横長シーン、ない姿は縦絵 */
     var step = stepOf(dispIdx, my);
@@ -1489,6 +1670,7 @@
   var aboutOverlay = document.getElementById('aboutOverlay');
   var aboutIsOpen = false;
   function openAbout(){
+    renderLives();
     aboutOverlay.hidden = false;
     aboutIsOpen = true;
     try { history.pushState({ omoroAbout: 1 }, ''); } catch(e) {}
@@ -1509,7 +1691,7 @@
   });
   document.getElementById('aboutCloseX').addEventListener('click', function(){ closeAbout(false); });
   aboutOverlay.addEventListener('click', function(e){ if (e.target === aboutOverlay) closeAbout(false); });
-  window.addEventListener('popstate', function(){ if (grewIsOpen) closeGrew(true); else if (aboutIsOpen) closeAbout(true); else if (houseIsOpen) closeHouse(true); });
+  window.addEventListener('popstate', function(){ if (rinneIsOpen) closeRinne(); else if (nameIsOpen) closeName(); else if (grewIsOpen) closeGrew(true); else if (aboutIsOpen) closeAbout(true); else if (houseIsOpen) closeHouse(true); });
 
   function spawnFaces(btn){
     for (var i = 0; i < 5; i++) {
@@ -1720,7 +1902,10 @@
       records: {
         'omoro-liked': localStorage.getItem('omoro-liked'),
         'omoro-evolved': localStorage.getItem('omoro-evolved'),
-        'omoro-form': localStorage.getItem('omoro-form')
+        'omoro-form': localStorage.getItem('omoro-form'),
+        'omoro-gen': localStorage.getItem('omoro-gen'),
+        'omoro-name': localStorage.getItem('omoro-name'),
+        'omoro-lives': localStorage.getItem('omoro-lives')
       }
     };
     var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -1769,7 +1954,7 @@
       }
       if (!window.confirm('今の記録を、バックアップの記録で上書きします。よろしいですか？')) return;
       try {
-        ['omoro-liked', 'omoro-evolved', 'omoro-form'].forEach(function(k){
+        ['omoro-liked', 'omoro-evolved', 'omoro-form', 'omoro-gen', 'omoro-name', 'omoro-lives'].forEach(function(k){
           if (rec[k] === null || rec[k] === undefined) localStorage.removeItem(k);
           else localStorage.setItem(k, rec[k]);
         });
