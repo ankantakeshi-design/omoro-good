@@ -896,14 +896,13 @@
         <div class="evo-flash" id="evoFlash" hidden aria-hidden="true"></div>
         <div class="evo-name" id="evoName" hidden></div>
       </div>
-      <button type="button" class="evt-btn" id="evtBtn" hidden>おもろっちの様子が、なんだか変だぞ…</button>
       <div class="form-row" id="formRow" aria-label="すがたをえらぶ"></div>
       <p class="form-hint">タッチで、過去のおもろっちや、育った段階も見れるよ</p>
       <div class="progress">
         <p class="life-row"><span id="lifeGen">1周目</span>｜名前：<b id="lifeName">おもろっち</b><button type="button" class="name-edit" id="nameEditBtn">名前をつけなおす</button></p>
         <p class="total-row"><img id="totalImg" src="stage-egg-t0.png" width="700" height="903" alt=""><b id="totalCount">0</b><span class="next-inline" id="nextRow">（あと <b id="nextCount">10</b>）</span><span class="next-inline" id="maxRow" hidden>✨</span></p>
         <div class="bar"><div id="barFill"></div></div>
-        <p class="daily-note" id="dailyNote">おもろは1日3個までだよ</p>
+        <p class="daily-note" id="dailyNote">おもろは1日4個までだよ</p>
         <button type="button" class="evolve-btn" id="evolveBtn" hidden>✦ 進化する ✦</button>
         <button type="button" class="rinne-btn" id="rinneBtn" hidden>✦ 輪廻転生する ✦</button>
       </div>
@@ -1678,7 +1677,6 @@
     }
     checkGrowth();
     refreshDailyNote();
-    updateEvtBtn();
   }
 
   /* ===== 進化ボタン（見本の流れ：揺れ→フラッシュ→新しい姿＋「◯◯に進化したよ！」） ===== */
@@ -1789,7 +1787,6 @@
     { key: 'trip', line: 'ころんじゃった', mark: null, snd: 'どてっ', sndCls: 'snd-trip fall', cap: '（ころんだ）' }
   ];
   var evtBusy = false;
-  var evtBtn = document.getElementById('evtBtn');
   function evtFormIsEgg(){
     var idx = evolvedIdx;
     if (formKey) {
@@ -1799,21 +1796,9 @@
     }
     return STAGES[idx].key === 'egg';
   }
-  function updateEvtBtn(){
-    if (!evtBtn) return;
-    var show = houseIsOpen && !evtBusy && typeof evtUsedToday === 'function' && !evtUsedToday() && !evtFormIsEgg();
-    evtBtn.hidden = !show;
-  }
-  if (evtBtn) evtBtn.addEventListener('click', function(){
-    if (evtBusy || evtUsedToday()) return;
-    if (evtFormIsEgg()) return;
-    markEvtUsedToday();
-    updateEvtBtn();
-    refreshDailyNote();
-    playRandomEvent();
-  });
   function playRandomEvent(){
     if (evtBusy) return;
+    if (evtFormIsEgg()) return;
     var ev = EVT_EVENTS[Math.floor(Math.random() * EVT_EVENTS.length)];
     evtBusy = true;
     setTimeout(function(){
@@ -1845,7 +1830,7 @@
     panel.hidden = false;
     houseIsOpen = true;
     markGrowthSeen();
-    updateEvtBtn();
+    playRandomEvent();
     toggleBtn.setAttribute('aria-expanded', 'true');
     if (!sceneMode) startWalk();
     try { history.pushState({ omoroHouse: 1 }, ''); } catch(e) {}
@@ -1949,7 +1934,7 @@
     }
   }
 
-  var BASE_LIMIT = 3;
+  var BASE_LIMIT = 4;
   function dailyRec(){
     var t = new Date();
     var key = t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
@@ -1974,18 +1959,12 @@
     var t = new Date();
     return t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
   }
-  function evtUsedToday(){
-    try { return localStorage.getItem('omoro-evt-used') === todayKey(); } catch(e) { return false; }
-  }
-  function markEvtUsedToday(){
-    try { localStorage.setItem('omoro-evt-used', todayKey()); } catch(e) {}
-  }
   function dailyLimit(){
-    return BASE_LIMIT + (evtUsedToday() ? 1 : 0);
+    return BASE_LIMIT;
   }
   function refreshDailyNote(){
     var note = document.getElementById('dailyNote');
-    if (note) note.textContent = evtUsedToday() ? '様子を見てあげたから、今日はおもろ4個までだよ' : 'おもろは1日3個までだよ';
+    if (note) note.textContent = 'おもろは1日4個までだよ';
   }
   refreshDailyNote();
   function doOmoro(id, btn){
