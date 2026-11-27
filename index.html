@@ -810,6 +810,31 @@
   .gift-box.opening .gift-lid{ animation:lidPop .55s ease forwards; }
   @keyframes lidPop{ to{ transform:translateY(-18px) rotate(-16deg); opacity:0; } }
   @keyframes giftBounce{ 0%,100%{ transform:translateY(0); } 50%{ transform:translateY(-6px); } }
+
+  /* おもろっちの小さなイベント（2026-11-27） */
+  .jumpwrap{ position:relative; }
+  .evt-mark{ position:absolute; pointer-events:none; opacity:0; z-index:6; }
+  .evt-puff{ right:2%; bottom:15%; width:36px; height:22px; }
+  .evt-puff i{ position:absolute; display:block; background:#f0e9db; border-radius:50%; }
+  .evt-puff i:nth-child(1){ width:16px; height:16px; left:0; bottom:0; }
+  .evt-puff i:nth-child(2){ width:21px; height:21px; left:9px; bottom:3px; }
+  .evt-puff i:nth-child(3){ width:13px; height:13px; left:23px; bottom:0; }
+  .evt-puff.show{ animation:puffOut 1.4s ease-out forwards; }
+  @keyframes puffOut{ 0%{ opacity:0; transform:translateX(6px) scale(.5); } 25%{ opacity:.95; } 100%{ opacity:0; transform:translateX(-16px) scale(1.25); } }
+  .evt-bubble{ left:57%; top:13%; width:15px; height:15px; border:2.5px solid #a8c8e8; border-radius:50%; background:rgba(200,228,255,.35); box-sizing:border-box; }
+  .evt-bubble.big{ width:25px; height:25px; }
+  .evt-bubble.show{ animation:bubbleUp 1.2s ease-out forwards; }
+  @keyframes bubbleUp{ 0%{ opacity:0; transform:translateY(8px) scale(.6); } 30%{ opacity:1; } 100%{ opacity:0; transform:translateY(-20px) scale(1.15); } }
+  #stageImg.evt-fart{ animation:evtSquash .55s ease; }
+  @keyframes evtSquash{ 0%{ transform:scale(1,1); } 35%{ transform:scale(1.07,.86); } 100%{ transform:scale(1,1); } }
+  #stageImg.evt-burp{ animation:evtBounce .6s ease; }
+  @keyframes evtBounce{ 0%{ transform:translateY(0); } 30%{ transform:translateY(-7px) scale(1.03,.97); } 60%{ transform:translateY(0) scale(.98,1.03); } 100%{ transform:translateY(0); } }
+  #stageImg.evt-yawn{ animation:evtYawn 1.9s ease; }
+  @keyframes evtYawn{ 0%{ transform:scale(1,1); } 40%{ transform:scale(.97,1.08); } 75%{ transform:scale(1.02,.95); } 100%{ transform:scale(1,1); } }
+  #stageImg.evt-hen{ animation:evtHen .95s ease; }
+  @keyframes evtHen{ 0%{ transform:scale(1,1) rotate(0deg); } 25%{ transform:scale(1.1,.82) rotate(-2.5deg); } 50%{ transform:scale(1.1,.82) rotate(2.5deg); } 75%{ transform:scale(1.06,.88) rotate(-1.5deg); } 100%{ transform:scale(1,1) rotate(0deg); } }
+  #stageImg.evt-hiccup{ animation:evtHiccup .95s ease; }
+  @keyframes evtHiccup{ 0%{ transform:translateY(0); } 12%{ transform:translateY(-8px); } 24%{ transform:translateY(0); } 55%{ transform:translateY(0); } 67%{ transform:translateY(-8px); } 79%{ transform:translateY(0); } 100%{ transform:translateY(0); } }
 </style>
 </head>
 <body>
@@ -832,7 +857,7 @@
       <div class="house-room" id="houseRoom">
         <img class="room-bg" id="roomBg" alt="" hidden>
         <button type="button" class="walker" id="walker" aria-label="おもろっち">
-          <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg-t0.png" width="700" height="903" alt="おもろっち"><span class="egg-nest" aria-hidden="true"><svg viewBox="0 0 120 36" fill="none"><ellipse cx="60" cy="25" rx="50" ry="9" fill="#eec25e" opacity="0.5"/><path d="M16 13 l-7 -5 M104 13 l7 -5 M38 9 l-3 -6 M82 9 l3 -6" stroke="#b97e2a" stroke-width="3" stroke-linecap="round"/><path d="M12 15 Q60 30 108 15" stroke="#c9902e" stroke-width="6" stroke-linecap="round"/><path d="M30 18 Q60 29 90 18" stroke="#f2cd7e" stroke-width="3.5" stroke-linecap="round"/><path d="M18 21 Q60 35 102 21" stroke="#a8741f" stroke-width="5.5" stroke-linecap="round"/><path d="M26 26 Q60 36 94 26" stroke="#d9a441" stroke-width="4.5" stroke-linecap="round"/></svg></span></span>
+          <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg-t0.png" width="700" height="903" alt="おもろっち"><span class="egg-nest" aria-hidden="true"><svg viewBox="0 0 120 36" fill="none"><ellipse cx="60" cy="25" rx="50" ry="9" fill="#eec25e" opacity="0.5"/><path d="M16 13 l-7 -5 M104 13 l7 -5 M38 9 l-3 -6 M82 9 l3 -6" stroke="#b97e2a" stroke-width="3" stroke-linecap="round"/><path d="M12 15 Q60 30 108 15" stroke="#c9902e" stroke-width="6" stroke-linecap="round"/><path d="M30 18 Q60 29 90 18" stroke="#f2cd7e" stroke-width="3.5" stroke-linecap="round"/><path d="M18 21 Q60 35 102 21" stroke="#a8741f" stroke-width="5.5" stroke-linecap="round"/><path d="M26 26 Q60 36 94 26" stroke="#d9a441" stroke-width="4.5" stroke-linecap="round"/></svg></span><span class="evt-mark evt-puff" id="evtPuff" aria-hidden="true"><i></i><i></i><i></i></span><span class="evt-mark evt-bubble" id="evtBubble" aria-hidden="true"></span></span>
         </button>
         <button type="button" class="gift-box" id="giftBox" hidden aria-label="プレゼントを開ける"><span class="gift-lid"></span><span class="gift-body"></span></button>
         <div class="evo-flash" id="evoFlash" hidden aria-hidden="true"></div>
@@ -1726,10 +1751,44 @@
     walkRaf = null;
   }
   var houseIsOpen = false;
+
+  /* ===== おもろっちの小さなイベント（おうちを開いた時、たまにランダム） ===== */
+  var EVT_EVENTS = [
+    { key: 'fart', line: 'ちょっとおならしたよ', mark: 'puff' },
+    { key: 'burp', line: 'ゲップしちゃった', mark: 'bubble' },
+    { key: 'yawn', line: 'ふあ〜あ、あくび出ちゃった', mark: 'bubbleBig' },
+    { key: 'hen', line: '変顔してみたよ', mark: null },
+    { key: 'hiccup', line: 'しゃっくり、出ちゃった', mark: null }
+  ];
+  var evtBusy = false;
+  function playRandomEvent(){
+    if (evtBusy) return;
+    if (Math.random() >= 0.45) return;
+    var ev = EVT_EVENTS[Math.floor(Math.random() * EVT_EVENTS.length)];
+    evtBusy = true;
+    setTimeout(function(){
+      if (!houseIsOpen) { evtBusy = false; return; }
+      stageImg.classList.add('evt-' + ev.key);
+      var puff = document.getElementById('evtPuff');
+      var bub = document.getElementById('evtBubble');
+      if (ev.mark === 'puff' && puff) { puff.classList.remove('show'); void puff.offsetWidth; puff.classList.add('show'); }
+      if ((ev.mark === 'bubble' || ev.mark === 'bubbleBig') && bub) {
+        bub.classList.toggle('big', ev.mark === 'bubbleBig');
+        bub.classList.remove('show'); void bub.offsetWidth; bub.classList.add('show');
+      }
+      if (bubbleEl) bubbleEl.textContent = ev.line;
+      setTimeout(function(){
+        stageImg.classList.remove('evt-' + ev.key);
+        renderGrowth(false);
+        evtBusy = false;
+      }, 2700);
+    }, 700);
+  }
   function openHouse(){
     panel.hidden = false;
     houseIsOpen = true;
     markGrowthSeen();
+    playRandomEvent();
     toggleBtn.setAttribute('aria-expanded', 'true');
     if (!sceneMode) startWalk();
     try { history.pushState({ omoroHouse: 1 }, ''); } catch(e) {}
