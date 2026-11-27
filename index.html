@@ -890,7 +890,6 @@
         <button type="button" class="walker" id="walker" aria-label="おもろっち">
           <span class="jumpwrap" id="jumpWrap"><img id="stageImg" src="stage-egg-t0.png" width="700" height="903" alt="おもろっち"><span class="egg-nest" aria-hidden="true"><svg viewBox="0 0 120 36" fill="none"><ellipse cx="60" cy="25" rx="50" ry="9" fill="#eec25e" opacity="0.5"/><path d="M16 13 l-7 -5 M104 13 l7 -5 M38 9 l-3 -6 M82 9 l3 -6" stroke="#b97e2a" stroke-width="3" stroke-linecap="round"/><path d="M12 15 Q60 30 108 15" stroke="#c9902e" stroke-width="6" stroke-linecap="round"/><path d="M30 18 Q60 29 90 18" stroke="#f2cd7e" stroke-width="3.5" stroke-linecap="round"/><path d="M18 21 Q60 35 102 21" stroke="#a8741f" stroke-width="5.5" stroke-linecap="round"/><path d="M26 26 Q60 36 94 26" stroke="#d9a441" stroke-width="4.5" stroke-linecap="round"/></svg></span><span class="evt-mark evt-puff" id="evtPuff" aria-hidden="true"><i></i><i></i><i></i></span><span class="evt-mark evt-bubble" id="evtBubble" aria-hidden="true"></span></span>
         </button>
-        <button type="button" class="gift-box" id="giftBox" hidden aria-label="プレゼントを開ける"><span class="gift-lid"></span><span class="gift-body"></span></button>
         <span class="evt-sound" id="evtSound" aria-hidden="true"></span>
         <div class="evo-flash" id="evoFlash" hidden aria-hidden="true"></div>
         <div class="evo-name" id="evoName" hidden></div>
@@ -1086,17 +1085,6 @@
     </div>
     <button type="button" class="grew-go" id="grewGo">見に行く</button>
     <button type="button" class="about-close" id="grewClose">閉じる</button>
-  </div>
-</div>
-
-<div class="grew-overlay" id="giftOverlay" hidden>
-  <div class="grew-card" role="dialog" aria-modal="true" aria-labelledby="giftMsg">
-    <div class="about-head">
-      <h2 id="giftMsg">プレゼントが開いたよ！</h2>
-      <button type="button" class="about-x" id="giftCloseX" aria-label="閉じる">×</button>
-    </div>
-    <p class="gift-text">おもろっちからのプレゼントで、今日のおもろが あと1個 押せるようになったよ。</p>
-    <button type="button" class="grew-go" id="giftThanks">ありがとう</button>
   </div>
 </div>
 
@@ -1413,7 +1401,7 @@
   function markGrowthSeen(){
     try { localStorage.setItem('omoro-grew-seen', String(growthRank())); } catch(e) {}
     checkGrowth();
-    refreshGiftUI();
+    refreshDailyNote();
   }
 
   /* 育った・進化した時のポップアップ（同じ変化では1回だけ出す） */
@@ -1687,7 +1675,8 @@
       currentStage = idx;
     }
     checkGrowth();
-    refreshGiftUI();
+    refreshDailyNote();
+    updateEvtBtn();
   }
 
   /* ===== 進化ボタン（見本の流れ：揺れ→フラッシュ→新しい姿＋「◯◯に進化したよ！」） ===== */
@@ -1798,17 +1787,27 @@
     { key: 'trip', line: 'ころんじゃった', mark: null, snd: 'どてっ', sndCls: 'snd-trip fall' }
   ];
   var evtBusy = false;
-  var evtReady = false;
   var evtBtn = document.getElementById('evtBtn');
-  function rollEventButton(){
-    if (evtBusy) return;
-    evtReady = Math.random() < 0.45;
-    if (evtBtn) evtBtn.hidden = !evtReady;
+  function evtFormIsEgg(){
+    var idx = evolvedIdx;
+    if (formKey) {
+      for (var i = 0; i < STAGES.length; i++) {
+        if (STAGES[i].key === formKey) { idx = (i <= evolvedIdx) ? i : evolvedIdx; break; }
+      }
+    }
+    return STAGES[idx].key === 'egg';
+  }
+  function updateEvtBtn(){
+    if (!evtBtn) return;
+    var show = houseIsOpen && !evtBusy && typeof evtUsedToday === 'function' && !evtUsedToday() && !evtFormIsEgg();
+    evtBtn.hidden = !show;
   }
   if (evtBtn) evtBtn.addEventListener('click', function(){
-    if (!evtReady || evtBusy) return;
-    evtReady = false;
-    evtBtn.hidden = true;
+    if (evtBusy || evtUsedToday()) return;
+    if (evtFormIsEgg()) return;
+    markEvtUsedToday();
+    updateEvtBtn();
+    refreshDailyNote();
     playRandomEvent();
   });
   function playRandomEvent(){
@@ -1844,7 +1843,7 @@
     panel.hidden = false;
     houseIsOpen = true;
     markGrowthSeen();
-    rollEventButton();
+    updateEvtBtn();
     toggleBtn.setAttribute('aria-expanded', 'true');
     if (!sceneMode) startWalk();
     try { history.pushState({ omoroHouse: 1 }, ''); } catch(e) {}
@@ -1892,7 +1891,7 @@
   });
   document.getElementById('aboutCloseX').addEventListener('click', function(){ closeAbout(false); });
   aboutOverlay.addEventListener('click', function(e){ if (e.target === aboutOverlay) closeAbout(false); });
-  window.addEventListener('popstate', function(){ if (giftIsOpen) closeGiftCard(); else if (rinneIsOpen) closeRinne(); else if (nameIsOpen) closeName(); else if (grewIsOpen) closeGrew(true); else if (aboutIsOpen) closeAbout(true); else if (houseIsOpen) closeHouse(true); });
+  window.addEventListener('popstate', function(){ if (rinneIsOpen) closeRinne(); else if (nameIsOpen) closeName(); else if (grewIsOpen) closeGrew(true); else if (aboutIsOpen) closeAbout(true); else if (houseIsOpen) closeHouse(true); });
 
   function spawnFaces(btn){
     for (var i = 0; i < 5; i++) {
@@ -1967,55 +1966,26 @@
     toastTimer = setTimeout(function(){ el.classList.remove('show'); }, 2400);
   }
 
-  /* ===== おもろっちからのプレゼント =====
-     普段は1日3個まで。おもろっちがプレゼントを用意した日は、
-     開けるとその日だけ +1個（4個まで）になる。 */
-  var gift = { d: '', st: 'none' };
-  try { var g0 = JSON.parse(localStorage.getItem('omoro-gift') || 'null'); if (g0 && g0.d) gift = g0; } catch(e) {}
+  /* ===== 「様子が変だぞ」のお礼（旧プレゼントの置き換え、2026-11-27） =====
+     普段は1日3個まで。「様子が変だぞ」を見てあげた日は、その日だけ +1個（4個まで）。 */
   function todayKey(){
     var t = new Date();
     return t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
   }
-  function saveGift(){ try { localStorage.setItem('omoro-gift', JSON.stringify(gift)); } catch(e) {} }
-  function rollGift(){
-    var k = todayKey();
-    if (gift.d !== k) {
-      gift = { d: k, st: (Math.random() < 0.6 ? 'waiting' : 'none') };
-      saveGift();
-    }
+  function evtUsedToday(){
+    try { return localStorage.getItem('omoro-evt-used') === todayKey(); } catch(e) { return false; }
+  }
+  function markEvtUsedToday(){
+    try { localStorage.setItem('omoro-evt-used', todayKey()); } catch(e) {}
   }
   function dailyLimit(){
-    return BASE_LIMIT + ((gift.st === 'opened' && gift.d === todayKey()) ? 1 : 0);
+    return BASE_LIMIT + (evtUsedToday() ? 1 : 0);
   }
-  var giftBox = document.getElementById('giftBox');
-  var giftOverlay = document.getElementById('giftOverlay');
-  var giftIsOpen = false;
-  function refreshGiftUI(){
-    rollGift();
-    if (giftBox) giftBox.hidden = !(gift.st === 'waiting');
+  function refreshDailyNote(){
     var note = document.getElementById('dailyNote');
-    if (note) note.textContent = (gift.st === 'opened' && gift.d === todayKey()) ? 'プレゼントで、今日はおもろ4個までだよ' : 'おもろは1日3個までだよ';
-    if (gift.st === 'waiting' && !toggleBtn.classList.contains('grew')) {
-      var b = document.querySelector('.bubble');
-      if (b && b.textContent === '僕のこと、育ててくれる？') b.textContent = 'プレゼント、用意したよ！';
-    }
+    if (note) note.textContent = evtUsedToday() ? '様子を見てあげたから、今日はおもろ4個までだよ' : 'おもろは1日3個までだよ';
   }
-  function openGiftCard(){ giftOverlay.hidden = false; giftIsOpen = true; }
-  function closeGiftCard(){ giftOverlay.hidden = true; giftIsOpen = false; }
-  if (giftBox) giftBox.addEventListener('click', function(){
-    if (gift.st !== 'waiting') return;
-    giftBox.classList.add('opening');
-    setTimeout(function(){
-      gift.st = 'opened'; saveGift();
-      giftBox.hidden = true; giftBox.classList.remove('opening');
-      refreshGiftUI();
-      openGiftCard();
-    }, 620);
-  });
-  document.getElementById('giftThanks').addEventListener('click', closeGiftCard);
-  document.getElementById('giftCloseX').addEventListener('click', closeGiftCard);
-  giftOverlay.addEventListener('click', function(e){ if (e.target === giftOverlay) closeGiftCard(); });
-  refreshGiftUI();
+  refreshDailyNote();
   function doOmoro(id, btn){
     if (liked.indexOf(id) >= 0) return;
     var rec = dailyRec();
