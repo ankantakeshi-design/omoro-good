@@ -1364,6 +1364,8 @@
   });
 
   /* ===== 輪廻転生と名前 ===== */
+  var rinneDemo = false;
+  try { rinneDemo = new URLSearchParams(location.search).get('demo') === 'rinne'; } catch(e) {}
   var rinneOverlay = document.getElementById('rinneOverlay');
   var rinneIsOpen = false;
   function showRinneStep(id){
@@ -1423,7 +1425,7 @@
       setTimeout(function(){ el.classList.add('on'); }, 350 + i * 500);
     });
     setTimeout(function(){
-      doReincarnate();
+      if (!rinneDemo) doReincarnate();
       showRinneStep('rinneReturn');
       setTimeout(function(){
         document.getElementById('rinneGod2').hidden = true;
@@ -1436,13 +1438,14 @@
         egg.classList.add('pop');
       }, 2900);
       setTimeout(function(){
-        document.getElementById('rinneBornTitle').textContent = gen + '周目のはじまり';
+        document.getElementById('rinneBornTitle').textContent = (rinneDemo ? gen + 1 : gen) + '周目のはじまり';
         document.getElementById('rinneNameInput').value = '';
         showRinneStep('rinneBorn');
       }, 4200);
     }, 2750);
   });
   document.getElementById('rinneStart').addEventListener('click', function(){
+    if (rinneDemo) { closeRinne(); return; }
     var v = document.getElementById('rinneNameInput').value.trim();
     petName = v || 'おもろっち';
     try { localStorage.setItem('omoro-name', petName); } catch(e) {}
@@ -1492,6 +1495,8 @@
     lives.forEach(function(lv){ row(lv.gen + '周目：' + lv.name, lv.reached || ''); });
     row(gen + '周目：' + petName, '育て中');
   }
+  /* デモ再生（?demo=rinne）：本物の記録は変えずに、転生イベントだけ再生する */
+  if (rinneDemo) setTimeout(openRinne, 700);
 
 
   function renderGrowth(pop){
