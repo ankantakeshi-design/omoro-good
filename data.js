@@ -4,6 +4,33 @@
 window.OMORO_DATA = {
   entries: [
     {
+      id: "20261128-threads-goji-line-senshuken",
+      date: "2026-11-28",
+      dateLabel: "2026年11月28日",
+      platform: "Threads",
+      title: "「母親からの誤字LINE選手権」",
+      body: "タカキハルカさんの投稿。お母さんからのLINEで「ピラティス」が「ティラピス」になっていたスクリーンショットから始まる、母親の誤字LINEの持ち寄りです。みんなの母親の誤字が次々と集まりました。表示610万回、いいね3.4万、返信3,100件です。",
+      url: "https://www.threads.com/@mainichi_takaki/post/DYMPWmAkWFK"
+    },
+    {
+      id: "20261128-threads-jidoushazei",
+      date: "2026-11-28",
+      dateLabel: "2026年11月28日",
+      platform: "Threads",
+      title: "「自動車税51,700円かと思った」",
+      body: "Daisuke Urashimaさんの投稿。届いた納付書の金額を見間違えて、自動車税が51,700円かとびっくりした一枚です。返信欄には同じような勘違いや、請求書あるあるが次々と集まりました。表示620万回、いいね1.6万、返信1,100件です。",
+      url: "https://www.threads.com/@daisk29/post/DYGYcOMASb9"
+    },
+    {
+      id: "20261128-threads-neko-cartier",
+      date: "2026-11-28",
+      dateLabel: "2026年11月28日",
+      platform: "Threads",
+      title: "「うちの子もいけるんじゃないか！と思ったけど、いけなかった件」",
+      body: "tenmusさんの投稿。カルティエのヒョウの広告と同じポーズを、うちのキジトラ猫で再現しようとした写真です。返信欄には「うちの子も」と、同じ構図の猫や鳥の写真が次々と集まりました。表示34.1万回、いいね9,700、返信472件です。",
+      url: "https://www.threads.com/@aogitenmusu/post/DfV0kTaEk3M"
+    },
+    {
       id: "20261127-threads-iimachigai-senshuken",
       date: "2026-11-27",
       dateLabel: "2026年11月27日",
