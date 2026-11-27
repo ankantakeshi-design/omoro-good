@@ -790,7 +790,7 @@
       <div class="progress">
         <p class="total-row"><img id="totalImg" src="stage-egg-t0.png" width="700" height="903" alt=""><b id="totalCount">0</b><span class="next-inline" id="nextRow">（あと <b id="nextCount">10</b>）</span><span class="next-inline" id="maxRow" hidden>✨</span></p>
         <div class="bar"><div id="barFill"></div></div>
-        <p class="daily-note">おもろは1日5個までだよ</p>
+        <p class="daily-note">おもろは1日3個までだよ</p>
         <button type="button" class="evolve-btn" id="evolveBtn" hidden>✦ 進化する ✦</button>
       </div>
       <p class="about-row"><button type="button" class="about-link" id="aboutOpen">おもろっちについて ›</button></p>
@@ -1565,7 +1565,7 @@
     }
   }
 
-  var DAILY_LIMIT = 5;
+  var DAILY_LIMIT = 3;
   function dailyRec(){
     var t = new Date();
     var key = t.getFullYear() + '-' + (t.getMonth() + 1) + '-' + t.getDate();
@@ -1587,7 +1587,7 @@
     if (liked.indexOf(id) >= 0) return;
     var rec = dailyRec();
     if (rec.n >= DAILY_LIMIT) {
-      showDailyToast('今日のおもろは5個までだよ。また明日ね');
+      showDailyToast('今日のおもろは3個までだよ。また明日ね');
       return;
     }
     spawnFaces(btn);
