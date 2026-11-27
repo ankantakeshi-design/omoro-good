@@ -1339,7 +1339,7 @@
     jumpWrap.classList.add('hop');
   }
   jumpWrap.addEventListener('animationend', function(){ jumpWrap.classList.remove('hop'); });
-  walker.addEventListener('click', function(){ hop(); playRandomEvent(); });
+  walker.addEventListener('click', function(){ hop(); playRandomEvent('tap'); });
 
   /* ===== すがたをえらぶ（サムネイル行） ===== */
   var formRow = document.getElementById('formRow');
@@ -1801,7 +1801,6 @@
     { key: 'trip', line: 'ころんじゃった', mark: null, snd: 'どてっ', sndCls: 'snd-trip fall', cap: '（ころんだ）' },
     { key: 'smile', line: '微笑んじゃった', mark: null, snd: 'クスクスクス', sndCls: 'snd-smile', cap: '（微笑んだ）' }
   ];
-  var evtBusy = false;
   function evtFormKey(){
     var idx = evolvedIdx;
     if (formKey) {
@@ -1822,14 +1821,33 @@
     { key: 'dosu', line: 'ドスドス歩いてる', mark: null, snd: 'ドスドス', sndCls: 'snd-eggdosu twice', cap: '（足音がドスドス）' },
     { key: 'gao', line: 'ガオーって鳴いた', mark: null, snd: 'ガオー', sndCls: 'snd-egggao', cap: '（大きな鳴き声）' }
   ];
-  function playRandomEvent(){
-    if (evtBusy) return;
+  var evtCur = null;
+  var evtLastKey = '';
+  var evtT1 = null, evtT2 = null;
+  function evtCleanup(){
+    if (evtCur) { stageImg.classList.remove('evt-' + evtCur); evtCur = null; }
+    var puff = document.getElementById('evtPuff');
+    var bub = document.getElementById('evtBubble');
+    var sndEl = document.getElementById('evtSound');
+    if (puff) puff.classList.remove('show');
+    if (bub) bub.classList.remove('show');
+    if (sndEl) sndEl.classList.remove('show');
+  }
+  function playRandomEvent(srcKind){
+    if (evtT1) { clearTimeout(evtT1); evtT1 = null; }
+    if (evtT2) { clearTimeout(evtT2); evtT2 = null; }
+    evtCleanup();
     var fk = evtFormKey();
     var list = (fk === 'egg') ? EGG_EVENTS : (fk === 'daidara' ? EVT_EVENTS.concat(DAIDARA_EVENTS) : EVT_EVENTS);
-    var ev = list[Math.floor(Math.random() * list.length)];
-    evtBusy = true;
-    setTimeout(function(){
-      if (!houseIsOpen) { evtBusy = false; return; }
+    var pick = Math.floor(Math.random() * list.length);
+    var ev = list[pick];
+    if (list.length > 1 && ev.key === evtLastKey) ev = list[(pick + 1) % list.length];
+    evtLastKey = ev.key;
+    var delay = (srcKind === 'tap') ? 100 : 650;
+    evtT1 = setTimeout(function(){
+      evtT1 = null;
+      if (!houseIsOpen) { evtCleanup(); return; }
+      evtCur = ev.key;
       stageImg.classList.add('evt-' + ev.key);
       var puff = document.getElementById('evtPuff');
       var bub = document.getElementById('evtBubble');
@@ -1846,18 +1864,18 @@
         sndEl.classList.add('show');
       }
       if (bubbleEl) bubbleEl.textContent = ev.line;
-      setTimeout(function(){
-        stageImg.classList.remove('evt-' + ev.key);
+      evtT2 = setTimeout(function(){
+        evtT2 = null;
+        evtCleanup();
         renderGrowth(false);
-        evtBusy = false;
-      }, 2700);
-    }, 700);
+      }, 2300);
+    }, delay);
   }
   function openHouse(){
     panel.hidden = false;
     houseIsOpen = true;
     markGrowthSeen();
-    playRandomEvent();
+    playRandomEvent('open');
     toggleBtn.setAttribute('aria-expanded', 'true');
     if (!sceneMode) startWalk();
     try { history.pushState({ omoroHouse: 1 }, ''); } catch(e) {}
