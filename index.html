@@ -866,6 +866,8 @@
   @keyframes soundFall{ 0%{ opacity:0; transform:translateX(-50%) rotate(-4deg) scale(.5); } 16%{ opacity:1; transform:translateX(-50%) rotate(-4deg) scale(1.1); } 30%{ transform:translateX(-50%) rotate(-4deg) scale(1); } 48%{ transform:translateX(-42%) rotate(64deg) translateY(12px) scale(1); } 78%{ opacity:1; transform:translateX(-42%) rotate(64deg) translateY(12px) scale(1); } 100%{ opacity:0; transform:translateX(-42%) rotate(64deg) translateY(12px) scale(1); } }
   .snd-laugh::before, .snd-laugh::after{ content:'\2726'; position:absolute; font-size:19px; color:#f2b134; text-shadow:1px 0 0 #fff, -1px 0 0 #fff, 0 1px 0 #fff, 0 -1px 0 #fff; }
   .snd-laugh::before{ left:-27px; top:-9px; } .snd-laugh::after{ right:-27px; bottom:-7px; }
+
+  .snd-cap{ display:block; font-size:16px; letter-spacing:1px; text-align:center; margin-top:1px; }
 </style>
 </head>
 <body>
@@ -1776,15 +1778,15 @@
 
   /* ===== おもろっちの小さなイベント（おうちを開いた時、たまにランダム） ===== */
   var EVT_EVENTS = [
-    { key: 'fart', line: 'ちょっとおならしたよ', mark: 'puff', snd: 'ぷぅ～', sndCls: 'snd-fart' },
-    { key: 'burp', line: 'ゲップしちゃった', mark: 'bubble', snd: 'げぷぅ～', sndCls: 'snd-burp' },
-    { key: 'yawn', line: 'ふあ〜あ、あくび出ちゃった', mark: 'bubbleBig', snd: 'ふあ〜あ', sndCls: 'snd-yawn slow' },
-    { key: 'hiccup', line: 'しゃっくり、出ちゃった', mark: null, snd: 'ひっく！', sndCls: 'snd-hiccup twice' },
-    { key: 'laugh', line: 'わらっちゃった', mark: null, snd: 'わはははは！！', sndCls: 'snd-laugh wiggle' },
-    { key: 'sneeze', line: 'くしゃみ出ちゃった', mark: null, snd: 'はくしょん！', sndCls: 'snd-sneeze' },
-    { key: 'stomach', line: 'お腹が鳴っちゃった', mark: null, snd: 'ぐぅ〜', sndCls: 'snd-stomach rumble' },
-    { key: 'surprise', line: 'びっくりした！', mark: null, snd: 'びくっ！', sndCls: 'snd-surprise' },
-    { key: 'trip', line: 'ころんじゃった', mark: null, snd: 'どてっ', sndCls: 'snd-trip fall' }
+    { key: 'fart', line: 'ちょっとおならしたよ', mark: 'puff', snd: 'ぷぅ～', sndCls: 'snd-fart', cap: '（おならした）' },
+    { key: 'burp', line: 'ゲップしちゃった', mark: 'bubble', snd: 'げぷぅ～', sndCls: 'snd-burp', cap: '（げっぷした）' },
+    { key: 'yawn', line: 'ふあ〜あ、あくび出ちゃった', mark: 'bubbleBig', snd: 'ふあ〜あ', sndCls: 'snd-yawn slow', cap: '（あくびした）' },
+    { key: 'hiccup', line: 'しゃっくり、出ちゃった', mark: null, snd: 'ひっく！', sndCls: 'snd-hiccup twice', cap: '（しゃっくりした）' },
+    { key: 'laugh', line: 'わらっちゃった', mark: null, snd: 'わはははは！！', sndCls: 'snd-laugh wiggle', cap: '（わらった）' },
+    { key: 'sneeze', line: 'くしゃみ出ちゃった', mark: null, snd: 'はくしょん！', sndCls: 'snd-sneeze', cap: '（くしゃみした）' },
+    { key: 'stomach', line: 'お腹が鳴っちゃった', mark: null, snd: 'ぐぅ〜', sndCls: 'snd-stomach rumble', cap: '（お腹が鳴った）' },
+    { key: 'surprise', line: 'びっくりした！', mark: null, snd: 'びくっ！', sndCls: 'snd-surprise', cap: '（びっくりした）' },
+    { key: 'trip', line: 'ころんじゃった', mark: null, snd: 'どてっ', sndCls: 'snd-trip fall', cap: '（ころんだ）' }
   ];
   var evtBusy = false;
   var evtBtn = document.getElementById('evtBtn');
@@ -1826,7 +1828,7 @@
       }
       var sndEl = document.getElementById('evtSound');
       if (sndEl) {
-        sndEl.textContent = ev.snd;
+        sndEl.innerHTML = ev.snd + '<span class="snd-cap">' + ev.cap + '</span>';
         sndEl.className = 'evt-sound ' + ev.sndCls;
         void sndEl.offsetWidth;
         sndEl.classList.add('show');
