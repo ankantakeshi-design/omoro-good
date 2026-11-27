@@ -1327,7 +1327,7 @@
     jumpWrap.classList.add('hop');
   }
   jumpWrap.addEventListener('animationend', function(){ jumpWrap.classList.remove('hop'); });
-  walker.addEventListener('click', hop);
+  walker.addEventListener('click', function(){ hop(); playRandomEvent(); });
 
   /* ===== すがたをえらぶ（サムネイル行） ===== */
   var formRow = document.getElementById('formRow');
