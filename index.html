@@ -2408,16 +2408,25 @@
 
   // ページが見えなくなったら止めます（タブやアプリの切り替え、画面を消した時に、音楽が残らないように）
   var wasPlaying = false;
-  document.addEventListener('visibilitychange', function(){
-    if (document.hidden) {
-      wasPlaying = wanted && !player.paused;
-      if (wasPlaying) player.pause();
-    } else if (wasPlaying && wanted) {
+  function bgmPause(){
+    if (!player.paused) { wasPlaying = true; player.pause(); }
+  }
+  function bgmResume(){
+    if (wasPlaying && wanted && !document.hidden) {
       wasPlaying = false;
       player.play().catch(function(){});
     }
+  }
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) bgmPause(); else bgmResume();
   });
-  window.addEventListener('pagehide', function(){ if (!player.paused) player.pause(); });
+  window.addEventListener('blur', bgmPause);
+  window.addEventListener('focus', bgmResume);
+  window.addEventListener('pagehide', bgmPause);
+  document.addEventListener('freeze', bgmPause);
+  setInterval(function(){
+    if (document.hidden && !player.paused) bgmPause();
+  }, 2000);
 
   // 1分ごとに時間帯を確かめて、帯が変わっていたら曲を切り替えます
   setInterval(function(){
