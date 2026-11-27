@@ -842,6 +842,8 @@
   #stageImg.evt-surprise{ animation:evtSurprise .6s ease; }
   @keyframes evtSurprise{ 0%{ transform:translateY(0); } 22%{ transform:translateY(-14px); } 48%{ transform:translateY(0) scale(1.05,.93); } 70%{ transform:translateY(-3px) scale(1,1); } 100%{ transform:translateY(0); } }
   #stageImg.evt-trip{ animation:evtTrip 1.35s ease; transform-origin:50% 88%; }
+  #stageImg.evt-smile{ animation:evtSmile 1.6s ease; }
+  @keyframes evtSmile{ 0%,100%{ transform:rotate(0deg) translateY(0); } 25%{ transform:rotate(2deg) translateY(-2px); } 55%{ transform:rotate(-2deg) translateY(-2px); } 80%{ transform:rotate(1deg) translateY(0); } }
   @keyframes evtTrip{ 0%{ transform:rotate(0deg); } 25%{ transform:rotate(-13deg) translateY(5px); } 60%{ transform:rotate(-13deg) translateY(5px); } 85%{ transform:rotate(2deg); } 100%{ transform:rotate(0deg); } }
   @keyframes evtLaugh{ 0%,100%{ transform:translateY(0) rotate(0deg); } 15%{ transform:translateY(-6px) rotate(-2deg); } 30%{ transform:translateY(0) rotate(2deg); } 45%{ transform:translateY(-6px) rotate(-2deg); } 60%{ transform:translateY(0) rotate(2deg); } 75%{ transform:translateY(-5px) rotate(-1deg); } 88%{ transform:translateY(0); } }
   @keyframes evtHiccup{ 0%{ transform:translateY(0); } 12%{ transform:translateY(-8px); } 24%{ transform:translateY(0); } 55%{ transform:translateY(0); } 67%{ transform:translateY(-8px); } 79%{ transform:translateY(0); } 100%{ transform:translateY(0); } }
@@ -857,7 +859,7 @@
   .evt-sound.show.twice{ animation-name:soundTwice; animation-duration:1.6s; }
   @keyframes soundPop{ 0%{ opacity:0; transform:translateX(-50%) rotate(-4deg) scale(.4); } 18%{ opacity:1; transform:translateX(-50%) rotate(-4deg) scale(1.15); } 30%{ transform:translateX(-50%) rotate(-4deg) scale(1); } 75%{ opacity:1; } 100%{ opacity:0; transform:translateX(-50%) rotate(-4deg) scale(1.02) translateY(-6px); } }
   @keyframes soundTwice{ 0%{ opacity:0; transform:translateX(-50%) rotate(-4deg) scale(.4); } 14%{ opacity:1; transform:translateX(-50%) rotate(-4deg) scale(1.12); } 26%{ transform:translateX(-50%) rotate(-4deg) scale(1); } 44%{ opacity:1; transform:translateX(-50%) rotate(-4deg) scale(.92); } 58%{ opacity:1; transform:translateX(-50%) rotate(-4deg) scale(1.12); } 72%{ transform:translateX(-50%) rotate(-4deg) scale(1); } 100%{ opacity:0; transform:translateX(-50%) rotate(-4deg) scale(1) translateY(-6px); } }
-  .snd-fart{ color:#b07d2b; } .snd-burp{ color:#4a86c5; } .snd-yawn{ color:#9a7bc8; font-size:30px; } .snd-hiccup{ color:#e86a17; } .snd-laugh{ color:#4da653; font-size:28px; } .snd-sneeze{ color:#2ea3a8; } .snd-stomach{ color:#d96a4a; font-size:27px; } .snd-surprise{ color:#7a5fd0; } .snd-trip{ color:#8a6d4b; }
+  .snd-fart{ color:#b07d2b; } .snd-burp{ color:#4a86c5; } .snd-yawn{ color:#9a7bc8; font-size:30px; } .snd-hiccup{ color:#e86a17; } .snd-laugh{ color:#4da653; font-size:28px; } .snd-sneeze{ color:#2ea3a8; } .snd-smile{ color:#e07ba0; font-size:28px; } .snd-stomach{ color:#d96a4a; font-size:27px; } .snd-surprise{ color:#7a5fd0; } .snd-trip{ color:#8a6d4b; }
   .evt-sound.wiggle.show{ animation-name:soundWiggle; }
   @keyframes soundWiggle{ 0%{ opacity:0; transform:translateX(-50%) rotate(-5deg) scale(.5); } 15%{ opacity:1; transform:translateX(-50%) rotate(3deg) scale(1.1); } 30%{ transform:translateX(-50%) rotate(-3deg) scale(1); } 45%{ transform:translateX(-50%) rotate(3deg) scale(1.04); } 60%{ transform:translateX(-50%) rotate(-3deg) scale(1); } 75%{ opacity:1; transform:translateX(-50%) rotate(2deg) scale(1.02); } 100%{ opacity:0; transform:translateX(-50%) rotate(0deg) scale(1) translateY(-6px); } }
   .evt-sound.rumble.show{ animation-name:soundRumble; }
@@ -1784,7 +1786,8 @@
     { key: 'sneeze', line: 'くしゃみ出ちゃった', mark: null, snd: 'はくしょん！', sndCls: 'snd-sneeze', cap: '（くしゃみした）' },
     { key: 'stomach', line: 'お腹が鳴っちゃった', mark: null, snd: 'ぐぅ〜', sndCls: 'snd-stomach rumble', cap: '（お腹が鳴った）' },
     { key: 'surprise', line: 'びっくりした！', mark: null, snd: 'びくっ！', sndCls: 'snd-surprise', cap: '（びっくりした）' },
-    { key: 'trip', line: 'ころんじゃった', mark: null, snd: 'どてっ', sndCls: 'snd-trip fall', cap: '（ころんだ）' }
+    { key: 'trip', line: 'ころんじゃった', mark: null, snd: 'どてっ', sndCls: 'snd-trip fall', cap: '（ころんだ）' },
+    { key: 'smile', line: '微笑んじゃった', mark: null, snd: 'クスクスクス', sndCls: 'snd-smile', cap: '（微笑んだ）' }
   ];
   var evtBusy = false;
   function evtFormIsEgg(){
