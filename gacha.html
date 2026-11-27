@@ -180,11 +180,43 @@
     font-size:15px; font-weight:700; white-space:nowrap;
   }
   .toast[hidden]{ display:none; }
+
+  .demo-note{ background:#fff3d6; border:2px solid var(--card-border); border-radius:12px; padding:8px 12px; font-weight:700; font-size:14px; }
+  /* ガチャ演出ステージ（2026-11-27） */
+  .stage{ position:relative; margin-top:18px; min-height:330px; }
+  .stage[hidden]{ display:none; }
+  .stage [hidden]{ display:none !important; }
+  .big-cap{ position:relative; width:148px; height:148px; margin:24px auto 0; animation:capIn .45s ease-out; }
+  .big-cap[hidden]{ display:none; }
+  .big-cap .bc-top,.big-cap .bc-bottom{ position:absolute; left:0; width:148px; height:74px; }
+  .big-cap .bc-top{ top:0; border-radius:74px 74px 0 0; background:var(--cap1,#e05d00); box-shadow:inset 0 6px 8px rgba(255,255,255,.35); }
+  .big-cap .bc-bottom{ bottom:0; border-radius:0 0 74px 74px; background:#fdf6e3; box-shadow:inset 0 -6px 8px rgba(0,0,0,.06); }
+  @keyframes capIn{ 0%{ transform:translateY(-44px) scale(.7); opacity:0; } 60%{ transform:translateY(5px) scale(1.05); opacity:1; } 100%{ transform:translateY(0) scale(1); } }
+  .big-cap.wobble{ animation:capWobble .55s ease-in-out; }
+  @keyframes capWobble{ 0%,100%{ transform:rotate(0); } 20%{ transform:rotate(-7deg); } 45%{ transform:rotate(6deg); } 70%{ transform:rotate(-4deg); } }
+  .big-cap.open .bc-top{ animation:capTopFly .5s ease-out forwards; }
+  .big-cap.open .bc-bottom{ animation:capBottomDrop .5s ease-in forwards; }
+  @keyframes capTopFly{ 0%{ transform:translateY(0) rotate(0); opacity:1; } 100%{ transform:translateY(-118px) rotate(-38deg); opacity:0; } }
+  @keyframes capBottomDrop{ 0%{ transform:translateY(0); opacity:1; } 100%{ transform:translateY(72px); opacity:0; } }
+  .stage-flash{ position:absolute; left:50%; top:88px; width:64px; height:64px; margin-left:-32px; border-radius:50%; background:radial-gradient(circle,#fff8dc 0%,rgba(255,220,90,.85) 45%,rgba(255,220,90,0) 75%); opacity:0; pointer-events:none; }
+  .stage-flash.go{ animation:flashGo .55s ease-out forwards; }
+  @keyframes flashGo{ 0%{ opacity:0; transform:scale(.4); } 25%{ opacity:1; } 100%{ opacity:0; transform:scale(4.6); } }
+  .sparks span{ position:absolute; left:50%; top:104px; color:#f7b733; opacity:0; pointer-events:none; }
+  .sparks.go span{ animation:sparkFly .8s ease-out forwards; }
+  @keyframes sparkFly{ 0%{ opacity:1; transform:translate(0,0) scale(.6); } 100%{ opacity:0; transform:translate(var(--dx),var(--dy)) scale(1.25); } }
+  .stage img#resultImg{ display:block; max-width:min(240px,70vw); max-height:280px; width:auto; margin:0 auto; }
+  .stage img#resultImg.pop{ animation:figPop .55s ease-out; }
+  @keyframes figPop{ 0%{ transform:scale(.3); opacity:0; } 55%{ transform:scale(1.09); opacity:1; } 75%{ transform:scale(.96); } 100%{ transform:scale(1); opacity:1; } }
+  .result-new.bounce{ animation:newBounce .6s ease-out; }
+  @keyframes newBounce{ 0%{ transform:scale(.3); } 55%{ transform:scale(1.35); } 100%{ transform:scale(1); } }
+  .back-bottom{ margin:14px 0 0; }
+  .back-bottom a{ display:flex; align-items:center; justify-content:center; min-height:54px; background:#fff; border:2px solid var(--card-border); border-radius:999px; color:var(--orange-dark); font-weight:900; text-decoration:none; font-size:16px; }
 </style>
 </head>
 <body>
 <div class="wrap">
   <p class="back-row"><a href="./">‹ おもろグ〜にもどる</a></p>
+  <p class="demo-note" id="demoNote" hidden>テスト表示中だよ。本物の回数やコレクションは変わらないよ。</p>
   <h1>🎁 おもろガチャ</h1>
   <p class="lead">輪廻転生のごほうびガチャだよ。<br>転生するたびに3回まわせて、かぶりなし。<br>12種ぜんぶ集めてみてね。</p>
 
@@ -203,11 +235,14 @@
     <p class="spin-count">あと <b id="spinCount">0</b> 回 まわせるよ</p>
     <button type="button" class="spin-btn" id="spinBtn">ガチャをまわす</button>
     <p class="spin-note" id="spinNote"></p>
-    <div class="result" id="result" hidden>
-      <img id="resultImg" src="" alt="">
-      <p class="result-name" id="resultName"></p>
-      <p><span class="result-new">NEW！</span></p>
-      <a class="save-btn" id="saveBtn" href="#" download>📥 画像を保存する</a>
+    <div class="stage" id="stage" hidden>
+      <div class="stage-flash" id="stageFlash"></div>
+      <div class="big-cap" id="bigCap"><span class="bc-top"></span><span class="bc-bottom"></span></div>
+      <div class="sparks" id="sparks" aria-hidden="true"></div>
+      <img id="resultImg" src="" alt="" hidden>
+      <p class="result-name" id="resultName" hidden></p>
+      <p id="resultNewWrap" hidden><span class="result-new">NEW！</span></p>
+      <a class="save-btn" id="saveBtn" href="#" download hidden>📥 画像を保存する</a>
     </div>
   </section>
 
@@ -225,11 +260,11 @@
     <h2>なかまたちの紹介</h2>
 
     <div class="intro-card">
-      <div class="intro-thumb"><img id="introOmoroImg" src="stage-egg-t0.png" alt="おもろっち" loading="lazy"></div>
+      <div class="intro-thumb"><img id="introOmoroImg" src="thumb-egg.webp" alt="おもろっち" loading="lazy"></div>
       <div class="intro-body">
         <p class="intro-name">おもろっち</p>
-        <p class="intro-text">おもろグ〜で育つ、小さな命。おもろを集めて、たまご→ベビー→こども→おとな→ダイダラ→神へと育っていくよ。</p>
-        <p class="intro-link"><a href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener noreferrer">LINEスタンプはこちら ›</a></p>
+        <p class="intro-text">おもろグ〜で育つ、小さな命。おもろを集めると、少しずつ育っていくよ。</p>
+        <p class="intro-link"><a href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener noreferrer">LINEスタンプはこちら（進化のネタバレ注意） ›</a></p>
       </div>
     </div>
 
@@ -237,7 +272,7 @@
       <div class="intro-thumb"><img src="gacha-intro-hii.webp" alt="ひーくん" loading="lazy"></div>
       <div class="intro-body">
         <p class="intro-name">ひーくん</p>
-        <p class="intro-text">火の男の子。考えることと、やる気を出すのが得意。気持ちを言葉にするのは、少しずつ練習中だよ。絵本の主人公で、昔のたけちゃんがモデル。</p>
+        <p class="intro-text">火の男の子。考えることと、やる気を出すのが得意。気持ちを言葉にするのは、少しずつ練習中だよ。</p>
         <p class="intro-link"><a href="https://kasuiehon.pages.dev/" target="_blank" rel="noopener noreferrer">絵本『ひーくんと みーちゃん』はこちら ›</a></p>
       </div>
     </div>
@@ -246,8 +281,8 @@
       <div class="intro-thumb"><img src="gacha-intro-mii.webp" alt="みーちゃん" loading="lazy"></div>
       <div class="intro-body">
         <p class="intro-name">みーちゃん</p>
-        <p class="intro-text">水の女の子。感じることが得意で、気持ちがいっぱいになると、言葉が止まってしまうこともあるよ。ひーくんと一緒に、言葉にする練習をしているよ。</p>
-        <p class="intro-link"><a href="https://kasuiehon.pages.dev/" target="_blank" rel="noopener noreferrer">絵本『ひーくんと みーちゃん』はこちら ›</a></p>
+        <p class="intro-text">水の女の子。感じることが得意で、気持ちがいっぱいになると、言葉が止まってしまうこともあるよ。</p>
+        <p class="intro-link"><a href="https://kasuiehon.pages.dev/" target="_blank" rel="noopener noreferrer">絵本『ひーくんと みーちゃん』はこちら ›</a><br><a href="https://mizujoshinomori.pages.dev/" target="_blank" rel="noopener noreferrer">集まれ水女子の森はこちら ›</a></p>
       </div>
     </div>
 
@@ -255,13 +290,14 @@
       <div class="intro-thumb"><img src="gacha-intro-keeper.webp" alt="森の番人" loading="lazy"></div>
       <div class="intro-body">
         <p class="intro-name">森の番人</p>
-        <p class="intro-text">集まれ水女子の森と、陰陽メガネの番人。いつも静かに見守ってくれる、森のおじいちゃんだよ。</p>
-        <p class="intro-link"><a href="https://mizujoshinomori.pages.dev/" target="_blank" rel="noopener noreferrer">集まれ水女子の森はこちら ›</a><br><a href="https://inyo-megane.pages.dev/" target="_blank" rel="noopener noreferrer">陰陽メガネはこちら ›</a></p>
+        <p class="intro-text">集まれ水女子の森と、陰陽メガネの番人。いつも静かに見守ってくれているよ。</p>
+        <p class="intro-link"><a href="https://hotto-news.pages.dev/" target="_blank" rel="noopener noreferrer">森のほっとニュースはこちら ›</a><br><a href="https://inyo-megane.pages.dev/" target="_blank" rel="noopener noreferrer">陰陽メガネはこちら ›</a></p>
       </div>
     </div>
   </section>
 
   <p class="foot-note">運営：心体調整塾 たけちゃん</p>
+  <p class="back-bottom"><a href="./">‹ おもろグ〜にもどる</a></p>
 </div>
 
 <div class="overlay" id="overlay" hidden>
@@ -308,7 +344,12 @@
   var spinBtn  = document.getElementById('spinBtn');
   var spinCount= document.getElementById('spinCount');
   var spinNote = document.getElementById('spinNote');
-  var result   = document.getElementById('result');
+  var stage    = document.getElementById('stage');
+  var bigCap   = document.getElementById('bigCap');
+  var stageFlash = document.getElementById('stageFlash');
+  var sparks   = document.getElementById('sparks');
+  var resultNewWrap = document.getElementById('resultNewWrap');
+  var demoNote = document.getElementById('demoNote');
   var resultImg= document.getElementById('resultImg');
   var resultName = document.getElementById('resultName');
   var saveBtn  = document.getElementById('saveBtn');
@@ -322,18 +363,23 @@
   var spinning = false;
   var ovOpen = false;
 
+  var DEMO = /[?&]demo/.test(location.search);
+  var memSpins = 3;
+  var memCol = [];
   function getSpins(){
+    if (DEMO) return memSpins;
     var n = parseInt(localStorage.getItem('omoro-gacha-spins') || '0', 10);
     return isNaN(n) || n < 0 ? 0 : n;
   }
-  function setSpins(n){ try { localStorage.setItem('omoro-gacha-spins', String(n)); } catch(e) {} }
+  function setSpins(n){ if (DEMO) { memSpins = n; return; } try { localStorage.setItem('omoro-gacha-spins', String(n)); } catch(e) {} }
   function getCol(){
+    if (DEMO) return memCol.slice();
     try {
       var c = JSON.parse(localStorage.getItem('omoro-gacha-col') || '[]');
       return Array.isArray(c) ? c : [];
     } catch(e) { return []; }
   }
-  function setCol(c){ try { localStorage.setItem('omoro-gacha-col', JSON.stringify(c)); } catch(e) {} }
+  function setCol(c){ if (DEMO) { memCol = c.slice(); return; } try { localStorage.setItem('omoro-gacha-col', JSON.stringify(c)); } catch(e) {} }
   function figOf(key){
     for (var i = 0; i < FIGURES.length; i++) if (FIGURES[i].key === key) return FIGURES[i];
     return null;
@@ -391,11 +437,25 @@
     } else if (spins <= 0) {
       spinBtn.disabled = true;
       spinBtn.textContent = 'ガチャをまわす';
-      spinNote.textContent = '転生すると、3回まわせるようになるよ。おもろっちを神・段階3まで育ててみてね。';
+      spinNote.textContent = '';
     } else {
       spinBtn.disabled = spinning;
       spinBtn.textContent = 'ガチャをまわす';
       spinNote.textContent = 'かぶりなしだから、まわすたびに新しいフィギュアが増えるよ。';
+    }
+  }
+
+  function makeSparks(){
+    sparks.innerHTML = '';
+    var pts = [[-110,-70],[100,-84],[-128,6],[122,20],[-70,-118],[64,-126],[-30,64],[40,72],[0,-140],[-140,-44],[138,-52],[12,88]];
+    for (var i = 0; i < pts.length; i++) {
+      var s = document.createElement('span');
+      s.textContent = '✦';
+      s.style.setProperty('--dx', pts[i][0] + 'px');
+      s.style.setProperty('--dy', pts[i][1] + 'px');
+      s.style.animationDelay = (i % 4) * 0.05 + 's';
+      s.style.fontSize = (15 + (i % 3) * 5) + 'px';
+      sparks.appendChild(s);
     }
   }
 
@@ -406,34 +466,58 @@
     var rest = remaining(col);
     if (spins <= 0 || rest.length === 0) { renderSpin(); return; }
     spinning = true;
-    result.hidden = true;
-    result.classList.remove('pop');
+    stage.hidden = true;
     dropCap.classList.remove('drop');
     renderSpin();
     machine.classList.add('shaking');
+    setTimeout(function(){ machine.classList.remove('shaking'); }, 980);
+    dropCap.style.setProperty('--dc', CAP_COLORS[Math.floor(Math.random() * CAP_COLORS.length)]);
     setTimeout(function(){
-      machine.classList.remove('shaking');
-      var prize = rest[Math.floor(Math.random() * rest.length)];
-      dropCap.style.setProperty('--dc', CAP_COLORS[Math.floor(Math.random() * CAP_COLORS.length)]);
       void dropCap.offsetWidth;
       dropCap.classList.add('drop');
+    }, 900);
+    setTimeout(function(){
+      var prize = rest[Math.floor(Math.random() * rest.length)];
+      bigCap.style.setProperty('--cap1', CAP_COLORS[Math.floor(Math.random() * CAP_COLORS.length)]);
+      bigCap.className = 'big-cap';
+      bigCap.hidden = false;
+      resultImg.hidden = true;
+      resultName.hidden = true;
+      resultNewWrap.hidden = true;
+      saveBtn.hidden = true;
+      stage.hidden = false;
+      stage.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      void bigCap.offsetWidth;
+      setTimeout(function(){ bigCap.classList.add('wobble'); }, 500);
       setTimeout(function(){
-        col.push(prize.key);
-        setCol(col);
-        setSpins(spins - 1);
-        resultImg.src = 'gacha-fig-' + prize.key + '.webp';
-        resultImg.alt = prize.name;
-        resultName.textContent = prize.name;
-        saveBtn.href = 'gacha-card-' + prize.key + '.png';
-        saveBtn.setAttribute('download', 'gacha-card-' + prize.key + '.png');
-        result.hidden = false;
-        void result.offsetWidth;
-        result.classList.add('pop');
-        spinning = false;
-        renderAlbum();
-        renderSpin();
-      }, 620);
-    }, 980);
+        var col2 = getCol();
+        col2.push(prize.key);
+        setCol(col2);
+        setSpins(getSpins() - 1);
+        bigCap.classList.add('open');
+        stageFlash.classList.remove('go'); void stageFlash.offsetWidth; stageFlash.classList.add('go');
+        makeSparks();
+        sparks.classList.remove('go'); void sparks.offsetWidth; sparks.classList.add('go');
+        setTimeout(function(){
+          bigCap.hidden = true;
+          resultImg.src = 'gacha-fig-' + prize.key + '.webp';
+          resultImg.alt = prize.name;
+          resultImg.hidden = false;
+          resultImg.classList.remove('pop'); void resultImg.offsetWidth; resultImg.classList.add('pop');
+          resultName.textContent = prize.name;
+          resultName.hidden = false;
+          resultNewWrap.hidden = false;
+          var nw = resultNewWrap.querySelector('.result-new');
+          nw.classList.remove('bounce'); void nw.offsetWidth; nw.classList.add('bounce');
+          saveBtn.href = 'gacha-card-' + prize.key + '.png';
+          saveBtn.setAttribute('download', 'gacha-card-' + prize.key + '.png');
+          saveBtn.hidden = false;
+          spinning = false;
+          renderAlbum();
+          renderSpin();
+        }, 430);
+      }, 1250);
+    }, 1650);
   }
   spinBtn.addEventListener('click', spin);
 
@@ -464,7 +548,7 @@
 
   var introOmoro = document.getElementById('introOmoroImg');
   if (introOmoro) {
-    var STAGE_ART = ['stage-egg-t0.png', 'stage-baby.png', 'stage-kid.png', 'stage-adult.png', 'stage-daidara.png', 'stage-god.png'];
+    var STAGE_ART = ['thumb-egg.webp', 'thumb-baby.webp', 'thumb-kid.webp', 'thumb-adult.webp', 'thumb-daidara.webp', 'thumb-god.webp'];
     var ev = parseInt(localStorage.getItem('omoro-evolved') || '0', 10);
     if (isNaN(ev) || ev < 0) ev = 0;
     if (ev > 5) ev = 5;
@@ -473,6 +557,10 @@
 
   renderAlbum();
   renderSpin();
+  if (DEMO) {
+    demoNote.hidden = false;
+    setTimeout(function(){ spin(); }, 900);
+  }
 })();
 </script>
 
