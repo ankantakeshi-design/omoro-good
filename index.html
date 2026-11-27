@@ -768,6 +768,7 @@
   .rinne-btn{ width:100%; min-height:52px; margin-top:8px; border:3px solid #8a6d1f; background:linear-gradient(135deg,#ffe9a8,#f7b733); color:#6b4e00; border-radius:999px; font-family:inherit; font-size:16px; font-weight:900; cursor:pointer; }
   .rinne-btn[hidden]{ display:none; }
   .rinne-btn{ animation:rinneBlink 1.6s ease-in-out infinite; }
+  .gacha-link{ display:block; margin-top:10px; min-height:48px; line-height:48px; text-align:center; background:#fff3d6; border:2px solid var(--card-border); border-radius:999px; color:var(--orange-dark); font-weight:900; text-decoration:none; }
   @keyframes rinneBlink{ 0%,100%{ box-shadow:0 0 0 0 rgba(247,183,51,0); filter:brightness(1); } 50%{ box-shadow:0 0 16px 5px rgba(247,183,51,.85); filter:brightness(1.13); } }
   .rinne-overlay{ position:fixed; inset:0; z-index:70; background:rgba(58,42,26,.6); display:flex; align-items:center; justify-content:center; padding:20px; }
   .rinne-overlay[hidden]{ display:none; }
@@ -932,6 +933,7 @@
         <p class="daily-note" id="dailyNote">おもろは1日4個までだよ</p>
         <button type="button" class="evolve-btn" id="evolveBtn" hidden>✦ 進化する ✦</button>
         <button type="button" class="rinne-btn" id="rinneBtn" hidden>✦ 輪廻転生する ✦</button>
+        <a class="gacha-link" id="gachaLink" href="gacha.html">🎁 おもろガチャ ›</a>
       </div>
       <p class="about-row"><button type="button" class="about-link" id="aboutOpen">おもろっちについて ›</button></p>
       <div class="backup-box">
@@ -1284,6 +1286,12 @@
     if (lifeGenEl) lifeGenEl.textContent = gen + '周目';
     if (lifeNameEl) lifeNameEl.textContent = petName;
     if (bubbleSub) bubbleSub.textContent = petName + 'のおうち';
+    var gl = document.getElementById('gachaLink');
+    if (gl) {
+      var gsn = parseInt(localStorage.getItem('omoro-gacha-spins') || '0', 10);
+      if (isNaN(gsn) || gsn < 0) gsn = 0;
+      gl.textContent = gsn > 0 ? ('🎁 おもろガチャ（あと' + gsn + '回まわせるよ） ›') : '🎁 おもろガチャ ›';
+    }
   }
   var evoFlash = document.getElementById('evoFlash');
   var evoName = document.getElementById('evoName');
@@ -1506,6 +1514,9 @@
     formKey = 'egg';
     try {
       localStorage.setItem('omoro-lives', JSON.stringify(lives));
+      var gsp = parseInt(localStorage.getItem('omoro-gacha-spins') || '0', 10);
+      if (isNaN(gsp) || gsp < 0) gsp = 0;
+      localStorage.setItem('omoro-gacha-spins', String(gsp + 3));
       localStorage.setItem('omoro-gen', String(gen));
       localStorage.setItem('omoro-name', petName);
       localStorage.setItem('omoro-liked', '[]');
@@ -2185,7 +2196,9 @@
         'omoro-form': localStorage.getItem('omoro-form'),
         'omoro-gen': localStorage.getItem('omoro-gen'),
         'omoro-name': localStorage.getItem('omoro-name'),
-        'omoro-lives': localStorage.getItem('omoro-lives')
+        'omoro-lives': localStorage.getItem('omoro-lives'),
+        'omoro-gacha-spins': localStorage.getItem('omoro-gacha-spins'),
+        'omoro-gacha-col': localStorage.getItem('omoro-gacha-col')
       }
     };
     var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -2234,7 +2247,7 @@
       }
       if (!window.confirm('今の記録を、バックアップの記録で上書きします。よろしいですか？')) return;
       try {
-        ['omoro-liked', 'omoro-evolved', 'omoro-form', 'omoro-gen', 'omoro-name', 'omoro-lives'].forEach(function(k){
+        ['omoro-liked', 'omoro-evolved', 'omoro-form', 'omoro-gen', 'omoro-name', 'omoro-lives', 'omoro-gacha-spins', 'omoro-gacha-col'].forEach(function(k){
           if (rec[k] === null || rec[k] === undefined) localStorage.removeItem(k);
           else localStorage.setItem(k, rec[k]);
         });
