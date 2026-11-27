@@ -835,6 +835,10 @@
   @keyframes evtHen{ 0%{ transform:scale(1,1) rotate(0deg); } 25%{ transform:scale(1.1,.82) rotate(-2.5deg); } 50%{ transform:scale(1.1,.82) rotate(2.5deg); } 75%{ transform:scale(1.06,.88) rotate(-1.5deg); } 100%{ transform:scale(1,1) rotate(0deg); } }
   #stageImg.evt-hiccup{ animation:evtHiccup .95s ease; }
   @keyframes evtHiccup{ 0%{ transform:translateY(0); } 12%{ transform:translateY(-8px); } 24%{ transform:translateY(0); } 55%{ transform:translateY(0); } 67%{ transform:translateY(-8px); } 79%{ transform:translateY(0); } 100%{ transform:translateY(0); } }
+
+  .evt-btn{ width:100%; min-height:48px; margin:10px 0 2px; border:2px dashed var(--orange-dark); background:#fff8ec; color:var(--orange-dark); border-radius:999px; font-family:inherit; font-size:15px; font-weight:900; cursor:pointer; animation:evtBtnWiggle 2.2s ease-in-out infinite; }
+  .evt-btn[hidden]{ display:none; }
+  @keyframes evtBtnWiggle{ 0%,100%{ transform:rotate(0deg); } 3%{ transform:rotate(-1.1deg); } 6%{ transform:rotate(1.1deg); } 9%{ transform:rotate(0deg); } }
 </style>
 </head>
 <body>
@@ -863,6 +867,7 @@
         <div class="evo-flash" id="evoFlash" hidden aria-hidden="true"></div>
         <div class="evo-name" id="evoName" hidden></div>
       </div>
+      <button type="button" class="evt-btn" id="evtBtn" hidden>おもろっちの様子が、なんだか変だぞ…</button>
       <div class="form-row" id="formRow" aria-label="すがたをえらぶ"></div>
       <p class="form-hint">タッチで、過去のおもろっちや、育った段階も見れるよ</p>
       <div class="progress">
@@ -1761,9 +1766,21 @@
     { key: 'hiccup', line: 'しゃっくり、出ちゃった', mark: null }
   ];
   var evtBusy = false;
+  var evtReady = false;
+  var evtBtn = document.getElementById('evtBtn');
+  function rollEventButton(){
+    if (evtBusy) return;
+    evtReady = Math.random() < 0.45;
+    if (evtBtn) evtBtn.hidden = !evtReady;
+  }
+  if (evtBtn) evtBtn.addEventListener('click', function(){
+    if (!evtReady || evtBusy) return;
+    evtReady = false;
+    evtBtn.hidden = true;
+    playRandomEvent();
+  });
   function playRandomEvent(){
     if (evtBusy) return;
-    if (Math.random() >= 0.45) return;
     var ev = EVT_EVENTS[Math.floor(Math.random() * EVT_EVENTS.length)];
     evtBusy = true;
     setTimeout(function(){
@@ -1788,7 +1805,7 @@
     panel.hidden = false;
     houseIsOpen = true;
     markGrowthSeen();
-    playRandomEvent();
+    rollEventButton();
     toggleBtn.setAttribute('aria-expanded', 'true');
     if (!sceneMode) startWalk();
     try { history.pushState({ omoroHouse: 1 }, ''); } catch(e) {}
