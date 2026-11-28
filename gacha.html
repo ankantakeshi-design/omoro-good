@@ -188,8 +188,8 @@
   .sparks span{ position:absolute; left:50%; top:104px; color:#f7b733; opacity:0; pointer-events:none; }
   .sparks.go span{ animation:sparkFly .8s ease-out forwards; }
   @keyframes sparkFly{ 0%{ opacity:1; transform:translate(0,0) scale(.6); } 100%{ opacity:0; transform:translate(var(--dx),var(--dy)) scale(1.25); } }
-  .stage img#resultImg{ display:block; max-width:min(240px,70vw); max-height:280px; width:auto; margin:0 auto; }
-  .stage img#resultImg.pop{ animation:figPop .55s ease-out; }
+  img#resultImg{ display:block; max-width:min(240px,70vw); max-height:280px; width:auto; margin:0 auto; }
+  img#resultImg.pop{ animation:figPop .55s ease-out; }
   @keyframes figPop{ 0%{ transform:scale(.3); opacity:0; } 55%{ transform:scale(1.09); opacity:1; } 75%{ transform:scale(.96); } 100%{ transform:scale(1); opacity:1; } }
   .result-new.bounce{ animation:newBounce .6s ease-out; }
   @keyframes newBounce{ 0%{ transform:scale(.3); } 55%{ transform:scale(1.35); } 100%{ transform:scale(1); } }
@@ -225,12 +225,6 @@
       <div class="big-cap" id="bigCap"><span class="bc-top"></span><span class="bc-bottom"></span></div>
       <div class="cap-shadow" id="capShadow"></div>
       <div class="sparks" id="sparks" aria-hidden="true"></div>
-      <img id="resultImg" src="" alt="" hidden>
-      <p class="result-name" id="resultName" hidden></p>
-      <p id="resultNewWrap" hidden><span class="result-new">NEW！</span></p>
-      <a class="save-btn" id="saveBtn" href="#" download hidden>📥 画像を保存する</a>
-      <button type="button" class="save-btn share-btn" id="shareBtn" hidden>⤴ 友達にシェア</button>
-      <p class="share-hint" id="shareHint" hidden>シェアすると、文章とリンクもコピーされるよ。シェア先で文章が出なかったら、貼り付けてね。</p>
     </div>
   </section>
 
@@ -317,6 +311,19 @@
     <button type="button" class="save-btn share-btn" id="ovShare">⤴ 友達にシェア</button>
     <p class="share-hint">シェアすると、文章とリンクもコピーされるよ。シェア先で文章が出なかったら、貼り付けてね。</p>
     <button type="button" class="ov-close-btn" id="ovCloseBtn">閉じる</button>
+  </div>
+</div>
+
+<div class="overlay" id="resultOverlay" hidden>
+  <div class="ov-card" role="dialog" aria-modal="true" aria-label="ガチャの結果">
+    <button type="button" class="ov-close-x" id="resCloseX" aria-label="閉じる">✕</button>
+    <img id="resultImg" src="" alt="" hidden>
+    <p class="result-name" id="resultName" hidden></p>
+    <p id="resultNewWrap" hidden><span class="result-new">NEW！</span></p>
+    <a class="save-btn" id="saveBtn" href="#" download hidden>📥 画像を保存する</a>
+    <button type="button" class="save-btn share-btn" id="shareBtn" hidden>⤴ 友達にシェア</button>
+    <p class="share-hint" id="shareHint" hidden>シェアすると、文章とリンクもコピーされるよ。シェア先で文章が出なかったら、貼り付けてね。</p>
+    <button type="button" class="ov-close-btn" id="resCloseBtn">閉じる</button>
   </div>
 </div>
 
@@ -735,6 +742,8 @@
           shareBtn.dataset.name = prize.name;
           shareBtn.hidden = false;
           shareHint.hidden = false;
+          stage.hidden = true;
+          openResult();
           spinning = false;
           renderAlbum();
           renderSpin();
@@ -856,6 +865,28 @@
   document.getElementById('ovCloseBtn').addEventListener('click', closeDetailWithBack);
   overlay.addEventListener('click', function(e){ if (e.target === overlay) closeDetailWithBack(); });
   window.addEventListener('popstate', function(){ closeDetail(); });
+
+  var resultOverlay = document.getElementById('resultOverlay');
+  var resOpen = false;
+  function openResult(){
+    resultOverlay.hidden = false;
+    resOpen = true;
+    try { history.pushState({ gachaResult: 1 }, ''); } catch(e) {}
+  }
+  function closeResult(){
+    if (!resOpen) return;
+    resOpen = false;
+    resultOverlay.hidden = true;
+  }
+  function closeResultWithBack(){
+    if (history.state && history.state.gachaResult) history.back();
+    else closeResult();
+  }
+  document.getElementById('resCloseX').addEventListener('click', closeResultWithBack);
+  document.getElementById('resCloseBtn').addEventListener('click', closeResultWithBack);
+  resultOverlay.addEventListener('click', function(e){ if (e.target === resultOverlay) closeResultWithBack(); });
+  window.addEventListener('popstate', function(){ closeResult(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && resOpen) closeResultWithBack(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeDetailWithBack(); });
 
   var introOmoro = document.getElementById('introOmoroImg');
