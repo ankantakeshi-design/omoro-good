@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>おもろガチャ｜おもろグ〜</title>
-<meta name="description" content="おもろグ〜のごほうびガチャ。輪廻転生するたびに3回まわせて、フィギュア17種を集められるよ。">
+<meta name="description" content="おもろグ〜のごほうびガチャ。輪廻転生するたびに3回まわせて、フィギュア23種を集められるよ。">
 <link rel="icon" href="favicon.ico">
 <style>
   :root{
@@ -244,7 +244,7 @@
   <section aria-label="フィギュア図鑑">
     <div class="album-head">
       <h2>フィギュア図鑑</h2>
-      <span class="album-count" id="albumCount">0 / 17</span>
+      <span class="album-count" id="albumCount">0 / 23</span>
     </div>
     <p class="album-note" style="margin:8px 0 10px;">おもろっちのフィギュアは、育てて進化した姿の分だけ出るよ。まだ進化していない姿は、出ないよ。</p>
     <div class="album-grid" id="albumGrid"></div>
@@ -295,7 +295,7 @@
       <div class="intro-thumb"><img src="gacha-intro-kaku.webp" alt="かくたろうファミリー" loading="lazy"></div>
       <div class="intro-body">
         <p class="intro-name">かくたろうファミリー</p>
-        <p class="intro-text">四角い頭の、ほのぼの宇宙人家族。かくたろう、かくみ、こたろう、とりたろう、ぴよたろうの5人だよ。</p>
+        <p class="intro-text">四角い頭の、ほのぼの宇宙人家族。かくたろう、かくみ、こたろう、とりたろう、ぴよたろうの5人だよ。お友達の、マンボロウもいるよ。</p>
         <p class="intro-link"><a href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener noreferrer">LINEスタンプはこちら ›</a></p>
         <p class="intro-warn">⚠ おもろっちの進化のネタバレ注意：スタンプのページには、おもろっちの進化の姿も出ています</p>
       </div>
@@ -347,7 +347,13 @@
     { key:'kaku-mama',     name:'かくみ' },
     { key:'kaku-musuko',   name:'こたろう' },
     { key:'kaku-niwatori', name:'とりたろう' },
-    { key:'kaku-hiyoko',   name:'ぴよたろう' }
+    { key:'kaku-hiyoko',   name:'ぴよたろう' },
+    { key:'manbo',         name:'マンボロウ' },
+    { key:'manbo-manpou',  name:'マンボロウ(万宝)' },
+    { key:'manbo-tori',    name:'マンボロウ(とり)' },
+    { key:'manbo-sun',     name:'マンボロウ(太陽)' },
+    { key:'manbo-lips',    name:'マンボロウ(たらこくちびる)' },
+    { key:'manbo-eyelid',  name:'マンボロウ(まぶた)' }
   ];
   var CAP_COLORS = ['#ef5350','#42a5f5','#ffca28','#66bb6a','#ab47bc','#ff7043','#26a69a','#ec407a'];
   var CAP_BASE_HUE = 1;
@@ -491,7 +497,7 @@
     if (col.length >= FIGURES.length) {
       spinBtn.disabled = true;
       spinBtn.textContent = 'コンプリート済み';
-      spinNote.textContent = '17種ぜんぶ集まったよ。ありがとう！';
+      spinNote.textContent = '23種ぜんぶ集まったよ。ありがとう！';
     } else if (spins <= 0) {
       spinBtn.disabled = true;
       spinBtn.textContent = 'ガチャをまわす';
