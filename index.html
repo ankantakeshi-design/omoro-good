@@ -2194,6 +2194,12 @@
     }
   }
 
+  /* ガチャなどから #house で来たら、おうちを開く */
+  if (location.hash === '#house') {
+    if (panel.hidden) openHouse();
+    setTimeout(function(){ panel.scrollIntoView({ behavior: 'auto', block: 'nearest' }); }, 60);
+  }
+
   /* ===== 現在の集計を取得 ===== */
   fetch(SB_URL + '/rest/v1/omoro_likes?select=post_id,count', {
     headers: { 'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY }

@@ -76,12 +76,7 @@
   .raise-title{ font-weight:900; margin:0 0 4px; }
   .raise-text{ margin:0 0 10px; font-size:14px; color:var(--ink-soft); }
   .raise-btn{ display:inline-block; min-height:48px; line-height:48px; padding:0 18px; background:linear-gradient(135deg,#ffb74d,#f96d00); color:#fff; font-weight:900; border-radius:999px; text-decoration:none; box-shadow:0 3px 0 #d35400; }
-  .stamp-guard-btn{ background:none; border:none; padding:0; font:inherit; color:var(--orange-dark); font-weight:700; cursor:pointer; text-align:left; }
-  .stamp-guard{ margin-top:8px; background:#fff; border:2px dashed var(--card-border); border-radius:12px; padding:10px 12px; }
-  .stamp-guard-text{ margin:0 0 10px; font-size:14px; }
-  .stamp-guard-btns{ margin:0; display:flex; gap:8px; flex-wrap:wrap; }
-  .stamp-go{ display:inline-block; min-height:48px; line-height:48px; padding:0 16px; border-radius:999px; background:linear-gradient(135deg,#ffb74d,#f96d00); color:#fff; font-weight:900; text-decoration:none; }
-  .stamp-stop{ min-height:48px; padding:0 16px; border-radius:999px; border:2px solid var(--card-border); background:#fff; color:var(--ink-soft); font-weight:700; font-family:inherit; font-size:15px; cursor:pointer; }
+  .intro-warn{ margin:6px 0 0; font-size:14px; font-weight:700; color:var(--orange-dark); background:#fff3e0; border-radius:8px; padding:6px 8px; }
   .result{ margin-top:18px; }
   .result.pop{ animation:resPop .5s cubic-bezier(.3,1.5,.5,1); }
   @keyframes resPop{ 0%{ transform:scale(.6); opacity:0; } 100%{ transform:scale(1); opacity:1; } }
@@ -243,7 +238,7 @@
     <div>
       <p class="raise-title">本編は「おもろっちのおうち」だよ</p>
       <p class="raise-text">おもろを集めて おもろっちを育てると、少しずつ進化していくよ。育て終わると、またガチャが3回まわせるよ。</p>
-      <a class="raise-btn" href="index.html">おもろっちを育てに行く ›</a>
+      <a class="raise-btn" href="index.html#house">おもろっちを育てに行く ›</a>
     </div>
   </section>
 
@@ -265,11 +260,7 @@
       <div class="intro-body">
         <p class="intro-name">おもろっち</p>
         <p class="intro-text">おもろグ〜で育つ、小さな命。おもろを集めると、少しずつ育っていくよ。</p>
-        <p class="intro-link"><button type="button" class="stamp-guard-btn">LINEスタンプはこちら ›</button></p>
-        <div class="stamp-guard" hidden>
-          <p class="stamp-guard-text">スタンプのページには、おもろっちの進化の姿が ぜんぶ出ているよ。まだ育てている途中なら、ネタバレになっちゃうかも。</p>
-          <p class="stamp-guard-btns"><a class="stamp-go" href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener noreferrer">それでも見に行く ›</a><button type="button" class="stamp-stop">やめておく</button></p>
-        </div>
+        <p class="intro-link"><a href="index.html#house">おもろっちのおうちはこちら ›</a></p>
       </div>
     </div>
 
@@ -305,11 +296,8 @@
       <div class="intro-body">
         <p class="intro-name">かくたろうファミリー</p>
         <p class="intro-text">四角い頭の、ほのぼの宇宙人家族。かくたろう、かくみ、こたろう、とりたろう、ぴよたろうの5人だよ。</p>
-        <p class="intro-link"><button type="button" class="stamp-guard-btn">LINEスタンプはこちら ›</button></p>
-        <div class="stamp-guard" hidden>
-          <p class="stamp-guard-text">スタンプのページには、かくたろうファミリーのスタンプと一緒に、おもろっちの進化の姿も出ているよ。まだ育てている途中なら、ネタバレになっちゃうかも。</p>
-          <p class="stamp-guard-btns"><a class="stamp-go" href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener noreferrer">それでも見に行く ›</a><button type="button" class="stamp-stop">やめておく</button></p>
-        </div>
+        <p class="intro-link"><a href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener noreferrer">LINEスタンプはこちら ›</a></p>
+        <p class="intro-warn">⚠ おもろっちの進化のネタバレ注意：スタンプのページには、おもろっちの進化の姿も出ています</p>
       </div>
     </div>
   </section>
@@ -624,19 +612,6 @@
     });
   });
 
-  document.querySelectorAll('.stamp-guard-btn').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var body = btn.closest('.intro-body');
-      var panel = body ? body.querySelector('.stamp-guard') : null;
-      if (panel) panel.hidden = !panel.hidden;
-    });
-  });
-  document.querySelectorAll('.stamp-stop').forEach(function(btn){
-    btn.addEventListener('click', function(){
-      var panel = btn.closest('.stamp-guard');
-      if (panel) panel.hidden = true;
-    });
-  });
 
   function shareFigure(key, name){
     var url = 'https://omoro-gacha.pages.dev/';
