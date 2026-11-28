@@ -338,6 +338,15 @@
   </div>
 </div>
 
+<div class="overlay" id="inappOverlay" hidden>
+  <div class="ov-card" role="dialog" aria-modal="true" aria-label="ブラウザで開くお願い">
+    <p class="ov-name">ブラウザで開いてね</p>
+    <p class="share-hint" style="font-size:13.5px; text-align:left;">いま、アプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザごとに別々に保存されるよ。アプリの中だと、記録が消えたり、別になったりするよ。SafariやChromeで開き直すのがおすすめだよ。</p>
+    <button type="button" class="save-btn share-btn" id="inappCopy">🔗 リンクをコピーする</button>
+    <button type="button" class="ov-close-btn" id="inappClose">閉じる</button>
+  </div>
+</div>
+
 <nav class="bottom-bar" aria-label="固定メニュー">
   <button class="bar-item" id="barTop" type="button"><span class="bar-icon" aria-hidden="true">↑</span><span class="bar-label">トップへ</span></button>
   <a class="bar-item" href="https://mizujoshinomori.pages.dev/" target="_blank" rel="noopener noreferrer"><span class="bar-icon" aria-hidden="true">🌳</span><span class="bar-label">森へ行く</span></a>
@@ -904,6 +913,16 @@
   if (/(Line\/|FBAN|FBAV|Instagram|Threads|Barcelona)/.test(uaStr)) {
     var inappNote = document.getElementById('inappNote');
     if (inappNote) inappNote.hidden = false;
+    var inappOverlay = document.getElementById('inappOverlay');
+    inappOverlay.hidden = false;
+    document.getElementById('inappClose').addEventListener('click', function(){ inappOverlay.hidden = true; });
+    inappOverlay.addEventListener('click', function(e){ if (e.target === inappOverlay) inappOverlay.hidden = true; });
+    document.getElementById('inappCopy').addEventListener('click', function(){
+      var url = 'https://omoro-gacha.pages.dev/';
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(url).then(function(){ showToast('コピーしたよ。SafariやChromeに貼り付けて開いてね。'); }, function(){ showToast(url); });
+      } else { showToast(url); }
+    });
   }
   var isIOS = /iPhone|iPad|iPod/.test(uaStr) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   var cardOverlay = document.getElementById('cardOverlay');
