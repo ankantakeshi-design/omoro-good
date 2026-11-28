@@ -70,6 +70,8 @@
   .code-btn:disabled{ opacity:.5; cursor:default; }
   .code-msg{ font-size:13.5px; color:var(--ink-soft); margin:6px 0 0; min-height:1.2em; }
   .share-hint{ font-size:12px; color:var(--ink-soft); margin:8px 6px 0; line-height:1.6; }
+  .ov-save img{ max-width:min(260px,74vw); max-height:340px; width:auto; }
+  .save-how{ font-size:16px; line-height:1.75; font-weight:700; margin:12px 2px 14px; text-align:left; }
   .inapp-note{ background:#fff3e0; color:#9a5a12; border:1px solid #f2cf9a; border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.6; margin:10px 0 0; }
   .raise-box{ display:flex; align-items:center; gap:12px; background:var(--yellow-soft); border:2px solid var(--card-border); border-radius:16px; padding:14px; margin:18px 0 4px; text-align:left; }
   .raise-thumb{ flex:0 0 60px; text-align:center; }
@@ -131,6 +133,7 @@
     display:flex; align-items:center; justify-content:center; padding:18px;
   }
   .overlay[hidden]{ display:none; }
+  .overlay [hidden]{ display:none !important; }
   .ov-card{
     background:#fffdf7; border-radius:20px; max-width:400px; width:100%;
     padding:26px 20px 22px; text-align:center; position:relative;
@@ -311,7 +314,12 @@
     <p class="ov-name" id="ovName"></p>
     <a class="save-btn" id="ovSave" href="#" download>📥 画像を保存する</a>
     <button type="button" class="save-btn share-btn" id="ovShare">⤴ 友達にシェア</button>
-    <p class="share-hint">シェアすると、文章とリンクもコピーされるよ。シェア先で文章が出なかったら、貼り付けてね。</p>
+    <p class="share-hint" id="ovHint">シェアすると、文章とリンクもコピーされるよ。シェア先で文章が出なかったら、貼り付けてね。</p>
+    <div class="ov-save" id="ovSaveBox" hidden>
+      <img id="ovCardImg" src="" alt="カード画像">
+      <p class="save-how">保存のしかた<br>この画像を長押しして、「写真に追加」を押してね。写真アプリに保存されるよ。</p>
+      <button type="button" class="ov-close-btn" id="ovSaveBack">もどる</button>
+    </div>
     <button type="button" class="ov-close-btn" id="ovCloseBtn">閉じる</button>
   </div>
 </div>
@@ -325,16 +333,12 @@
     <a class="save-btn" id="saveBtn" href="#" download hidden>📥 画像を保存する</a>
     <button type="button" class="save-btn share-btn" id="shareBtn" hidden>⤴ 友達にシェア</button>
     <p class="share-hint" id="shareHint" hidden>シェアすると、文章とリンクもコピーされるよ。シェア先で文章が出なかったら、貼り付けてね。</p>
+    <div class="ov-save" id="resSaveBox" hidden>
+      <img id="resCardImg" src="" alt="カード画像">
+      <p class="save-how">保存のしかた<br>この画像を長押しして、「写真に追加」を押してね。写真アプリに保存されるよ。</p>
+      <button type="button" class="ov-close-btn" id="resSaveBack">もどる</button>
+    </div>
     <button type="button" class="ov-close-btn" id="resCloseBtn">閉じる</button>
-  </div>
-</div>
-
-<div class="overlay" id="cardOverlay" hidden>
-  <div class="ov-card" role="dialog" aria-modal="true" aria-label="カード画像">
-    <button type="button" class="ov-close-x" id="cardCloseX" aria-label="閉じる">✕</button>
-    <img id="cardImg" src="" alt="カード画像">
-    <p class="share-hint">画像を長押しして、「写真に追加」を押すと、写真に入るよ。</p>
-    <button type="button" class="ov-close-btn" id="cardCloseBtn">閉じる</button>
   </div>
 </div>
 
@@ -861,6 +865,7 @@
   ovShare.addEventListener('click', function(){ shareFigure(ovShare.dataset.key, ovShare.dataset.name); });
 
   function openDetail(f){
+    ovSaveBox.hidden = true;
     ovImg.src = 'gacha-fig-' + f.key + '.webp';
     ovImg.alt = f.name;
     ovName.textContent = f.name;
@@ -889,6 +894,7 @@
   var resultOverlay = document.getElementById('resultOverlay');
   var resOpen = false;
   function openResult(){
+    resSaveBox.hidden = true;
     resultOverlay.hidden = false;
     resOpen = true;
     try { history.pushState({ gachaResult: 1 }, ''); } catch(e) {}
@@ -925,36 +931,44 @@
     });
   }
   var isIOS = /iPhone|iPad|iPod/.test(uaStr) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
-  var cardOverlay = document.getElementById('cardOverlay');
-  var cardImg = document.getElementById('cardImg');
-  var cardOpen = false;
-  function openCard(src){
-    cardImg.src = src;
-    cardOverlay.hidden = false;
-    cardOpen = true;
-    try { history.pushState({ gachaCard: 1 }, ''); } catch(e) {}
+  var ovSaveBox = document.getElementById('ovSaveBox');
+  var ovCardImg = document.getElementById('ovCardImg');
+  var ovHint = document.getElementById('ovHint');
+  var resSaveBox = document.getElementById('resSaveBox');
+  var resCardImg = document.getElementById('resCardImg');
+  var resWasNew = false;
+  function detailSaveMode(on){
+    ovSaveBox.hidden = !on;
+    ovImg.hidden = on;
+    ovName.hidden = on;
+    ovSave.hidden = on;
+    ovShare.hidden = on;
+    ovHint.hidden = on;
+    if (on) ovCardImg.src = ovSave.getAttribute('href');
   }
-  function closeCard(){
-    if (!cardOpen) return;
-    cardOpen = false;
-    cardOverlay.hidden = true;
+  function resultSaveMode(on){
+    if (on) {
+      resWasNew = !resultNewWrap.hidden;
+      resCardImg.src = saveBtn.getAttribute('href');
+    }
+    resSaveBox.hidden = !on;
+    resultImg.hidden = on;
+    resultName.hidden = on;
+    resultNewWrap.hidden = on ? true : !resWasNew;
+    saveBtn.hidden = on;
+    shareBtn.hidden = on;
+    shareHint.hidden = on;
   }
-  function closeCardWithBack(){
-    if (history.state && history.state.gachaCard) history.back();
-    else closeCard();
-  }
-  document.getElementById('cardCloseX').addEventListener('click', closeCardWithBack);
-  document.getElementById('cardCloseBtn').addEventListener('click', closeCardWithBack);
-  cardOverlay.addEventListener('click', function(e){ if (e.target === cardOverlay) closeCardWithBack(); });
-  window.addEventListener('popstate', function(){ closeCard(); });
-  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && cardOpen) closeCardWithBack(); });
   function iosSaveTap(e){
     if (!isIOS) return;
     e.preventDefault();
-    openCard(this.getAttribute('href'));
+    if (this === saveBtn) resultSaveMode(true);
+    else detailSaveMode(true);
   }
   saveBtn.addEventListener('click', iosSaveTap);
   ovSave.addEventListener('click', iosSaveTap);
+  document.getElementById('ovSaveBack').addEventListener('click', function(){ detailSaveMode(false); });
+  document.getElementById('resSaveBack').addEventListener('click', function(){ resultSaveMode(false); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeDetailWithBack(); });
 
   var introOmoro = document.getElementById('introOmoroImg');
