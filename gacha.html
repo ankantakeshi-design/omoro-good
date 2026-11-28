@@ -212,7 +212,7 @@
     <button type="button" class="spin-btn" id="spinBtn">ガチャをまわす</button>
     <p class="spin-note" id="spinNote"></p>
     <div class="code-box">
-      <label class="code-label" for="codeInput">コードをお持ちの方はこちら（はじめてコードは3回まわせるよ）</label>
+      <label class="code-label" for="codeInput">コードをお持ちの方はこちら</label>
       <div class="code-row">
         <input type="text" class="code-input" id="codeInput" placeholder="コードを入力" autocomplete="off">
         <button type="button" class="code-btn" id="codeBtn">使う</button>
@@ -655,7 +655,7 @@
       if (h === FIRST_CODE_HASH) {
         setFirst(FIRST_ORDER.slice());
         setSpins(getSpins() + 3);
-        codeMsg.textContent = 'はじめてコードで3回まわせるようになったよ！';
+        codeMsg.textContent = 'コードでまわせるようになったよ！';
       } else {
         setSpins(getSpins() + 1);
         codeMsg.textContent = 'コードで1回まわせるようになったよ！';
@@ -670,7 +670,7 @@
 
   function shareFigure(key, name){
     var url = 'https://omoro-gacha.pages.dev/';
-    var text = 'おもろガチャで「' + name + '」が出たよ！\n初めての人は、コード「はじめて」で3回まわせるよ。\n' + url;
+    var text = 'おもろガチャで「' + name + '」が出たよ！\n初めての人は、コード「はじめて」でまわせるよ。\n' + url;
     function shareTextOnly(){
       if (navigator.share) {
         navigator.share({ title: 'おもろガチャ', text: text, url: url }).catch(function(){});
