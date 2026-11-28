@@ -4,7 +4,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>おもろガチャ｜おもろグ〜</title>
-<meta name="description" content="おもろグ〜のごほうびガチャ。輪廻転生するたびに3回まわせて、フィギュア12種を集められるよ。">
+<meta name="description" content="おもろグ〜のごほうびガチャ。輪廻転生するたびに3回まわせて、フィギュア17種を集められるよ。">
 <link rel="icon" href="favicon.ico">
 <style>
   :root{
@@ -340,7 +340,12 @@
     { key:'mii-dance',     name:'みーちゃん ダンス' },
     { key:'mii-hug',       name:'みーちゃん しずく' },
     { key:'keeper-lantern',name:'森の番人 ランタン' },
-    { key:'keeper-read',   name:'森の番人 読書' }
+    { key:'keeper-read',   name:'森の番人 読書' },
+    { key:'kaku-papa',     name:'かくたろう' },
+    { key:'kaku-mama',     name:'かくみ' },
+    { key:'kaku-musuko',   name:'こたろう' },
+    { key:'kaku-niwatori', name:'とりたろう' },
+    { key:'kaku-hiyoko',   name:'ぴよたろう' }
   ];
   var CAP_COLORS = ['#ef5350','#42a5f5','#ffca28','#66bb6a','#ab47bc','#ff7043','#26a69a','#ec407a'];
 
@@ -452,7 +457,7 @@
     if (col.length >= FIGURES.length) {
       spinBtn.disabled = true;
       spinBtn.textContent = 'コンプリート済み';
-      spinNote.textContent = '12種ぜんぶ集まったよ。ありがとう！';
+      spinNote.textContent = '17種ぜんぶ集まったよ。ありがとう！';
     } else if (spins <= 0) {
       spinBtn.disabled = true;
       spinBtn.textContent = 'ガチャをまわす';
