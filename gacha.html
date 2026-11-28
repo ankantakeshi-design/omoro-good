@@ -529,6 +529,130 @@
     }
   }
 
+  /* ガチャの時だけの特別な音（曲＋効果音）。♪がオンの時だけ鳴らして、終わったらBGMに戻す */
+  var AC = null, songBus = null, seBus = null, spinSound = false, bgmGuard = null, bgmPlayerEl = null;
+  function soundOn(){
+    var b = document.getElementById('bgm-btn');
+    var p = document.getElementById('bgm-player');
+    return !!((b && b.getAttribute('aria-pressed') === 'true') || (p && !p.paused));
+  }
+  function audioInit(){
+    if (!AC) {
+      try { AC = new (window.AudioContext || window.webkitAudioContext)(); } catch(e) { AC = null; }
+      if (AC) {
+        songBus = AC.createGain(); songBus.gain.value = 0.9; songBus.connect(AC.destination);
+        seBus = AC.createGain(); seBus.gain.value = 0.9; seBus.connect(AC.destination);
+      }
+    }
+    if (AC && AC.state === 'suspended') { AC.resume(); }
+    return AC;
+  }
+  function mtof(m){ return 440 * Math.pow(2, (m - 69) / 12); }
+  function bell(midi, t0, dur, vol, bus){
+    if (!AC) return;
+    var f = mtof(midi);
+    [[1, 1], [2, 0.35], [3, 0.12]].forEach(function(pr){
+      var o = AC.createOscillator(), g = AC.createGain();
+      o.type = 'sine'; o.frequency.value = f * pr[0];
+      g.gain.setValueAtTime(0, t0);
+      g.gain.linearRampToValueAtTime(vol * pr[1], t0 + 0.008);
+      g.gain.exponentialRampToValueAtTime(0.0001, t0 + dur);
+      o.connect(g); g.connect(bus);
+      o.start(t0); o.stop(t0 + dur + 0.05);
+    });
+  }
+  var SONG = [72,74,76,79, 81,79,76,74, 72,74,76,79, 84,79,76,74, 72,74,76,79, 81,79,76,74, 74,72,74,76, 72,0,0,0];
+  function startSong(){
+    if (!AC || !songBus) return;
+    songBus.gain.cancelScheduledValues(AC.currentTime);
+    songBus.gain.value = 0.9;
+    var step = 0.185, t = AC.currentTime + 0.05, n = 0;
+    while (n * step < 5.0) {
+      var m = SONG[n % SONG.length];
+      if (m) bell(m, t + n * step, 0.34, 0.13, songBus);
+      n++;
+    }
+  }
+  function stopSong(){
+    if (!AC || !songBus) return;
+    var t = AC.currentTime;
+    songBus.gain.cancelScheduledValues(t);
+    songBus.gain.setValueAtTime(songBus.gain.value, t);
+    songBus.gain.linearRampToValueAtTime(0.0001, t + 0.15);
+  }
+  function seRattle(){
+    if (!AC || !spinSound) return;
+    var t = AC.currentTime + 0.03;
+    var buf = AC.createBuffer(1, Math.floor(AC.sampleRate * 0.05), AC.sampleRate);
+    var d = buf.getChannelData(0);
+    for (var i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    for (var k = 0; k < 13; k++) {
+      var src = AC.createBufferSource(); src.buffer = buf;
+      var bp = AC.createBiquadFilter(); bp.type = 'bandpass'; bp.frequency.value = 1400 + Math.random() * 1600; bp.Q.value = 1.2;
+      var g = AC.createGain(); g.gain.value = 0.04 + Math.random() * 0.05;
+      src.connect(bp); bp.connect(g); g.connect(seBus);
+      src.start(t + k * 0.108 + Math.random() * 0.03);
+    }
+  }
+  function seDrop(){
+    if (!AC || !spinSound) return;
+    var t = AC.currentTime;
+    var o = AC.createOscillator(), g = AC.createGain();
+    o.type = 'sine';
+    o.frequency.setValueAtTime(520, t);
+    o.frequency.exponentialRampToValueAtTime(170, t + 0.1);
+    g.gain.setValueAtTime(0.2, t);
+    g.gain.exponentialRampToValueAtTime(0.0001, t + 0.16);
+    o.connect(g); g.connect(seBus);
+    o.start(t); o.stop(t + 0.2);
+  }
+  function seWobble(){
+    if (!AC || !spinSound) return;
+    var t = AC.currentTime;
+    bell(76, t, 0.25, 0.09, seBus);
+    bell(72, t + 0.16, 0.3, 0.09, seBus);
+  }
+  function seSparkle(){
+    if (!AC || !spinSound) return;
+    var t = AC.currentTime;
+    [79, 84, 88, 91, 96].forEach(function(m, i){ bell(m, t + i * 0.07, 0.5, 0.11, seBus); });
+  }
+  function seFanfare(){
+    if (!AC || !spinSound) return;
+    var t = AC.currentTime;
+    [72, 76, 79].forEach(function(m, i){ bell(m, t + i * 0.055, 0.55, 0.12, seBus); });
+    bell(84, t + 0.17, 0.85, 0.14, seBus);
+    bell(88, t + 0.17, 0.85, 0.06, seBus);
+  }
+  function gachaSoundStart(){
+    spinSound = soundOn();
+    if (!spinSound) return;
+    if (!audioInit()) { spinSound = false; return; }
+    bgmPlayerEl = document.getElementById('bgm-player');
+    if (bgmPlayerEl && !bgmPlayerEl.paused) bgmPlayerEl.pause();
+    bgmGuard = setInterval(function(){
+      if (bgmPlayerEl && !bgmPlayerEl.paused) bgmPlayerEl.pause();
+    }, 400);
+    startSong();
+    seRattle();
+  }
+  function gachaSoundEnd(){
+    if (bgmGuard) { clearInterval(bgmGuard); bgmGuard = null; }
+    if (!spinSound) return;
+    spinSound = false;
+    var b = document.getElementById('bgm-btn');
+    if (bgmPlayerEl && !document.hidden && b && b.getAttribute('aria-pressed') === 'true') {
+      bgmPlayerEl.play().catch(function(){});
+    }
+  }
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden) {
+      stopSong();
+      if (bgmGuard) { clearInterval(bgmGuard); bgmGuard = null; }
+      spinSound = false;
+    }
+  });
+
   function spin(){
     if (spinning) return;
     var spins = getSpins();
@@ -545,6 +669,7 @@
     if (spins <= 0 || rest.length === 0) { renderSpin(); return; }
     if (window.__ana) __ana('gacha_spin');
     spinning = true;
+    gachaSoundStart();
     stage.hidden = true;
     dropCap.classList.remove('drop');
     renderSpin();
@@ -554,6 +679,7 @@
     setTimeout(function(){
       void dropCap.offsetWidth;
       dropCap.classList.add('drop');
+      setTimeout(seDrop, 680);
     }, 1400);
     setTimeout(function(){
       var prize = rest[Math.floor(Math.random() * rest.length)];
@@ -569,7 +695,7 @@
       stage.hidden = false;
       stage.scrollIntoView({ behavior: 'auto', block: 'center' });
       void bigCap.offsetWidth;
-      setTimeout(function(){ bigCap.classList.add('wobble'); }, 700);
+      setTimeout(function(){ bigCap.classList.add('wobble'); seWobble(); }, 700);
       setTimeout(function(){
         var col2 = getCol();
         col2.push(prize.key);
@@ -577,6 +703,8 @@
         setSpins(getSpins() - 1);
         var fq2 = getFirst();
         if (fq2.length) { fq2.shift(); setFirst(fq2); }
+        seSparkle();
+        stopSong();
         bigCap.classList.add('reveal');
         stageFlash.classList.remove('go'); void stageFlash.offsetWidth; stageFlash.classList.add('go');
         makeSparks();
@@ -584,6 +712,8 @@
         setTimeout(function(){
           bigCap.hidden = true;
           capShadow.hidden = true;
+          seFanfare();
+          gachaSoundEnd();
           resultImg.src = 'gacha-fig-' + prize.key + '.webp';
           resultImg.alt = prize.name;
           resultImg.hidden = false;
