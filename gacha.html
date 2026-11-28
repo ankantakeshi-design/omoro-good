@@ -204,7 +204,7 @@
   <p class="demo-note" id="demoNote" hidden>テスト表示中だよ。本物の回数やコレクションは変わらないよ。</p>
   <h1>🎁 おもろガチャ</h1>
   <p class="lead" id="leadText">輪廻転生すると<br>3回分まわせるよ。（かぶりなし）</p>
-  <p class="inapp-note" id="inappNote" hidden>⚠ いまアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザの中に保存されるよ。アプリの中だと消えてしまうことがあるから、Safariなどのブラウザで開き直してね。</p>
+  <p class="inapp-note" id="inappNote" hidden>⚠ いま、LINEやThreadsなどのアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザの中に保存されるよ。アプリの中だと消えてしまうことがあるから、Safariなどのブラウザで開き直してね。</p>
 
   <section class="machine-box" aria-label="ガチャマシン">
     <div class="machine" id="machine" aria-hidden="true">
@@ -341,7 +341,7 @@
 <div class="overlay" id="inappOverlay" hidden>
   <div class="ov-card" role="dialog" aria-modal="true" aria-label="ブラウザで開くお願い">
     <p class="ov-name">ブラウザで開いてね</p>
-    <p class="share-hint" style="font-size:13.5px; text-align:left;">いま、アプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザごとに別々に保存されるよ。アプリの中だと、記録が消えたり、別になったりするよ。SafariやChromeで開き直すのがおすすめだよ。</p>
+    <p class="share-hint" style="font-size:13.5px; text-align:left;">いま、LINEやThreadsなどのアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザごとに別々に保存されるよ。アプリの中だと、記録が消えたり、別になったりするよ。SafariやChromeで開き直すのがおすすめだよ。</p>
     <button type="button" class="save-btn share-btn" id="inappCopy">🔗 リンクをコピーする</button>
     <button type="button" class="ov-close-btn" id="inappClose">閉じる</button>
   </div>
@@ -835,7 +835,7 @@
 
   function shareFigure(key, name){
     var url = 'https://omoro-gacha.pages.dev/';
-    var text = 'おもろガチャで「' + name + '」が出たよ！\n初めての人は、コード「はじめて」で3回まわせるよ。\n※開く時は、SafariやChromeで開いてね。アプリの中で開くと、集めた記録が別々になっちゃうよ。\n' + url;
+    var text = 'おもろガチャで「' + name + '」が出たよ！\n初めての人は、コード「はじめて」で3回まわせるよ。\n※開く時は、SafariやChromeで開いてね。LINEやThreadsなどのアプリの中で開くと、集めた記録が別々になっちゃうよ。\n' + url;
     function shareTextOnly(){
       if (navigator.share) {
         navigator.share({ title: 'おもろガチャ', text: text, url: url }).catch(function(){});
