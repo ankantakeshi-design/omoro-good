@@ -510,8 +510,7 @@
     } else {
       spinBtn.disabled = spinning;
       spinBtn.textContent = 'ガチャをまわす';
-      var fq3 = getFirst();
-      spinNote.textContent = fq3.length ? ('はじめてセット：つぎは' + (FIRST_LABELS[fq3[0]] || '') + 'から出るよ。') : 'まわすたびに新しいフィギュアが増えるよ。';
+      spinNote.textContent = 'まわすたびに新しいフィギュアが増えるよ。';
     }
     spinBtn.classList.toggle('can-spin', spins > 0 && col.length < FIGURES.length && !spinning);
   }
@@ -617,7 +616,6 @@
     manbo: ['manbo','manbo-manpou','manbo-tori','manbo-sun','manbo-lips','manbo-eyelid'],
     mix: ['hii-jump','hii-fire','mii-dance','mii-hug','keeper-lantern','keeper-read','egg']
   };
-  var FIRST_LABELS = { kaku: 'カクタローファミリー', manbo: 'マンボロウ', mix: 'ひーくん・みーちゃん・番人・たまご' };
   function getFirst(){
     if (DEMO) return memFirst.slice();
     try { var q = JSON.parse(localStorage.getItem('omoro-gacha-first') || '[]'); return Array.isArray(q) ? q : []; } catch(e) { return []; }
@@ -657,7 +655,7 @@
       if (h === FIRST_CODE_HASH) {
         setFirst(FIRST_ORDER.slice());
         setSpins(getSpins() + 3);
-        codeMsg.textContent = 'はじめてコードで3回まわせるようになったよ！カクタローファミリー、マンボロウ、ひーくんたちから1つずつ出るよ。';
+        codeMsg.textContent = 'はじめてコードで3回まわせるようになったよ！';
       } else {
         setSpins(getSpins() + 1);
         codeMsg.textContent = 'コードで1回まわせるようになったよ！';
