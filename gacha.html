@@ -826,7 +826,7 @@
 
   function shareFigure(key, name){
     var url = 'https://omoro-gacha.pages.dev/';
-    var text = 'おもろガチャで「' + name + '」が出たよ！\n初めての人は、コード「はじめて」で3回まわせるよ。\n' + url;
+    var text = 'おもろガチャで「' + name + '」が出たよ！\n初めての人は、コード「はじめて」で3回まわせるよ。\n※開く時は、SafariやChromeで開いてね。アプリの中で開くと、集めた記録が別々になっちゃうよ。\n' + url;
     function shareTextOnly(){
       if (navigator.share) {
         navigator.share({ title: 'おもろガチャ', text: text, url: url }).catch(function(){});
