@@ -212,7 +212,7 @@
     <button type="button" class="spin-btn" id="spinBtn">ガチャをまわす</button>
     <p class="spin-note" id="spinNote"></p>
     <div class="code-box">
-      <label class="code-label" for="codeInput">コードをお持ちの方はこちら（1回まわせるよ）</label>
+      <label class="code-label" for="codeInput">コードをお持ちの方はこちら（はじめてコードは3回まわせるよ）</label>
       <div class="code-row">
         <input type="text" class="code-input" id="codeInput" placeholder="コードを入力" autocomplete="off">
         <button type="button" class="code-btn" id="codeBtn">使う</button>
@@ -401,6 +401,7 @@
   var memSpins = 3;
   var memCol = [];
   var memCodes = [];
+  var memFirst = [];
   function getSpins(){
     if (DEMO) return memSpins;
     var n = parseInt(localStorage.getItem('omoro-gacha-spins') || '0', 10);
@@ -509,7 +510,8 @@
     } else {
       spinBtn.disabled = spinning;
       spinBtn.textContent = 'ガチャをまわす';
-      spinNote.textContent = 'まわすたびに新しいフィギュアが増えるよ。';
+      var fq3 = getFirst();
+      spinNote.textContent = fq3.length ? ('はじめてセット：つぎは' + (FIRST_LABELS[fq3[0]] || '') + 'から出るよ。') : 'まわすたびに新しいフィギュアが増えるよ。';
     }
     spinBtn.classList.toggle('can-spin', spins > 0 && col.length < FIGURES.length && !spinning);
   }
@@ -532,7 +534,15 @@
     if (spinning) return;
     var spins = getSpins();
     var col = getCol();
-    var rest = remaining(col);
+    var fq = getFirst();
+    var rest;
+    if (fq.length) {
+      var gkeys = FIRST_GROUPS[fq[0]] || [];
+      rest = FIGURES.filter(function(f){ return gkeys.indexOf(f.key) !== -1 && col.indexOf(f.key) === -1; });
+      if (!rest.length) rest = remaining(col);
+    } else {
+      rest = remaining(col);
+    }
     if (spins <= 0 || rest.length === 0) { renderSpin(); return; }
     if (window.__ana) __ana('gacha_spin');
     spinning = true;
@@ -566,6 +576,8 @@
         col2.push(prize.key);
         setCol(col2);
         setSpins(getSpins() - 1);
+        var fq2 = getFirst();
+        if (fq2.length) { fq2.shift(); setFirst(fq2); }
         bigCap.classList.add('reveal');
         stageFlash.classList.remove('go'); void stageFlash.offsetWidth; stageFlash.classList.add('go');
         makeSparks();
@@ -598,6 +610,19 @@
   spinBtn.addEventListener('click', spin);
 
   var CODE_HASHES = ['5e9a95acdfce9f441f1862877cdcba7cb7fb69c308dfa3fa273c96f57e98a896'];
+  var FIRST_CODE_HASH = '5e9a95acdfce9f441f1862877cdcba7cb7fb69c308dfa3fa273c96f57e98a896';
+  var FIRST_ORDER = ['kaku','manbo','mix'];
+  var FIRST_GROUPS = {
+    kaku: ['kaku-papa','kaku-mama','kaku-musuko','kaku-niwatori','kaku-hiyoko'],
+    manbo: ['manbo','manbo-manpou','manbo-tori','manbo-sun','manbo-lips','manbo-eyelid'],
+    mix: ['hii-jump','hii-fire','mii-dance','mii-hug','keeper-lantern','keeper-read','egg']
+  };
+  var FIRST_LABELS = { kaku: 'カクタローファミリー', manbo: 'マンボロウ', mix: 'ひーくん・みーちゃん・番人・たまご' };
+  function getFirst(){
+    if (DEMO) return memFirst.slice();
+    try { var q = JSON.parse(localStorage.getItem('omoro-gacha-first') || '[]'); return Array.isArray(q) ? q : []; } catch(e) { return []; }
+  }
+  function setFirst(q){ if (DEMO) { memFirst = q.slice(); return; } try { localStorage.setItem('omoro-gacha-first', JSON.stringify(q)); } catch(e) {} }
   function getUsedCodes(){
     if (DEMO) return memCodes.slice();
     try {
@@ -628,9 +653,15 @@
       if (used.indexOf(h) !== -1) { codeMsg.textContent = 'そのコードは、もう使ったよ。'; return; }
       used.push(h);
       setUsedCodes(used);
-      setSpins(getSpins() + 1);
       codeInput.value = '';
-      codeMsg.textContent = 'コードで1回まわせるようになったよ！';
+      if (h === FIRST_CODE_HASH) {
+        setFirst(FIRST_ORDER.slice());
+        setSpins(getSpins() + 3);
+        codeMsg.textContent = 'はじめてコードで3回まわせるようになったよ！カクタローファミリー、マンボロウ、ひーくんたちから1つずつ出るよ。';
+      } else {
+        setSpins(getSpins() + 1);
+        codeMsg.textContent = 'コードで1回まわせるようになったよ！';
+      }
       renderSpin();
     }).catch(function(){
       codeBtn.disabled = false;
@@ -641,7 +672,7 @@
 
   function shareFigure(key, name){
     var url = 'https://omoro-gacha.pages.dev/';
-    var text = 'おもろガチャで「' + name + '」が出たよ！\n初めての人は、コード「はじめて」で1回まわせるよ。\n' + url;
+    var text = 'おもろガチャで「' + name + '」が出たよ！\n初めての人は、コード「はじめて」で3回まわせるよ。\n' + url;
     function shareTextOnly(){
       if (navigator.share) {
         navigator.share({ title: 'おもろガチャ', text: text, url: url }).catch(function(){});

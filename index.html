@@ -2237,7 +2237,8 @@
         'omoro-name': localStorage.getItem('omoro-name'),
         'omoro-lives': localStorage.getItem('omoro-lives'),
         'omoro-gacha-spins': localStorage.getItem('omoro-gacha-spins'),
-        'omoro-gacha-col': localStorage.getItem('omoro-gacha-col')
+        'omoro-gacha-col': localStorage.getItem('omoro-gacha-col'),
+        'omoro-gacha-first': localStorage.getItem('omoro-gacha-first')
       }
     };
     var blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
@@ -2286,7 +2287,7 @@
       }
       if (!window.confirm('今の記録を、バックアップの記録で上書きします。よろしいですか？')) return;
       try {
-        ['omoro-liked', 'omoro-evolved', 'omoro-form', 'omoro-gen', 'omoro-name', 'omoro-lives', 'omoro-gacha-spins', 'omoro-gacha-col'].forEach(function(k){
+        ['omoro-liked', 'omoro-evolved', 'omoro-form', 'omoro-gen', 'omoro-name', 'omoro-lives', 'omoro-gacha-spins', 'omoro-gacha-col', 'omoro-gacha-first'].forEach(function(k){
           if (rec[k] === null || rec[k] === undefined) localStorage.removeItem(k);
           else localStorage.setItem(k, rec[k]);
         });
