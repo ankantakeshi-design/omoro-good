@@ -919,7 +919,7 @@
   if (/(Line\/|FBAN|FBAV|Instagram|Threads|Barcelona)/.test(uaStr)) {
     var recName = /iPhone|iPad|iPod/.test(uaStr) ? 'Safari' : 'Chrome';
     var inappText = document.getElementById('inappText');
-    if (inappText) inappText.textContent = 'いま、LINEやThreadsなどのアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザごとに別々に保存されるよ。アプリの中だと、記録が消えたり、別になったりするよ。' + recName + 'で開き直すのがおすすめだよ。';
+    if (inappText) inappText.textContent = 'いま、LINEやThreadsなどのアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザごとに別々に保存されるよ。アプリの中だと、記録が消えたり、別になったりするよ。' + recName + 'で開き直すのがおすすめだよ。ホーム画面に置いておくと、次からすぐ開けて、記録もそのまま残るよ。';
     var inappNote = document.getElementById('inappNote');
     if (inappNote) { inappNote.hidden = false; inappNote.textContent = '⚠ いま、LINEやThreadsなどのアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザの中に保存されるよ。アプリの中だと消えてしまうことがあるから、' + recName + 'で開き直してね。'; }
     var inappOverlay = document.getElementById('inappOverlay');
