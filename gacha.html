@@ -608,9 +608,8 @@
   }
   spinBtn.addEventListener('click', spin);
 
-  var CODE_HASHES = ['5e9a95acdfce9f441f1862877cdcba7cb7fb69c308dfa3fa273c96f57e98a896', '92bef183c173998aa95471eb4fcd34c586cd37f82b891b3904e4815b1331a610'];
+  var CODE_HASHES = ['5e9a95acdfce9f441f1862877cdcba7cb7fb69c308dfa3fa273c96f57e98a896'];
   var FIRST_CODE_HASH = '5e9a95acdfce9f441f1862877cdcba7cb7fb69c308dfa3fa273c96f57e98a896';
-  var TAKE_CODE_HASH = '92bef183c173998aa95471eb4fcd34c586cd37f82b891b3904e4815b1331a610';
   var FIRST_ORDER = ['kaku','manbo','mix'];
   var FIRST_GROUPS = {
     kaku: ['kaku-papa','kaku-mama','kaku-musuko','kaku-niwatori','kaku-hiyoko'],
@@ -656,10 +655,6 @@
       if (h === FIRST_CODE_HASH) {
         setFirst(FIRST_ORDER.slice());
         setSpins(getSpins() + 3);
-        codeMsg.textContent = 'コードでまわせるようになったよ！';
-      } else if (h === TAKE_CODE_HASH) {
-        setFirst(['manbo','mix']);
-        setSpins(getSpins() + 2);
         codeMsg.textContent = 'コードでまわせるようになったよ！';
       } else {
         setSpins(getSpins() + 1);
