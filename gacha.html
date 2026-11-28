@@ -176,7 +176,8 @@
   .big-cap .bc-top{ top:0; background:url(gacha-cap-top.webp) center/100% 100% no-repeat; }
   .big-cap .bc-bottom{ bottom:0; background:url(gacha-cap-bottom.webp) center/100% 100% no-repeat; }
   @keyframes capIn{ 0%{ transform:translateY(-44px) scale(.7); opacity:0; } 60%{ transform:translateY(5px) scale(1.05); opacity:1; } 100%{ transform:translateY(0) scale(1); } }
-  .big-cap.wobble{ animation:capWobble .85s ease-in-out; }
+  .big-cap.wobble{ animation:capWobble .85s ease-in-out; transform-origin:50% 96%; }
+  .cap-shadow{ width:120px; height:16px; margin:-8px auto 0; border-radius:50%; background:radial-gradient(ellipse at center, rgba(90,60,20,.35) 0%, rgba(90,60,20,0) 70%); }
   @keyframes capWobble{ 0%,100%{ transform:rotate(0); } 20%{ transform:rotate(-7deg); } 45%{ transform:rotate(6deg); } 70%{ transform:rotate(-4deg); } }
   .big-cap.open .bc-top{ animation:capTopFly .5s ease-out forwards; }
   .big-cap.open .bc-bottom{ animation:capBottomDrop .5s ease-in forwards; }
@@ -223,6 +224,7 @@
     <div class="stage" id="stage" hidden>
       <div class="stage-flash" id="stageFlash"></div>
       <div class="big-cap" id="bigCap"><span class="bc-top"></span><span class="bc-bottom"></span></div>
+      <div class="cap-shadow" id="capShadow"></div>
       <div class="sparks" id="sparks" aria-hidden="true"></div>
       <img id="resultImg" src="" alt="" hidden>
       <p class="result-name" id="resultName" hidden></p>
@@ -370,6 +372,7 @@
   var spinNote = document.getElementById('spinNote');
   var stage    = document.getElementById('stage');
   var bigCap   = document.getElementById('bigCap');
+  var capShadow = document.getElementById('capShadow');
   var stageFlash = document.getElementById('stageFlash');
   var sparks   = document.getElementById('sparks');
   var resultNewWrap = document.getElementById('resultNewWrap');
@@ -539,6 +542,7 @@
       bigCap.querySelector('.bc-top').style.filter = capFilter(CAP_COLORS[Math.floor(Math.random() * CAP_COLORS.length)]);
       bigCap.className = 'big-cap';
       bigCap.hidden = false;
+      capShadow.hidden = false;
       resultImg.hidden = true;
       resultName.hidden = true;
       resultNewWrap.hidden = true;
@@ -559,6 +563,7 @@
         sparks.classList.remove('go'); void sparks.offsetWidth; sparks.classList.add('go');
         setTimeout(function(){
           bigCap.hidden = true;
+          capShadow.hidden = true;
           resultImg.src = 'gacha-fig-' + prize.key + '.webp';
           resultImg.alt = prize.name;
           resultImg.hidden = false;
