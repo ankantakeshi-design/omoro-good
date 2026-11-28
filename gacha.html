@@ -179,8 +179,8 @@
   .big-cap.wobble{ animation:capWobble .85s ease-in-out; transform-origin:50% 96%; }
   .cap-shadow{ width:120px; height:16px; margin:-8px auto 0; border-radius:50%; background:radial-gradient(ellipse at center, rgba(90,60,20,.35) 0%, rgba(90,60,20,0) 70%); }
   @keyframes capWobble{ 0%,100%{ transform:rotate(0); } 20%{ transform:rotate(-7deg); } 45%{ transform:rotate(6deg); } 70%{ transform:rotate(-4deg); } }
-  .big-cap.reveal{ animation:capReveal .55s ease-in forwards; }
-  @keyframes capReveal{ 0%{ transform:scale(1); filter:brightness(1); opacity:1; } 40%{ transform:scale(1.07); filter:brightness(1.9); opacity:1; } 100%{ transform:scale(.5); filter:brightness(2.4); opacity:0; } }
+  .big-cap.reveal{ animation:capReveal .9s ease-in forwards; }
+  @keyframes capReveal{ 0%{ transform:scale(1); filter:brightness(1) drop-shadow(0 0 0 rgba(255,210,80,0)); opacity:1; } 35%{ transform:scale(1.03); filter:brightness(1.4) drop-shadow(0 0 14px rgba(255,210,80,.75)); opacity:1; } 65%{ transform:scale(1.08); filter:brightness(2.2) drop-shadow(0 0 26px rgba(255,210,80,.95)); opacity:1; } 100%{ transform:scale(.5); filter:brightness(2.6) drop-shadow(0 0 30px rgba(255,210,80,1)); opacity:0; } }
   .stage-flash{ position:absolute; left:50%; top:88px; width:64px; height:64px; margin-left:-32px; border-radius:50%; background:radial-gradient(circle,#fff8dc 0%,rgba(255,220,90,.85) 45%,rgba(255,220,90,0) 75%); opacity:0; pointer-events:none; }
   .stage-flash.go{ animation:flashGo .55s ease-out forwards; }
   @keyframes flashGo{ 0%{ opacity:0; transform:scale(.4); } 25%{ opacity:1; } 100%{ opacity:0; transform:scale(4.6); } }
@@ -585,7 +585,7 @@
           spinning = false;
           renderAlbum();
           renderSpin();
-        }, 550);
+        }, 900);
       }, 1750);
     }, 2400);
   }
