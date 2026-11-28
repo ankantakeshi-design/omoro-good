@@ -70,6 +70,10 @@
   .code-btn:disabled{ opacity:.5; cursor:default; }
   .code-msg{ font-size:13.5px; color:var(--ink-soft); margin:6px 0 0; min-height:1.2em; }
   .share-hint{ font-size:12px; color:var(--ink-soft); margin:8px 6px 0; line-height:1.6; }
+  .inapp-track{ margin-top:14px; }
+  .inapp-track-h{ font-size:16px; font-weight:900; color:var(--orange-dark); text-align:left; }
+  .inapp-steps{ text-align:left; font-size:15.5px; line-height:1.7; font-weight:700; margin:6px 6px 4px; padding-left:1.5em; }
+  .inapp-steps li{ margin-bottom:6px; }
   .ov-save img{ max-width:min(260px,74vw); max-height:340px; width:auto; }
   .save-how{ font-size:16px; line-height:1.75; font-weight:700; margin:12px 2px 14px; text-align:left; }
   .inapp-note{ background:#fff3e0; color:#9a5a12; border:1px solid #f2cf9a; border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.6; margin:10px 0 0; }
@@ -343,9 +347,25 @@
 </div>
 
 <div class="overlay" id="inappOverlay" hidden>
-  <div class="ov-card" role="dialog" aria-modal="true" aria-label="ブラウザで開くお願い">
-    <p class="ov-name">ブラウザで開いてね</p>
-    <p class="share-hint" id="inappText" style="font-size:13.5px; text-align:left;">いま、LINEやThreadsなどのアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザごとに別々に保存されるよ。アプリの中だと、記録が消えたり、別になったりするよ。SafariやChromeで開き直すのがおすすめだよ。</p>
+  <div class="ov-card" role="dialog" aria-modal="true" aria-label="開き直しのお願い">
+    <p class="ov-name">アプリの外で開いてね</p>
+    <p class="share-hint" style="font-size:14px; text-align:left;">いま、LINEやThreadsなどのアプリの中で開いているよ。アプリの中だと、集めたフィギュアの記録が消えたり、別になったりするよ。</p>
+    <div class="inapp-track">
+      <p class="inapp-track-h">📱 iPhoneの人はこちら</p>
+      <ol class="inapp-steps">
+        <li>下のボタンで、リンクをコピーする</li>
+        <li>Safariを開いて、貼り付けて開く</li>
+        <li>共有ボタンから「ホーム画面に追加」して、そこから遊んでね</li>
+      </ol>
+    </div>
+    <div class="inapp-track">
+      <p class="inapp-track-h">🤖 Androidの人はこちら</p>
+      <ol class="inapp-steps">
+        <li>下のボタンで、リンクをコピーする</li>
+        <li>Chromeを開いて、貼り付けて開く</li>
+        <li>メニュー（︙）から「ホーム画面に追加」して、そこから遊んでね</li>
+      </ol>
+    </div>
     <button type="button" class="save-btn share-btn" id="inappCopy">🔗 リンクをコピーする</button>
     <button type="button" class="ov-close-btn" id="inappClose">閉じる</button>
   </div>
@@ -918,10 +938,8 @@
   var uaStr = navigator.userAgent || '';
   if (/(Line\/|FBAN|FBAV|Instagram|Threads|Barcelona)/.test(uaStr)) {
     var recName = /iPhone|iPad|iPod/.test(uaStr) ? 'Safari' : 'Chrome';
-    var inappText = document.getElementById('inappText');
-    if (inappText) inappText.textContent = 'いま、LINEやThreadsなどのアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザごとに別々に保存されるよ。アプリの中だと、記録が消えたり、別になったりするよ。' + recName + 'で開き直すのがおすすめだよ。ホーム画面に置いておくと、次からすぐ開けて、記録もそのまま残るよ。';
     var inappNote = document.getElementById('inappNote');
-    if (inappNote) { inappNote.hidden = false; inappNote.textContent = '⚠ いま、LINEやThreadsなどのアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザの中に保存されるよ。アプリの中だと消えてしまうことがあるから、' + recName + 'で開き直してね。'; }
+    if (inappNote) { inappNote.hidden = false; inappNote.textContent = '⚠ いま、LINEやThreadsなどのアプリの中で開いているよ。集めた記録は、開いたところごとに別々になっちゃうよ。' + recName + 'で開き直してね。'; }
     var inappOverlay = document.getElementById('inappOverlay');
     inappOverlay.hidden = false;
     document.getElementById('inappClose').addEventListener('click', function(){ inappOverlay.hidden = true; });
