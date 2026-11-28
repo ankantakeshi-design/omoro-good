@@ -70,6 +70,7 @@
   .code-btn:disabled{ opacity:.5; cursor:default; }
   .code-msg{ font-size:13.5px; color:var(--ink-soft); margin:6px 0 0; min-height:1.2em; }
   .share-hint{ font-size:12px; color:var(--ink-soft); margin:8px 6px 0; line-height:1.6; }
+  .inapp-note{ background:#fff3e0; color:#9a5a12; border:1px solid #f2cf9a; border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.6; margin:10px 0 0; }
   .raise-box{ display:flex; align-items:center; gap:12px; background:var(--yellow-soft); border:2px solid var(--card-border); border-radius:16px; padding:14px; margin:18px 0 4px; text-align:left; }
   .raise-thumb{ flex:0 0 60px; text-align:center; }
   .raise-thumb img{ max-width:60px; max-height:76px; width:auto; height:auto; }
@@ -203,6 +204,7 @@
   <p class="demo-note" id="demoNote" hidden>テスト表示中だよ。本物の回数やコレクションは変わらないよ。</p>
   <h1>🎁 おもろガチャ</h1>
   <p class="lead" id="leadText">輪廻転生すると<br>3回分まわせるよ。（かぶりなし）</p>
+  <p class="inapp-note" id="inappNote" hidden>⚠ いまアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザの中に保存されるよ。アプリの中だと消えてしまうことがあるから、Safariなどのブラウザで開き直してね。</p>
 
   <section class="machine-box" aria-label="ガチャマシン">
     <div class="machine" id="machine" aria-hidden="true">
@@ -324,6 +326,15 @@
     <button type="button" class="save-btn share-btn" id="shareBtn" hidden>⤴ 友達にシェア</button>
     <p class="share-hint" id="shareHint" hidden>シェアすると、文章とリンクもコピーされるよ。シェア先で文章が出なかったら、貼り付けてね。</p>
     <button type="button" class="ov-close-btn" id="resCloseBtn">閉じる</button>
+  </div>
+</div>
+
+<div class="overlay" id="cardOverlay" hidden>
+  <div class="ov-card" role="dialog" aria-modal="true" aria-label="カード画像">
+    <button type="button" class="ov-close-x" id="cardCloseX" aria-label="閉じる">✕</button>
+    <img id="cardImg" src="" alt="カード画像">
+    <p class="share-hint">画像を長押しすると、「写真に保存」が出るよ。</p>
+    <button type="button" class="ov-close-btn" id="cardCloseBtn">閉じる</button>
   </div>
 </div>
 
@@ -887,6 +898,44 @@
   resultOverlay.addEventListener('click', function(e){ if (e.target === resultOverlay) closeResultWithBack(); });
   window.addEventListener('popstate', function(){ closeResult(); });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && resOpen) closeResultWithBack(); });
+
+  /* アプリ内ブラウザの注意と、iPhoneの画像保存 */
+  var uaStr = navigator.userAgent || '';
+  if (/(Line\/|FBAN|FBAV|Instagram)/.test(uaStr)) {
+    var inappNote = document.getElementById('inappNote');
+    if (inappNote) inappNote.hidden = false;
+  }
+  var isIOS = /iPhone|iPad|iPod/.test(uaStr) || (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+  var cardOverlay = document.getElementById('cardOverlay');
+  var cardImg = document.getElementById('cardImg');
+  var cardOpen = false;
+  function openCard(src){
+    cardImg.src = src;
+    cardOverlay.hidden = false;
+    cardOpen = true;
+    try { history.pushState({ gachaCard: 1 }, ''); } catch(e) {}
+  }
+  function closeCard(){
+    if (!cardOpen) return;
+    cardOpen = false;
+    cardOverlay.hidden = true;
+  }
+  function closeCardWithBack(){
+    if (history.state && history.state.gachaCard) history.back();
+    else closeCard();
+  }
+  document.getElementById('cardCloseX').addEventListener('click', closeCardWithBack);
+  document.getElementById('cardCloseBtn').addEventListener('click', closeCardWithBack);
+  cardOverlay.addEventListener('click', function(e){ if (e.target === cardOverlay) closeCardWithBack(); });
+  window.addEventListener('popstate', function(){ closeCard(); });
+  document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && cardOpen) closeCardWithBack(); });
+  function iosSaveTap(e){
+    if (!isIOS) return;
+    e.preventDefault();
+    openCard(this.getAttribute('href'));
+  }
+  saveBtn.addEventListener('click', iosSaveTap);
+  ovSave.addEventListener('click', iosSaveTap);
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape') closeDetailWithBack(); });
 
   var introOmoro = document.getElementById('introOmoroImg');
