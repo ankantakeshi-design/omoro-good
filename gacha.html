@@ -70,6 +70,18 @@
   .code-btn{ min-height:48px; padding:8px 20px; border:2px solid var(--orange); border-radius:12px; background:#fff; color:var(--orange-dark); font-size:15px; font-weight:900; font-family:inherit; cursor:pointer; }
   .code-btn:disabled{ opacity:.5; cursor:default; }
   .code-msg{ font-size:13.5px; color:var(--ink-soft); margin:6px 0 0; min-height:1.2em; }
+  .raise-box{ display:flex; align-items:center; gap:12px; background:var(--yellow-soft); border:2px solid var(--card-border); border-radius:16px; padding:14px; margin:18px 0 4px; text-align:left; }
+  .raise-thumb{ flex:0 0 60px; text-align:center; }
+  .raise-thumb img{ max-width:60px; max-height:76px; width:auto; height:auto; }
+  .raise-title{ font-weight:900; margin:0 0 4px; }
+  .raise-text{ margin:0 0 10px; font-size:14px; color:var(--ink-soft); }
+  .raise-btn{ display:inline-block; min-height:48px; line-height:48px; padding:0 18px; background:linear-gradient(135deg,#ffb74d,#f96d00); color:#fff; font-weight:900; border-radius:999px; text-decoration:none; box-shadow:0 3px 0 #d35400; }
+  .stamp-guard-btn{ background:none; border:none; padding:0; font:inherit; color:var(--orange-dark); font-weight:700; cursor:pointer; text-align:left; }
+  .stamp-guard{ margin-top:8px; background:#fff; border:2px dashed var(--card-border); border-radius:12px; padding:10px 12px; }
+  .stamp-guard-text{ margin:0 0 10px; font-size:14px; }
+  .stamp-guard-btns{ margin:0; display:flex; gap:8px; flex-wrap:wrap; }
+  .stamp-go{ display:inline-block; min-height:48px; line-height:48px; padding:0 16px; border-radius:999px; background:linear-gradient(135deg,#ffb74d,#f96d00); color:#fff; font-weight:900; text-decoration:none; }
+  .stamp-stop{ min-height:48px; padding:0 16px; border-radius:999px; border:2px solid var(--card-border); background:#fff; color:var(--ink-soft); font-weight:700; font-family:inherit; font-size:15px; cursor:pointer; }
   .result{ margin-top:18px; }
   .result.pop{ animation:resPop .5s cubic-bezier(.3,1.5,.5,1); }
   @keyframes resPop{ 0%{ transform:scale(.6); opacity:0; } 100%{ transform:scale(1); opacity:1; } }
@@ -226,6 +238,15 @@
     </div>
   </section>
 
+  <section class="raise-box" aria-label="おもろっちを育てる">
+    <div class="raise-thumb"><img src="thumb-egg.webp" alt="おもろっち" loading="lazy"></div>
+    <div>
+      <p class="raise-title">本編は「おもろっちのおうち」だよ</p>
+      <p class="raise-text">おもろを集めて おもろっちを育てると、少しずつ進化していくよ。育て終わると、またガチャが3回まわせるよ。</p>
+      <a class="raise-btn" href="index.html">おもろっちを育てに行く ›</a>
+    </div>
+  </section>
+
   <section aria-label="フィギュア図鑑">
     <div class="album-head">
       <h2>フィギュア図鑑</h2>
@@ -244,7 +265,11 @@
       <div class="intro-body">
         <p class="intro-name">おもろっち</p>
         <p class="intro-text">おもろグ〜で育つ、小さな命。おもろを集めると、少しずつ育っていくよ。</p>
-        <p class="intro-link"><a href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener noreferrer">LINEスタンプはこちら（進化のネタバレ注意） ›</a></p>
+        <p class="intro-link"><button type="button" class="stamp-guard-btn">LINEスタンプはこちら ›</button></p>
+        <div class="stamp-guard" hidden>
+          <p class="stamp-guard-text">スタンプのページには、おもろっちの進化の姿が ぜんぶ出ているよ。まだ育てている途中なら、ネタバレになっちゃうかも。</p>
+          <p class="stamp-guard-btns"><a class="stamp-go" href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener noreferrer">それでも見に行く ›</a><button type="button" class="stamp-stop">やめておく</button></p>
+        </div>
       </div>
     </div>
 
@@ -280,7 +305,11 @@
       <div class="intro-body">
         <p class="intro-name">かくたろうファミリー</p>
         <p class="intro-text">四角い頭の、ほのぼの宇宙人家族。かくたろう、かくみ、こたろう、とりたろう、ぴよたろうの5人だよ。</p>
-        <p class="intro-link"><a href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener noreferrer">LINEスタンプはこちら ›</a></p>
+        <p class="intro-link"><button type="button" class="stamp-guard-btn">LINEスタンプはこちら ›</button></p>
+        <div class="stamp-guard" hidden>
+          <p class="stamp-guard-text">スタンプのページには、かくたろうファミリーのスタンプと一緒に、おもろっちの進化の姿も出ているよ。まだ育てている途中なら、ネタバレになっちゃうかも。</p>
+          <p class="stamp-guard-btns"><a class="stamp-go" href="https://store.line.me/stickershop/author/1408627/ja" target="_blank" rel="noopener noreferrer">それでも見に行く ›</a><button type="button" class="stamp-stop">やめておく</button></p>
+        </div>
       </div>
     </div>
   </section>
@@ -592,6 +621,20 @@
     }).catch(function(){
       codeBtn.disabled = false;
       codeMsg.textContent = 'うまくいかなかったよ。もう一度ためしてね。';
+    });
+  });
+
+  document.querySelectorAll('.stamp-guard-btn').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var body = btn.closest('.intro-body');
+      var panel = body ? body.querySelector('.stamp-guard') : null;
+      if (panel) panel.hidden = !panel.hidden;
+    });
+  });
+  document.querySelectorAll('.stamp-stop').forEach(function(btn){
+    btn.addEventListener('click', function(){
+      var panel = btn.closest('.stamp-guard');
+      if (panel) panel.hidden = true;
     });
   });
 
