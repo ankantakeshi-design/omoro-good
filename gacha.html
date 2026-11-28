@@ -901,7 +901,7 @@
 
   /* アプリ内ブラウザの注意と、iPhoneの画像保存 */
   var uaStr = navigator.userAgent || '';
-  if (/(Line\/|FBAN|FBAV|Instagram)/.test(uaStr)) {
+  if (/(Line\/|FBAN|FBAV|Instagram|Threads|Barcelona)/.test(uaStr)) {
     var inappNote = document.getElementById('inappNote');
     if (inappNote) inappNote.hidden = false;
   }
