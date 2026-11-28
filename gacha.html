@@ -95,6 +95,13 @@
   .spin-btn.can-spin{ animation:spinGlow 1.6s ease-in-out infinite; }
   @keyframes spinGlow{ 0%,100%{ box-shadow:0 4px 0 #d35400, 0 0 0 0 rgba(247,183,51,0); filter:brightness(1); } 50%{ box-shadow:0 4px 0 #d35400, 0 0 18px 7px rgba(247,183,51,.9); filter:brightness(1.1); } }
   .spin-note{ color:var(--ink-soft); margin:10px 0 0; }
+  .code-box{ margin-top:14px; border-top:1px dashed var(--card-border); padding-top:12px; }
+  .code-label{ display:block; font-size:13.5px; font-weight:700; color:var(--ink-soft); margin-bottom:6px; }
+  .code-row{ display:flex; gap:8px; max-width:340px; margin:0 auto; }
+  .code-input{ flex:1; min-width:0; min-height:48px; border:2px solid var(--card-border); border-radius:12px; padding:8px 12px; font-size:16px; font-family:inherit; background:#fff; color:var(--ink); }
+  .code-btn{ min-height:48px; padding:8px 20px; border:2px solid var(--orange); border-radius:12px; background:#fff; color:var(--orange-dark); font-size:15px; font-weight:900; font-family:inherit; cursor:pointer; }
+  .code-btn:disabled{ opacity:.5; cursor:default; }
+  .code-msg{ font-size:13.5px; color:var(--ink-soft); margin:6px 0 0; min-height:1.2em; }
   .result{ margin-top:18px; }
   .result.pop{ animation:resPop .5s cubic-bezier(.3,1.5,.5,1); }
   @keyframes resPop{ 0%{ transform:scale(.6); opacity:0; } 100%{ transform:scale(1); opacity:1; } }
@@ -238,6 +245,14 @@
     <p class="spin-count">あと <b id="spinCount">0</b> 回 まわせるよ</p>
     <button type="button" class="spin-btn" id="spinBtn">ガチャをまわす</button>
     <p class="spin-note" id="spinNote"></p>
+    <div class="code-box">
+      <label class="code-label" for="codeInput">コードをお持ちの方はこちら（1回まわせるよ）</label>
+      <div class="code-row">
+        <input type="text" class="code-input" id="codeInput" placeholder="コードを入力" autocomplete="off">
+        <button type="button" class="code-btn" id="codeBtn">使う</button>
+      </div>
+      <p class="code-msg" id="codeMsg"></p>
+    </div>
     <div class="stage" id="stage" hidden>
       <div class="stage-flash" id="stageFlash"></div>
       <div class="big-cap" id="bigCap"><span class="bc-top"></span><span class="bc-bottom"></span></div>
@@ -253,7 +268,7 @@
   <section aria-label="フィギュア図鑑">
     <div class="album-head">
       <h2>フィギュア図鑑</h2>
-      <span class="album-count" id="albumCount">0 / 12</span>
+      <span class="album-count" id="albumCount">0 / 17</span>
     </div>
     <div class="album-grid" id="albumGrid"></div>
     <p class="complete-msg" id="completeMsg" hidden>🎉 ぜんぶ集まったよ！コンプリートおめでとう 🎉</p>
@@ -387,6 +402,7 @@
   var DEMO = /[?&]demo/.test(location.search);
   var memSpins = 3;
   var memCol = [];
+  var memCodes = [];
   function getSpins(){
     if (DEMO) return memSpins;
     var n = parseInt(localStorage.getItem('omoro-gacha-spins') || '0', 10);
@@ -405,8 +421,21 @@
     for (var i = 0; i < FIGURES.length; i++) if (FIGURES[i].key === key) return FIGURES[i];
     return null;
   }
+  var OMORO_KEYS = ['egg','baby','kid','adult','daidara','god'];
+  function reachedOmoroIdx(){
+    if (hasReincarnated()) return 5;
+    var idx = 0;
+    try { idx = parseInt(localStorage.getItem('omoro-evolved') || '0', 10); if (isNaN(idx)) idx = 0; } catch(e) {}
+    return Math.max(0, Math.min(5, idx));
+  }
   function remaining(col){
-    return FIGURES.filter(function(f){ return col.indexOf(f.key) === -1; });
+    var maxIdx = reachedOmoroIdx();
+    return FIGURES.filter(function(f){
+      if (col.indexOf(f.key) !== -1) return false;
+      var oi = OMORO_KEYS.indexOf(f.key);
+      if (oi !== -1 && oi > maxIdx) return false;
+      return true;
+    });
   }
 
   function renderAlbum(){
@@ -471,6 +500,10 @@
       spinBtn.disabled = true;
       spinBtn.textContent = 'ガチャをまわす';
       spinNote.textContent = hasReincarnated() ? 'おもろを集めて、また育ててみてね。' : 'おもろを集めて、おもろっちを育ててみてね。';
+    } else if (remaining(col).length === 0) {
+      spinBtn.disabled = true;
+      spinBtn.textContent = 'ガチャをまわす';
+      spinNote.textContent = 'いま出るフィギュアは全部集まったよ。おもろっちが育つと、また増えるよ。';
     } else {
       spinBtn.disabled = spinning;
       spinBtn.textContent = 'ガチャをまわす';
@@ -559,6 +592,47 @@
     }, 1650);
   }
   spinBtn.addEventListener('click', spin);
+
+  var CODE_HASHES = ['5e9a95acdfce9f441f1862877cdcba7cb7fb69c308dfa3fa273c96f57e98a896'];
+  function getUsedCodes(){
+    if (DEMO) return memCodes.slice();
+    try {
+      var c = JSON.parse(localStorage.getItem('omoro-gacha-codes') || '[]');
+      return Array.isArray(c) ? c : [];
+    } catch(e) { return []; }
+  }
+  function setUsedCodes(c){ if (DEMO) { memCodes = c.slice(); return; } try { localStorage.setItem('omoro-gacha-codes', JSON.stringify(c)); } catch(e) {} }
+  function normCode(s){
+    return (s || '').replace(/[\s　]+/g, '').replace(/[ァ-ヶ]/g, function(c){ return String.fromCharCode(c.charCodeAt(0) - 0x60); }).toLowerCase();
+  }
+  function sha256hex(str){
+    return crypto.subtle.digest('SHA-256', new TextEncoder().encode(str)).then(function(buf){
+      return Array.prototype.map.call(new Uint8Array(buf), function(b){ return ('0' + b.toString(16)).slice(-2); }).join('');
+    });
+  }
+  var codeInput = document.getElementById('codeInput');
+  var codeBtn = document.getElementById('codeBtn');
+  var codeMsg = document.getElementById('codeMsg');
+  codeBtn.addEventListener('click', function(){
+    var v = normCode(codeInput.value);
+    if (!v) { codeMsg.textContent = 'コードを入れてね。'; return; }
+    codeBtn.disabled = true;
+    sha256hex(v).then(function(h){
+      codeBtn.disabled = false;
+      if (CODE_HASHES.indexOf(h) === -1) { codeMsg.textContent = 'そのコードは使えないみたい。'; return; }
+      var used = getUsedCodes();
+      if (used.indexOf(h) !== -1) { codeMsg.textContent = 'そのコードは、もう使ったよ。'; return; }
+      used.push(h);
+      setUsedCodes(used);
+      setSpins(getSpins() + 1);
+      codeInput.value = '';
+      codeMsg.textContent = 'コードで1回まわせるようになったよ！';
+      renderSpin();
+    }).catch(function(){
+      codeBtn.disabled = false;
+      codeMsg.textContent = 'うまくいかなかったよ。もう一度ためしてね。';
+    });
+  });
 
   function shareFigure(key, name){
     var url = 'https://omoro-good.pages.dev/gacha.html';
