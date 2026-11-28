@@ -39,17 +39,14 @@
   .machine-box{ text-align:center; background:linear-gradient(180deg,#fff8e8,#fff); }
   .machine{ position:relative; width:min(250px,74vw); margin:2px auto 6px; }
   .machine-img{ width:100%; height:auto; display:block; }
-  .machine.shaking .machine-img{ animation:machineRock .95s ease-in-out; transform-origin:50% 88%; }
+  .machine.shaking .machine-img{ animation:machineRock 1.5s ease-in-out; transform-origin:50% 88%; }
   @keyframes machineRock{ 0%{ transform:rotate(0); } 20%{ transform:rotate(-1.7deg); } 45%{ transform:rotate(1.5deg); } 70%{ transform:rotate(-1deg); } 88%{ transform:rotate(.5deg); } 100%{ transform:rotate(0); } }
   .drop-cap{
     position:absolute; left:50%; top:85%; width:15%; aspect-ratio:1; border-radius:50%;
     transform:translate(-50%,-50%); opacity:0; pointer-events:none;
-    background:
-      radial-gradient(circle at 32% 26%, rgba(255,255,255,.95) 0%, rgba(255,255,255,.5) 20%, rgba(255,255,255,0) 48%),
-      linear-gradient(90deg, var(--dc,#ef5350) 49%, rgba(0,0,0,.16) 50%, #ffffff 51%);
-    box-shadow:inset -4px -6px 8px rgba(0,0,0,.22), inset 3px 4px 6px rgba(255,255,255,.35), 0 2px 5px rgba(0,0,0,.25);
+    background:url(gacha-cap-ball.webp) center/contain no-repeat;
   }
-  .drop-cap.drop{ animation:capDrop .55s cubic-bezier(.3,1.4,.5,1) forwards; }
+  .drop-cap.drop{ animation:capDrop .7s cubic-bezier(.3,1.4,.5,1) forwards; }
   @keyframes capDrop{ 0%{ top:61%; opacity:0; } 18%{ opacity:1; } 68%{ top:86.2%; opacity:1; } 84%{ top:83.8%; opacity:1; } 100%{ top:85%; opacity:1; } }
   .spin-count{ font-size:18px; margin:10px 0 4px; }
   .spin-count b{ font-size:24px; color:var(--orange-dark); }
@@ -176,10 +173,10 @@
   .big-cap{ position:relative; width:148px; height:148px; margin:24px auto 0; animation:capIn .45s ease-out; }
   .big-cap[hidden]{ display:none; }
   .big-cap .bc-top,.big-cap .bc-bottom{ position:absolute; left:0; width:148px; height:74px; }
-  .big-cap .bc-top{ top:0; border-radius:74px 74px 0 0; background:radial-gradient(130px 95px at 32% 16%, rgba(255,255,255,.92) 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, rgba(255,255,255,.22), rgba(0,0,0,.10) 92%), var(--cap1,#e05d00); box-shadow:inset -12px -10px 18px rgba(0,0,0,.16), inset 10px 12px 16px rgba(255,255,255,.30), inset 0 -4px 5px rgba(0,0,0,.18); }
-  .big-cap .bc-bottom{ bottom:0; border-radius:0 0 74px 74px; background:radial-gradient(130px 95px at 30% 30%, rgba(255,255,255,.95) 0%, rgba(255,255,255,0) 55%), linear-gradient(180deg, #ffffff, #eae1cc); box-shadow:inset -12px -16px 20px rgba(0,0,0,.15), inset 8px 4px 12px rgba(255,255,255,.55), inset 0 4px 5px rgba(0,0,0,.12); }
+  .big-cap .bc-top{ top:0; background:url(gacha-cap-top.webp) center/100% 100% no-repeat; }
+  .big-cap .bc-bottom{ bottom:0; background:url(gacha-cap-bottom.webp) center/100% 100% no-repeat; }
   @keyframes capIn{ 0%{ transform:translateY(-44px) scale(.7); opacity:0; } 60%{ transform:translateY(5px) scale(1.05); opacity:1; } 100%{ transform:translateY(0) scale(1); } }
-  .big-cap.wobble{ animation:capWobble .55s ease-in-out; }
+  .big-cap.wobble{ animation:capWobble .85s ease-in-out; }
   @keyframes capWobble{ 0%,100%{ transform:rotate(0); } 20%{ transform:rotate(-7deg); } 45%{ transform:rotate(6deg); } 70%{ transform:rotate(-4deg); } }
   .big-cap.open .bc-top{ animation:capTopFly .5s ease-out forwards; }
   .big-cap.open .bc-bottom{ animation:capBottomDrop .5s ease-in forwards; }
@@ -352,6 +349,19 @@
     { key:'kaku-hiyoko',   name:'ぴよたろう' }
   ];
   var CAP_COLORS = ['#ef5350','#42a5f5','#ffca28','#66bb6a','#ab47bc','#ff7043','#26a69a','#ec407a'];
+  var CAP_BASE_HUE = 1;
+  function hexHue(hex){
+    var r = parseInt(hex.slice(1,3),16)/255, g = parseInt(hex.slice(3,5),16)/255, b = parseInt(hex.slice(5,7),16)/255;
+    var mx = Math.max(r,g,b), mn = Math.min(r,g,b), d = mx - mn, h = 0;
+    if (d) {
+      if (mx === r) h = ((g - b) / d) % 6;
+      else if (mx === g) h = (b - r) / d + 2;
+      else h = (r - g) / d + 4;
+      h *= 60; if (h < 0) h += 360;
+    }
+    return h;
+  }
+  function capFilter(hex){ return 'hue-rotate(' + Math.round(hexHue(hex) - CAP_BASE_HUE) + 'deg)'; }
 
   var machine  = document.getElementById('machine');
   var dropCap  = document.getElementById('dropCap');
@@ -518,15 +528,15 @@
     dropCap.classList.remove('drop');
     renderSpin();
     machine.classList.add('shaking');
-    setTimeout(function(){ machine.classList.remove('shaking'); }, 980);
-    dropCap.style.setProperty('--dc', CAP_COLORS[Math.floor(Math.random() * CAP_COLORS.length)]);
+    setTimeout(function(){ machine.classList.remove('shaking'); }, 1500);
+    dropCap.style.filter = capFilter(CAP_COLORS[Math.floor(Math.random() * CAP_COLORS.length)]);
     setTimeout(function(){
       void dropCap.offsetWidth;
       dropCap.classList.add('drop');
-    }, 900);
+    }, 1400);
     setTimeout(function(){
       var prize = rest[Math.floor(Math.random() * rest.length)];
-      bigCap.style.setProperty('--cap1', CAP_COLORS[Math.floor(Math.random() * CAP_COLORS.length)]);
+      bigCap.querySelector('.bc-top').style.filter = capFilter(CAP_COLORS[Math.floor(Math.random() * CAP_COLORS.length)]);
       bigCap.className = 'big-cap';
       bigCap.hidden = false;
       resultImg.hidden = true;
@@ -537,7 +547,7 @@
       stage.hidden = false;
       stage.scrollIntoView({ behavior: 'auto', block: 'center' });
       void bigCap.offsetWidth;
-      setTimeout(function(){ bigCap.classList.add('wobble'); }, 500);
+      setTimeout(function(){ bigCap.classList.add('wobble'); }, 700);
       setTimeout(function(){
         var col2 = getCol();
         col2.push(prize.key);
@@ -567,9 +577,9 @@
           spinning = false;
           renderAlbum();
           renderSpin();
-        }, 430);
-      }, 1250);
-    }, 1650);
+        }, 550);
+      }, 1750);
+    }, 2400);
   }
   spinBtn.addEventListener('click', spin);
 
