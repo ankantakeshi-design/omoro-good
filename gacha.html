@@ -432,9 +432,13 @@
 
   function renderAlbum(){
     var col = getCol();
+    var omoKeys = ['egg','baby','kid','adult','daidara','god'];
+    var maxOmo = reachedOmoroIdx();
     albumGrid.innerHTML = '';
     FIGURES.forEach(function(f){
       var got = col.indexOf(f.key) !== -1;
+      var oi = omoKeys.indexOf(f.key);
+      var locked = !got && oi !== -1 && oi > maxOmo;
       var cell;
       if (got) {
         cell = document.createElement('button');
@@ -448,7 +452,7 @@
       var img = document.createElement('img');
       img.className = 'fig';
       img.src = got ? ('gacha-fig-' + f.key + '.webp') : ('gacha-sil-' + f.key + '.webp');
-      img.alt = got ? f.name : 'まだ集まっていないフィギュア';
+      img.alt = got ? f.name : (locked ? 'まだ進化していない姿のフィギュア' : 'まだ集まっていないフィギュア');
       img.loading = 'lazy';
       cell.appendChild(img);
       if (!got) {
@@ -460,7 +464,7 @@
       }
       var nm = document.createElement('span');
       nm.className = 'cname';
-      nm.textContent = got ? f.name : '？？？';
+      nm.textContent = got ? f.name : (locked ? 'まだだよ' : '？？？');
       cell.appendChild(nm);
       albumGrid.appendChild(cell);
     });
