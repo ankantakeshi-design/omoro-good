@@ -75,6 +75,7 @@
   .ov-save img{ max-width:min(260px,74vw); max-height:340px; width:auto; }
   .save-how{ font-size:16px; line-height:1.75; font-weight:700; margin:12px 2px 14px; text-align:left; }
   .inapp-note{ background:#fff3e0; color:#9a5a12; border:1px solid #f2cf9a; border-radius:12px; padding:10px 12px; font-size:13px; line-height:1.6; margin:10px 0 0; }
+  .inapp-how-btn{ display:block; margin-top:8px; min-height:44px; padding:6px 18px; border-radius:999px; border:2px solid var(--orange-dark); background:#fff; color:var(--orange-dark); font-weight:900; font-size:14.5px; font-family:inherit; cursor:pointer; }
   .raise-box{ display:flex; align-items:center; gap:12px; background:var(--yellow-soft); border:2px solid var(--card-border); border-radius:16px; padding:14px; margin:18px 0 4px; text-align:left; }
   .raise-thumb{ flex:0 0 60px; text-align:center; }
   .raise-thumb img{ max-width:60px; max-height:76px; width:auto; height:auto; }
@@ -209,7 +210,7 @@
   <p class="demo-note" id="demoNote" hidden>テスト表示中だよ。本物の回数やコレクションは変わらないよ。</p>
   <h1>🎁 おもろガチャ</h1>
   <p class="lead" id="leadText">輪廻転生すると<br>3回分まわせるよ。（かぶりなし）</p>
-  <p class="inapp-note" id="inappNote" hidden>⚠ いま、LINEやThreadsなどのアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザの中に保存されるよ。アプリの中だと消えてしまうことがあるから、Safariなどのブラウザで開き直してね。</p>
+  <div class="inapp-note" id="inappNote" hidden><span id="inappNoteText">⚠ いま、LINEやThreadsなどのアプリの中で開いているよ。集めたフィギュアの記録は、開いたブラウザの中に保存されるよ。アプリの中だと消えてしまうことがあるから、Safariなどのブラウザで開き直してね。</span><button type="button" class="inapp-how-btn" id="inappHow">やり方はこちら ›</button></div>
 
   <section class="machine-box" aria-label="ガチャマシン">
     <div class="machine" id="machine" aria-hidden="true">
@@ -932,9 +933,10 @@
     var inappStep3 = document.getElementById('inappStep3');
     if (inappStep3) inappStep3.textContent = recName === 'Safari' ? '共有ボタンから「ホーム画面に追加」して、そこから遊んでね' : 'メニュー（︙）から「ホーム画面に追加」して、そこから遊んでね';
     var inappNote = document.getElementById('inappNote');
-    if (inappNote) { inappNote.hidden = false; inappNote.textContent = '⚠ いま、LINEやThreadsなどのアプリの中で開いているよ。集めた記録は、開いたところごとに別々になっちゃうよ。' + recName + 'で開き直してね。'; }
+    if (inappNote) { inappNote.hidden = false; document.getElementById('inappNoteText').textContent = '⚠ いま、LINEやThreadsなどのアプリの中で開いているよ。集めた記録は、開いたところごとに別々になっちゃうよ。' + recName + 'で開き直してね。'; }
     var inappOverlay = document.getElementById('inappOverlay');
     inappOverlay.hidden = false;
+    document.getElementById('inappHow').addEventListener('click', function(){ inappOverlay.hidden = false; });
     document.getElementById('inappClose').addEventListener('click', function(){ inappOverlay.hidden = true; });
     inappOverlay.addEventListener('click', function(e){ if (e.target === inappOverlay) inappOverlay.hidden = true; });
     document.getElementById('inappCopy').addEventListener('click', function(){
