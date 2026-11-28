@@ -69,6 +69,7 @@
   .code-btn{ min-height:48px; padding:8px 20px; border:2px solid var(--orange); border-radius:12px; background:#fff; color:var(--orange-dark); font-size:15px; font-weight:900; font-family:inherit; cursor:pointer; }
   .code-btn:disabled{ opacity:.5; cursor:default; }
   .code-msg{ font-size:13.5px; color:var(--ink-soft); margin:6px 0 0; min-height:1.2em; }
+  .share-hint{ font-size:12px; color:var(--ink-soft); margin:8px 6px 0; line-height:1.6; }
   .raise-box{ display:flex; align-items:center; gap:12px; background:var(--yellow-soft); border:2px solid var(--card-border); border-radius:16px; padding:14px; margin:18px 0 4px; text-align:left; }
   .raise-thumb{ flex:0 0 60px; text-align:center; }
   .raise-thumb img{ max-width:60px; max-height:76px; width:auto; height:auto; }
@@ -229,6 +230,7 @@
       <p id="resultNewWrap" hidden><span class="result-new">NEW！</span></p>
       <a class="save-btn" id="saveBtn" href="#" download hidden>📥 画像を保存する</a>
       <button type="button" class="save-btn share-btn" id="shareBtn" hidden>⤴ 友達にシェア</button>
+      <p class="share-hint" id="shareHint" hidden>シェアすると、文章とリンクもコピーされるよ。シェア先で文章が出なかったら、貼り付けてね。</p>
     </div>
   </section>
 
@@ -313,6 +315,7 @@
     <p class="ov-name" id="ovName"></p>
     <a class="save-btn" id="ovSave" href="#" download>📥 画像を保存する</a>
     <button type="button" class="save-btn share-btn" id="ovShare">⤴ 友達にシェア</button>
+    <p class="share-hint">シェアすると、文章とリンクもコピーされるよ。シェア先で文章が出なかったら、貼り付けてね。</p>
     <button type="button" class="ov-close-btn" id="ovCloseBtn">閉じる</button>
   </div>
 </div>
@@ -386,6 +389,7 @@
   var resultName = document.getElementById('resultName');
   var saveBtn  = document.getElementById('saveBtn');
   var shareBtn = document.getElementById('shareBtn');
+  var shareHint = document.getElementById('shareHint');
   var albumGrid  = document.getElementById('albumGrid');
   var albumCount = document.getElementById('albumCount');
   var completeMsg= document.getElementById('completeMsg');
@@ -692,6 +696,7 @@
       resultNewWrap.hidden = true;
       saveBtn.hidden = true;
       shareBtn.hidden = true;
+      shareHint.hidden = true;
       stage.hidden = false;
       stage.scrollIntoView({ behavior: 'auto', block: 'center' });
       void bigCap.offsetWidth;
@@ -729,6 +734,7 @@
           shareBtn.dataset.key = prize.key;
           shareBtn.dataset.name = prize.name;
           shareBtn.hidden = false;
+          shareHint.hidden = false;
           spinning = false;
           renderAlbum();
           renderSpin();
@@ -816,7 +822,7 @@
         if (navigator.canShare({ files: [file] })) {
           if (navigator.clipboard) { navigator.clipboard.writeText(text).catch(function(){}); }
           navigator.share({ files: [file], text: text }).then(function(){
-            showToast('文章はコピーもしたよ。LINEで文章が出なかったら、貼り付けてね。');
+            showToast('文章とリンクをコピーしたよ。シェア先で文章が出なかったら、貼り付けてね。');
           }).catch(function(){});
         } else { shareTextOnly(); }
       }).catch(function(){ shareTextOnly(); });
